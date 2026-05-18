@@ -234,7 +234,6 @@ def home_page():
         st.session_state.started = True
         st.rerun()
 
-
 if not st.session_state.started:
     home_page()
     st.stop()
