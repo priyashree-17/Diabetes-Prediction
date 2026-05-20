@@ -15,7 +15,7 @@ import streamlit.components.v1 as components
 # ==============================
 st.set_page_config(
     page_title="GlucoTrack",
-    page_icon="ðŸ©º",
+    page_icon="🩺",
     layout="wide"
 )
 
@@ -54,7 +54,7 @@ for key, value in defaults.items():
 # ==============================
 dark_mode = False
 if st.session_state.started:
-    dark_mode = st.sidebar.toggle("ðŸŒ™ Dark Mode")
+    dark_mode = st.sidebar.toggle("🌙 Dark Mode")
 
 if dark_mode:
     bg = "#023047"
@@ -325,7 +325,7 @@ div[data-baseweb="select"] * {{ color: {input_text} !important; }}
 def home_page():
     st.markdown("""
     <div class="hero-wrap">
-        <div class="hero-badge">ðŸ©º AI-Powered Health Platform</div>
+        <div class="hero-badge">🩺 AI-Powered Health Platform</div>
         <div class="hero-title">GlucoTrack</div>
         <p class="hero-sub">
             Predict diabetes risk in seconds using Machine Learning.<br>
@@ -350,7 +350,7 @@ def home_page():
 
     st.markdown("""
     <div class="section-heading">
-        <h2>âœ¨ What GlucoTrack Does</h2>
+        <h2>✨ What GlucoTrack Does</h2>
         <p>Three powerful features to monitor, predict, and improve your health</p>
     </div>
     """, unsafe_allow_html=True)
@@ -362,12 +362,12 @@ def home_page():
         st.markdown(f"""
         <div class="feat-card" style="background:{feature_bg1};">
             <span class="feat-tag" style="color:{feature_txt1};">Machine Learning</span>
-            <span class="feat-icon">ðŸ¤–</span>
+            <span class="feat-icon">🤖</span>
             <div class="feat-title" style="color:{feature_txt1};">ML-Based Diabetes Risk Prediction</div>
             <div class="feat-desc" style="color:{feature_txt1};">
-                Our trained ML model analyzes <strong>8 clinical parameters</strong> â€”
+                Our trained ML model analyzes <strong>8 clinical parameters</strong> —
                 Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies,
-                Skin Thickness, and Diabetes Pedigree Function â€” to compute your
+                Skin Thickness, and Diabetes Pedigree Function — to compute your
                 <strong>diabetes risk with a confidence score</strong>.
                 <br><br>
                 Early detection gives you the power to act <em>before</em> symptoms appear
@@ -380,13 +380,13 @@ def home_page():
         st.markdown(f"""
         <div class="feat-card" style="background:{feature_bg2};">
             <span class="feat-tag" style="color:{feature_txt2};">Analytics</span>
-            <span class="feat-icon">ðŸ“Š</span>
+            <span class="feat-icon">📊</span>
             <div class="feat-title" style="color:{feature_txt2};">Patient Health Analytics</div>
             <div class="feat-desc" style="color:{feature_txt2};">
                 Visualize your health data through <strong>interactive bar charts,
                 glucose gauges, and BMI indicators</strong>.
                 <br><br>
-                See all key vitals â€” glucose, blood pressure, insulin, BMI â€”
+                See all key vitals — glucose, blood pressure, insulin, BMI —
                 in a clean <strong>graphical dashboard</strong> with color-coded
                 healthy vs risk zones, so you can make <em>data-driven</em>
                 decisions with your doctor.
@@ -398,15 +398,15 @@ def home_page():
         st.markdown(f"""
         <div class="feat-card" style="background:{feature_bg3};">
             <span class="feat-tag" style="color:{feature_txt3};">Personalized</span>
-            <span class="feat-icon">ðŸ’¡</span>
+            <span class="feat-icon">💡</span>
             <div class="feat-title" style="color:{feature_txt3};">Personalized Health Suggestions</div>
             <div class="feat-desc" style="color:{feature_txt3};">
                 Unlike generic advice, GlucoTrack analyzes <strong>your specific
-                health values</strong> â€” high glucose, elevated BMI, raised blood
-                pressure â€” and gives <strong>targeted recommendations</strong>
+                health values</strong> — high glucose, elevated BMI, raised blood
+                pressure — and gives <strong>targeted recommendations</strong>
                 tailored to your risk profile.
                 <br><br>
-                Diet tips, exercise guidance, and when to consult a doctor â€”
+                Diet tips, exercise guidance, and when to consult a doctor —
                 all <em>specific to you</em>, not a generic checklist.
             </div>
         </div>
@@ -414,7 +414,7 @@ def home_page():
 
     st.markdown("""
     <div class="section-heading">
-        <h2>ðŸ”„ How It Works</h2>
+        <h2>🔄 How It Works</h2>
         <p>Get your diabetes risk assessment in 4 simple steps</p>
     </div>
     """, unsafe_allow_html=True)
@@ -442,13 +442,13 @@ def home_page():
 
     _, mid, _ = st.columns([1.5, 1, 1.5])
     with mid:
-        if st.button("ðŸš€ Get Started Now", use_container_width=True):
+        if st.button("🚀 Get Started Now", use_container_width=True):
             st.session_state.started = True
             st.rerun()
 
     st.write("")
     st.markdown("""<p style="text-align:center;font-size:13px;opacity:0.45;">
-    âš•ï¸ GlucoTrack is for educational purposes. Always consult a medical professional.
+    ⚕️ GlucoTrack is for educational purposes. Always consult a medical professional.
     </p>""", unsafe_allow_html=True)
 
 
@@ -460,12 +460,12 @@ if not st.session_state.started:
 # ==============================
 # SIDEBAR  â† FIX: index= se current page select hogi
 # ==============================
-st.sidebar.markdown("## ðŸ©º GLUCOTRACK")
+st.sidebar.markdown("## 🩺 GLUCOTRACK")
 st.sidebar.caption("Smart Health Dashboard")
 st.sidebar.markdown("---")
 
 if st.session_state.logged_in:
-    st.sidebar.success(f"ðŸ‘¤ {st.session_state.current_user_name or st.session_state.role}")
+    st.sidebar.success(f"👤 {st.session_state.current_user_name or st.session_state.role}")
 
 # Define menu options based on user role
 if st.session_state.logged_in:
@@ -476,7 +476,7 @@ if st.session_state.logged_in:
 else:
     menu_options = ["User Login", "Sign Up", "Admin Login"]
 
-# âœ… KEY FIX: current page ka index find karo aur radio ko wahan set karo
+# ✅ KEY FIX: current page ka index find karo aur radio ko wahan set karo
 # If current page is not in menu, default to index 0
 current_page = st.session_state.page
 if current_page not in menu_options:
@@ -485,7 +485,7 @@ if current_page not in menu_options:
 
 current_index = menu_options.index(current_page)
 
-# Radio widget â€” highlights current page
+# Radio widget — highlights current page
 selected_page = st.sidebar.radio(
     "",
     menu_options,
@@ -493,7 +493,7 @@ selected_page = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
-# âœ… KEY FIX: Update only when user manually changes selection
+# ✅ KEY FIX: Update only when user manually changes selection
 # prediction_page() sets page="Results", preserve that behavior
 if selected_page != st.session_state.page:
     st.session_state.page = selected_page
@@ -513,7 +513,7 @@ if st.session_state.logged_in:
 # LOGIN / SIGNUP
 # ==============================
 def user_login():
-    st.title("ðŸ” User Login")
+    st.title("🔐 User Login")
     email = st.text_input("Email ID")
     password = st.text_input("Password", type="password")
     if st.button("Login"):
@@ -530,7 +530,7 @@ def user_login():
 
 
 def signup():
-    st.title("ðŸ“ Patient Sign Up")
+    st.title("📝 Patient Sign Up")
     with st.form("signup_form"):
         col1, col2 = st.columns(2)
         with col1:
@@ -557,7 +557,7 @@ def signup():
 
 
 def admin_login():
-    st.title("ðŸ›¡ï¸ Admin Login")
+    st.title("🛡️ Admin Login")
     email = st.text_input("Admin Email ID")
     password = st.text_input("Admin Password", type="password")
     if st.button("Admin Login"):
@@ -573,7 +573,7 @@ def admin_login():
 
 
 def admin_dashboard():
-    st.title("ðŸ›¡ï¸ Admin Dashboard")
+    st.title("🛡️ Admin Dashboard")
     col1, col2, col3 = st.columns(3)
     col1.metric("Registered Users", len(st.session_state.users))
     col2.metric("Admin Accounts", len(st.session_state.admins))
@@ -595,7 +595,7 @@ def get_suggestions(patient_data):
             "Monitor blood glucose levels every day",
             "Reduce sugar, sweets, and refined carbohydrates",
             "Consult a doctor for diabetes management",
-            "Avoid sugary drinks â€” switch to water or herbal tea"
+            "Avoid sugary drinks — switch to water or herbal tea"
         ]
     elif bmi >= 30:
         return [
@@ -616,7 +616,7 @@ def get_suggestions(patient_data):
             "Maintain a balanced diet rich in vegetables and whole grains",
             "Exercise regularly to stay active and healthy",
             "Drink at least 8 glasses of water daily",
-            "Get 7â€“8 hours of quality sleep every night"
+            "Get 7–8 hours of quality sleep every night"
         ]
 
 
@@ -632,7 +632,7 @@ def generate_pdf_report(patient_data, result, confidence, patient_name, patient_
     pdf.rect(0, height - 80, width, 80, fill=True, stroke=False)
     pdf.setFillColorRGB(1, 1, 1)
     pdf.setFont("Helvetica-Bold", 20)
-    pdf.drawString(40, height - 45, "GlucoTrack â€” Diabetes Risk Report")
+    pdf.drawString(40, height - 45, "GlucoTrack — Diabetes Risk Report")
     pdf.setFont("Helvetica", 10)
     pdf.drawString(40, height - 65, f"Generated: {prediction_time}")
 
@@ -709,7 +709,7 @@ def generate_pdf_report(patient_data, result, confidence, patient_name, patient_
 
     for s in get_suggestions(patient_data):
         pdf.setFillColorRGB(0.05, 0.52, 0.78)
-        pdf.drawString(50, y, "â€¢")
+        pdf.drawString(50, y, "•")
         pdf.setFillColorRGB(0.1, 0.1, 0.1)
         pdf.setFont("Helvetica", 11)
         pdf.drawString(65, y, s[:88])
@@ -724,7 +724,7 @@ def generate_pdf_report(patient_data, result, confidence, patient_name, patient_
     pdf.rect(0, 0, width, 28, fill=True, stroke=False)
     pdf.setFillColorRGB(1, 1, 1)
     pdf.setFont("Helvetica", 9)
-    pdf.drawString(40, 9, "GlucoTrack â€” Smart Diabetes Risk Prediction System")
+    pdf.drawString(40, 9, "GlucoTrack — Smart Diabetes Risk Prediction System")
     pdf.drawRightString(width - 40, 9, f"Patient: {patient_name}")
 
     pdf.save()
@@ -735,7 +735,7 @@ def generate_pdf_report(patient_data, result, confidence, patient_name, patient_
 # ANALYTICS
 # ==============================
 def show_patient_analytics(patient_data):
-    st.subheader("ðŸ“Š Patient Health Analytics")
+    st.subheader("📊 Patient Health Analytics")
 
     metrics = ["Glucose", "BMI", "Insulin", "BloodPressure", "Age"]
     values = [patient_data[m] for m in metrics]
@@ -818,7 +818,7 @@ def show_health_suggestions(patient_data):
     <div style="background:{card_bg}; padding:30px 36px; border-radius:24px;
                 box-shadow:0 8px 28px rgba(0,0,0,0.12); font-family:Arial,sans-serif;">
         <h2 style="color:{title_col}; font-size:22px; font-weight:800; margin-bottom:16px;">
-            ðŸ’¡ Personalized Health Recommendations
+            💡 Personalized Health Recommendations
         </h2>
         <ul style="margin:0; padding-left:22px; line-height:1.8;">{items_html}</ul>
     </div>
@@ -829,10 +829,10 @@ def show_health_suggestions(patient_data):
 # PREDICTION PAGE
 # ==============================
 def prediction_page():
-    st.title("ðŸ©º Diabetes Risk Prediction")
+    st.title("🩺 Diabetes Risk Prediction")
 
     # â”€â”€ Patient Info Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    st.markdown("### ðŸ‘¤ Patient Information")
+    st.markdown("### 👤 Patient Information")
     st.caption("You can edit or enter your name and email below.")
 
     pinfo_col1, pinfo_col2 = st.columns(2)
@@ -851,11 +851,11 @@ def prediction_page():
 
     # Validate name not empty
     if not patient_name_input.strip():
-        st.warning("âš ï¸ Patient name is required to generate the report.")
+        st.warning("⚠️ Patient name is required to generate the report.")
 
     st.markdown("---")
     # â”€â”€ Clinical Parameters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    st.markdown("### ðŸ”¬ Clinical Health Parameters")
+    st.markdown("### 🔬 Clinical Health Parameters")
     st.write("Enter your health values below:")
 
     col1, col2 = st.columns(2)
@@ -867,7 +867,7 @@ def prediction_page():
         skin    = st.number_input("Skin Thickness (mm)", 0, 100, 20)
 
     with col2:
-        insulin = st.number_input("Insulin (Î¼U/mL)", 0, 400, 100)
+        insulin = st.number_input("Insulin (μU/mL)", 0, 400, 100)
         bmi     = st.number_input("BMI", 10.0, 70.0, 25.0)
         dpf     = st.number_input("Diabetes Pedigree Function", 0.0, 3.0, 0.5)
         age     = st.number_input("Age", 1, 100, 30)
@@ -877,10 +877,10 @@ def prediction_page():
 
         # Name validation before prediction
         if not patient_name_input.strip():
-            st.error("âŒ Please enter the patient name first!")
+            st.error("❌ Please enter the patient name first!")
             st.stop()
 
-        # âœ… User ne jo naam/email diya, woh use karo (session update bhi)
+        # ✅ User ne jo naam/email diya, woh use karo (session update bhi)
         final_name  = patient_name_input.strip()
         final_email = patient_email_input.strip()
         st.session_state.current_user_name  = final_name
@@ -937,10 +937,10 @@ def prediction_page():
 # RESULTS PAGE
 # ==============================
 def results_page():
-    st.title("ðŸ“‹ Prediction Results")
+    st.title("📋 Prediction Results")
 
     if not st.session_state.prediction_done:
-        st.warning("âš ï¸ No prediction found. Please go to **Prediction** page and submit your details first.")
+        st.warning("⚠️ No prediction found. Please go to **Prediction** page and submit your details first.")
         if st.button("ðŸ”™ Go to Prediction"):
             st.session_state.page = "Prediction"
             st.rerun()
@@ -967,11 +967,11 @@ def results_page():
             </div>
             <div class="patient-info-item">
                 <label>Report Date</label>
-                <span>{pred_time[:10] if pred_time else "â€”"}</span>
+                <span>{pred_time[:10] if pred_time else "—"}</span>
             </div>
             <div class="patient-info-item">
                 <label>Report Time</label>
-                <span>{pred_time[11:] if pred_time else "â€”"}</span>
+                <span>{pred_time[11:] if pred_time else "—"}</span>
             </div>
         </div>
     </div>
@@ -981,14 +981,14 @@ def results_page():
     if result == "High Risk of Diabetes":
         st.markdown(f"""
         <div class="result-high">
-            âš ï¸ High Risk of Diabetes
+            ⚠️ High Risk of Diabetes
             <br><span style="font-size:17px;font-weight:600;">Prediction Confidence: {confidence}%</span>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
         <div class="result-low">
-            âœ… Low Risk of Diabetes
+            ✅ Low Risk of Diabetes
             <br><span style="font-size:17px;font-weight:600;">Prediction Confidence: {confidence}%</span>
         </div>
         """, unsafe_allow_html=True)
@@ -996,7 +996,7 @@ def results_page():
     st.write("")
 
     # Parameter Summary Grid
-    st.subheader("ðŸ§¾ Submitted Health Parameters")
+    st.subheader("🧾 Submitted Health Parameters")
     params = list(patient_data.items())
     cols = st.columns(4)
     for i, (k, v) in enumerate(params):
@@ -1014,18 +1014,18 @@ def results_page():
     show_health_suggestions(patient_data)
     st.write("")
 
-    # Action Buttons â€” row 1
+    # Action Buttons — row 1
     b1, b2 = st.columns(2)
     with b1:
         st.download_button(
-            label="ðŸ“„ Download PDF Report",
+            label="📄 Download PDF Report",
             data=st.session_state.pdf_bytes,
             file_name=f"glucotrack_{name.replace(' ', '_')}_report.pdf",
             mime="application/pdf",
             use_container_width=True
         )
     with b2:
-        if st.button("ðŸ” New Prediction", use_container_width=True):
+        if st.button("🔁 New Prediction", use_container_width=True):
             for k in ["prediction_done", "patient_data", "prediction_result",
                       "confidence", "pdf_bytes", "prediction_time"]:
                 st.session_state[k] = defaults[k]
@@ -1033,14 +1033,14 @@ def results_page():
             st.rerun()
 
     # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    # WHATSAPP SECTION â€” SIMPLE wa.me LINK
+    # WHATSAPP SECTION — SIMPLE wa.me LINK
     # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     st.write("")
     st.markdown("""
     <div style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);
                 border:2px solid #4ade80; border-radius:20px; padding:22px 26px;">
         <div style="font-size:20px;font-weight:800;color:#14532d;">
-            ðŸ“² Send Report via WhatsApp
+            📲 Send Report via WhatsApp
         </div>
         <div style="font-size:13px;color:#166534;margin-top:4px;">
             Enter number → Click button → WhatsApp opens → Send message
@@ -1052,55 +1052,55 @@ def results_page():
     wa_col1, wa_col2 = st.columns([2, 1])
     with wa_col1:
         wa_number = st.text_input(
-            "ðŸ“ž WhatsApp Number (with Country Code)",
+            "📞 WhatsApp Number (with Country Code)",
             placeholder="91XXXXXXXXXX  ya  +91XXXXXXXXXX",
             key="wa_number_input"
         )
     with wa_col2:
         st.write("")
         st.write("")
-        send_wa = st.button("ðŸ’¬ Send via WhatsApp", use_container_width=True)
+        send_wa = st.button("💬 Send via WhatsApp", use_container_width=True)
 
     if send_wa:
         digits_only = wa_number.strip().replace("+", "").replace(" ", "").replace("-", "")
         if not digits_only or not digits_only.isdigit() or len(digits_only) < 10:
-            st.error("âŒ Please enter a valid number. Example: 919876543210")
+            st.error("❌ Please enter a valid number. Example: 919876543210")
         else:
             suggestions      = get_suggestions(patient_data)
-            suggestions_text = "\n".join([f"  â€¢ {s}" for s in suggestions])
-            result_emoji     = "âš ï¸" if "High" in result else "âœ…"
+            suggestions_text = "\n".join([f"  • {s}" for s in suggestions])
+            result_emoji     = "⚠️" if "High" in result else "✅"
 
             wa_message = (
-                f"ðŸ©º *GlucoTrack â€” Diabetes Risk Report*\n"
-                f"â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n\n"
-                f"ðŸ‘¤ *Patient:* {name}\n"
+                f"🩺 *GlucoTrack — Diabetes Risk Report*\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"👤 *Patient:* {name}\n"
                 f"ðŸ“§ *Email:* {email}\n"
-                f"ðŸ“… *Date:* {pred_time[:10] if pred_time else 'â€”'}\n"
-                f"ðŸ• *Time:* {pred_time[11:] if pred_time else 'â€”'}\n\n"
-                f"â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n"
+                f"📅 *Date:* {pred_time[:10] if pred_time else '—'}\n"
+                f"🕐 *Time:* {pred_time[11:] if pred_time else '—'}\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━\n"
                 f"{result_emoji} *Result: {result}*\n"
-                f"ðŸ“Š *Confidence: {confidence}%*\n\n"
-                f"â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n"
-                f"ðŸ”¬ *Health Parameters:*\n"
-                f"  â€¢ Pregnancies: {patient_data['Pregnancies']}\n"
-                f"  â€¢ Glucose: {patient_data['Glucose']} mg/dL\n"
-                f"  â€¢ Blood Pressure: {patient_data['BloodPressure']} mm Hg\n"
-                f"  â€¢ Skin Thickness: {patient_data['SkinThickness']} mm\n"
-                f"  â€¢ Insulin: {patient_data['Insulin']} uU/mL\n"
-                f"  â€¢ BMI: {patient_data['BMI']}\n"
-                f"  â€¢ Diabetes Pedigree: {patient_data['DiabetesPedigreeFunction']}\n"
-                f"  â€¢ Age: {patient_data['Age']} years\n\n"
-                f"â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n"
-                f"ðŸ’¡ *Recommendations:*\n"
+                f"📊 *Confidence: {confidence}%*\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━\n"
+                f"🔬 *Health Parameters:*\n"
+                f"  • Pregnancies: {patient_data['Pregnancies']}\n"
+                f"  • Glucose: {patient_data['Glucose']} mg/dL\n"
+                f"  • Blood Pressure: {patient_data['BloodPressure']} mm Hg\n"
+                f"  • Skin Thickness: {patient_data['SkinThickness']} mm\n"
+                f"  • Insulin: {patient_data['Insulin']} uU/mL\n"
+                f"  • BMI: {patient_data['BMI']}\n"
+                f"  • Diabetes Pedigree: {patient_data['DiabetesPedigreeFunction']}\n"
+                f"  • Age: {patient_data['Age']} years\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━\n"
+                f"💡 *Recommendations:*\n"
                 f"{suggestions_text}\n\n"
-                f"â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━\n"
                 f"_GlucoTrack ML Report — Please consult a doctor_"
             )
 
             encoded  = urllib.parse.quote(wa_message)
             wa_link  = f"https://wa.me/{digits_only}?text={encoded}"
 
-            st.success("âœ… Link is ready! Click the green button below to open WhatsApp.")
+            st.success("✅ Link is ready! Click the green button below to open WhatsApp.")
             st.markdown(f"""
             <div style="text-align:center; margin-top:12px;">
                 <a href="{wa_link}" target="_blank" style="
@@ -1110,7 +1110,7 @@ def results_page():
                     padding:14px 44px; border-radius:50px;
                     text-decoration:none;
                     box-shadow:0 6px 20px rgba(37,211,102,0.40);">
-                    ðŸ“² Open in WhatsApp &amp; Send
+                    📲 Open in WhatsApp &amp; Send
                 </a>
                 <p style="font-size:12px;color:#6b7280;margin-top:10px;">
                     Clicking will open WhatsApp Web/App — just press Send
@@ -1119,7 +1119,7 @@ def results_page():
             """, unsafe_allow_html=True)
 
     st.write("")
-    st.caption("âš•ï¸ This prediction is generated by a Machine Learning model and does not replace professional medical advice.")
+    st.caption("⚕️ This prediction is generated by a Machine Learning model and does not replace professional medical advice.")
 
 
 # ==============================
