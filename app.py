@@ -127,8 +127,7 @@ html, body, [class*="css"]{{font-family:'Inter',sans-serif!important;}}
 h1,h2,h3,h4,h5,h6,p,label{{font-family:'Inter',sans-serif!important;}}
 h1,h2,h3,h4,h5,h6,p,label{{color:{TEXT}!important;}}
 [data-testid="stDecoration"]{{display:none!important;}}
-header[data-testid="stHeader"]{{background:transparent!important;pointer-events:none!important;box-shadow:none!important;border:none!important;}}
-header[data-testid="stHeader"] button{{pointer-events:auto!important;}}
+header[data-testid="stHeader"]{{background:transparent!important;box-shadow:none!important;border:none!important;}}
 header[data-testid="stHeader"] [data-testid="stAppDeployButton"]{{display:none!important;}}
 header[data-testid="stHeader"] #MainMenu{{display:none!important;}}
 header[data-testid="stHeader"] [data-testid="stConnectionStatus"]{{display:none!important;}}
@@ -828,138 +827,38 @@ def prediction_page():
             default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30)) if st.session_state.user_type == 'patient' else 30
             age = st.number_input('Age (years)', 1, 100, default_age)
             
-    if st.button('Predict Diabetes Risk  ›', type='primary', use_container_width=True, key='predict_action_btn'):
-        patient_data = {
-            'Pregnancies': preg,
-            'Glucose': glucose,
-            'BloodPressure': bp,
-            'SkinThickness': skin,
-            'Insulin': insulin,
-            'BMI': bmi,
-            'DiabetesPedigreeFunction': dpf,
-            'Age': age
-        }
-        res, conf = model_predict(patient_data)
-        st.session_state.prediction_done = True
-        st.session_state.patient_data = patient_data
-        st.session_state.prediction_result = res
-        st.session_state.confidence = conf
-        st.session_state.prediction_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-        
-        # Save assessment to global reports
-        reports.append({
-            'name': st.session_state.current_user_name,
-            'email': st.session_state.current_user_email,
-            'time': st.session_state.prediction_time,
-            'result': res,
-            'confidence': conf,
-            'data': patient_data
-        })
-        save_json(REPORTS_FILE, reports)
-        add_audit('Diabetes Risk Prediction Done', st.session_state.current_user_email, f'Risk: {res} | Confidence: {conf}%')
-        st.session_state.page = 'dashboard'
-        st.rerun()
+    if st.button('Predict Diabetes Risk  ›', type='primary', use_container_width=True):
+        patient_data = {'Pregnancies': preg, 'Glucose': glucose, 'BloodPressure': bp, 'SkinThickness': skin, 'Insulin': insulin, 'BMI': bmi, 'DiabetesPedigreeFunction': dpf, 'Age': age}; result, confidence = model_predict(patient_data); pred_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S'); name = st.session_state.current_user_name; email = st.session_state.current_user_email; pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time); st.session_state.patient_data = patient_data; st.session_state.prediction_result = result; st.session_state.confidence = confidence; st.session_state.prediction_time = pred_time; st.session_state.pdf_bytes = pdf; st.session_state.prediction_done = True; reports.append({'name': name, 'email': email, 'result': result, 'confidence': confidence, 'time': pred_time, 'data': patient_data}); save_json(REPORTS_FILE, reports); add_audit('Prediction', email, result); st.session_state.page = 'dashboard'; st.rerun()
 
 
 def dashboard_page():
-    if not st.session_state.prediction_done or st.session_state.patient_data is None:
-        st.info('Please run a diabetes risk prediction first.')
-        if st.button('Go to Prediction Screen', type='primary'):
-            st.session_state.page = 'prediction'
-            st.rerun()
+    st.markdown('<div class="page-head"><div class="page-icon">📊</div><div><div class="page-title">Health Dashboard</div><div class="page-sub">Your prediction result, analytics, and suggestions</div></div></div>', unsafe_allow_html=True)
+    if not st.session_state.prediction_done:
+        st.warning('No prediction found. Please complete a prediction first.')
+        if st.button('Go to Prediction', type='primary'): st.session_state.page = 'prediction'; st.rerun()
         return
-
-    patient_data = st.session_state.patient_data
-    result = st.session_state.prediction_result
-    confidence = st.session_state.confidence
+    result = st.session_state.prediction_result; confidence = st.session_state.confidence; patient_data = st.session_state.patient_data
     
-    st.markdown('<div class="page-head"><div class="page-icon">📊</div><div><div class="page-title">Personal Health Analytics</div><div class="page-sub">Understand your ML clinical predictions and health metrics</div></div></div>', unsafe_allow_html=True)
-    
-    # 1. Main Assessment banner
-    is_high = 'High' in result
-    st.markdown(f'''
-    <div class="{"result-high" if is_high else "result-low"}">
-        {"⚠️" if is_high else "✅"} Diabetes Assessment: {result.upper()} ({confidence}% Confidence)
-    </div>
-    ''', unsafe_allow_html=True)
-    
+    st.markdown(f'<div class="{"result-high" if "High" in result else "result-low"}">{"⚠️" if "High" in result else "✅"} {result}<br><span style="font-size:17px;">Confidence: {confidence}%</span></div>', unsafe_allow_html=True)
     st.write('')
     
-    # 2. Parameters Grid
-    st.subheader('Clinical Health Parameters')
-    cols = st.columns(4)
-    param_labels = {
-        'Pregnancies': 'Pregnancies',
-        'Glucose': 'Glucose (mg/dL)',
-        'BloodPressure': 'Blood Pressure (mmHg)',
-        'SkinThickness': 'Skin Thickness (mm)',
-        'Insulin': 'Insulin (μU/mL)',
-        'BMI': 'BMI (kg/m²)',
-        'DiabetesPedigreeFunction': 'Diabetes Pedigree Score',
-        'Age': 'Age (years)'
-    }
-    for i, (key, val) in enumerate(patient_data.items()):
-        with cols[i % 4]:
-            st.markdown(f'<div class="param-card"><div class="param-label">{param_labels.get(key, key)}</div><div class="param-value">{val}</div></div>', unsafe_allow_html=True)
-            
-    # 3. Interactive Analytics & Recommendations
+    st.subheader('🧾 Submitted Health Parameters')
+    params = list(patient_data.items()); cols = st.columns(4)
+    for i, (k, v) in enumerate(params):
+        with cols[i % 4]: st.markdown(f'<div class="param-card"><div class="param-label">{k}</div><div class="param-value">{v}</div></div>', unsafe_allow_html=True)
+        
     st.write('')
-    c_left, c_right = st.columns([3, 2])
+    st.subheader('📈 Patient Health Analytics')
+    metrics = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']; values = [patient_data[m] for m in metrics]; fig = go.Figure(); fig.add_trace(go.Bar(x=metrics, y=values, marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], text=values, textposition='outside')); fig.update_layout(template=PLOT_TEMPLATE, height=390, title='Health Parameter Overview'); st.plotly_chart(fig, use_container_width=True)
     
-    with c_left:
-        st.subheader('Clinical Parameters Analysis')
-        metrics_list = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']
-        values_list = [patient_data[m] for m in metrics_list]
-        
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            x=metrics_list, 
-            y=values_list, 
-            marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], 
-            text=values_list, 
-            textposition='outside'
-        ))
-        fig.update_layout(template=PLOT_TEMPLATE, height=350, title='Key Clinical Health Values', margin=dict(t=40, b=20, l=20, r=20))
-        st.plotly_chart(fig, use_container_width=True)
-        
-    with c_right:
-        st.subheader('💡 Doctor Recommendations')
-        suggestions = get_suggestions(patient_data)
-        s_html = ''.join([f'<li style="margin-bottom:8px;">{s}</li>' for s in suggestions])
-        components.html(f'''
-        <div style="background:#E8F5FF; padding: 20px; border-radius: 16px; font-family: Inter, Arial; height: 100%;">
-            <h4 style="color:#0F172A; margin: 0 0 12px;">Personalized Suggestions</h4>
-            <ul style="color:#006BAA; font-size:15px; line-height:1.6; font-weight:600; padding-left:20px; margin:0;">
-                {s_html}
-            </ul>
-        </div>
-        ''', height=350)
-        
-    # 4. Sharing & PDF Exports
-    st.write('')
-    st.subheader('📄 Export & Share Reports')
-    
-    # Generate Report Bytes
-    pdf_bytes = generate_pdf(
-        patient_data, 
-        result, 
-        confidence, 
-        st.session_state.current_user_name, 
-        st.session_state.current_user_email, 
-        st.session_state.prediction_time
-    )
+    suggestions = get_suggestions(patient_data); items = ''.join([f'<li>{s}</li>' for s in suggestions]); components.html(f'<div style="background:#E8F5FF;padding:28px 34px;border-radius:20px;font-family:Inter,Arial;"><h2 style="color:#0F172A;margin:0 0 16px;">💡 Health Suggestions</h2><ul style="color:#006BAA;font-size:16px;line-height:1.8;font-weight:600;">{items}</ul></div>', height=230)
     
     col_dl, col_wa = st.columns(2)
     with col_dl:
-        st.download_button(
-            label='📥 Download Clinical PDF Report',
-            data=pdf_bytes,
-            file_name=f"glucotrack_report_{st.session_state.current_user_name.replace(' ', '_')}.pdf",
-            mime='application/pdf',
-            use_container_width=True
-        )
-        
+        st.download_button('📄 Download Patient Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
+    
     with col_wa:
+        # Construct url-encoded WhatsApp message
         msg_text = f"*GlucoTrack Diabetes Risk Report*\n\n" \
                   f"👤 *Patient Name:* {st.session_state.current_user_name}\n" \
                   f"🩺 *Risk Assessment:* {result}\n" \
