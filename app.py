@@ -122,10 +122,10 @@ css = f'''
 *{{box-sizing:border-box;}}
 html, body, [class*="css"]{{font-family:'Inter',sans-serif!important;}}
 .stApp{{background:{BG}!important;}}
-.block-container{{padding-top:0!important;padding-left:1.55rem!important;padding-right:1.55rem!important;max-width:100%!important;}}
+.block-container{{padding-top:2rem!important;padding-left:1.55rem!important;padding-right:1.55rem!important;max-width:100%!important;}}
 h1,h2,h3,h4,h5,h6,p,label,span,div{{font-family:'Inter',sans-serif!important;}}
 h1,h2,h3,h4,h5,h6,p,label,span{{color:{TEXT}!important;}}
-[data-testid="stDecoration"]{{display:none!important;}}
+[data-testid="stDecoration"], header[data-testid="stHeader"]{{display:none!important;}}
 .stTextInput input,.stNumberInput input,.stTextArea textarea{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;font-size:16px!important;padding-left:16px!important;}}
 .stSelectbox div[data-baseweb="select"]>div{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;}}
 
@@ -513,6 +513,9 @@ def auth_page():
             with st.container(border=True):
                 email = st.text_input('Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('Password', type='password', placeholder='Your password', key='signin_password')
+                is_admin = st.checkbox('Are you an admin?', key='is_admin_login')
+                if is_admin:
+                    st.info('🔑 Admin Demo Credentials:\n- Email: `admin@glucotrack.com`\n- Password: `admin@123`')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
                     ok, msg = login_user(email, password)
