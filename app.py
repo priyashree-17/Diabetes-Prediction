@@ -1,6 +1,7 @@
 import os
 import json
 import pickle
+import base64
 from datetime import datetime
 from io import BytesIO
 import urllib.parse
@@ -125,7 +126,12 @@ html, body, [class*="css"]{{font-family:'Inter',sans-serif!important;}}
 .block-container{{padding-top:2rem!important;padding-left:1.55rem!important;padding-right:1.55rem!important;max-width:100%!important;}}
 h1,h2,h3,h4,h5,h6,p,label{{font-family:'Inter',sans-serif!important;}}
 h1,h2,h3,h4,h5,h6,p,label{{color:{TEXT}!important;}}
-[data-testid="stDecoration"], header[data-testid="stHeader"]{{display:none!important;}}
+[data-testid="stDecoration"]{{display:none!important;}}
+header[data-testid="stHeader"]{{background:transparent!important;pointer-events:none!important;box-shadow:none!important;border:none!important;}}
+header[data-testid="stHeader"] button{{pointer-events:auto!important;}}
+header[data-testid="stHeader"] [data-testid="stAppDeployButton"]{{display:none!important;}}
+header[data-testid="stHeader"] #MainMenu{{display:none!important;}}
+header[data-testid="stHeader"] [data-testid="stConnectionStatus"]{{display:none!important;}}
 .nav-link{{text-decoration:none!important;color:{TEXT}!important;font-weight:700!important;font-size:16px!important;transition:color 0.2s ease!important;}}
 .nav-link:hover{{color:{BLUE}!important;}}
 .stTextInput input,.stNumberInput input,.stTextArea textarea{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;font-size:16px!important;padding-left:16px!important;}}
@@ -481,7 +487,20 @@ def public_header():
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
     name = st.session_state.current_user_name; email = st.session_state.current_user_email; role = {'patient': 'User', 'doctor': 'Doctor', 'admin': 'Admin'}.get(st.session_state.user_type, 'User'); init = initials(name)
-    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">⌁</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile"><div class="sb-avatar">{init}</div><div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
+    
+    # Retrieve profile picture if available
+    profile_pic = None
+    if st.session_state.user_type == 'patient' and email in users:
+        profile_pic = users[email].get('profile_pic')
+    elif st.session_state.user_type == 'doctor' and email in doctors:
+        profile_pic = doctors[email].get('profile_pic')
+        
+    if profile_pic:
+        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:50px;height:50px;border-radius:16px;object-fit:cover;display:block;">'
+    else:
+        avatar_html = f'<div class="sb-avatar">{init}</div>'
+        
+    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">⌁</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
     
     if st.sidebar.button('👤 Edit Profile', use_container_width=True): 
         st.session_state.page = 'profile'; st.rerun()
@@ -729,8 +748,27 @@ def create_profile_page():
                 age = st.number_input('Age', 1, 100, int(st.session_state.signup_age))
                 gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(st.session_state.signup_gender) if st.session_state.signup_gender in ['Female', 'Male', 'Other'] else 0)
                 address = st.text_area('Address', value=st.session_state.signup_address)
+                
+                # Profile Photo Upload
+                uploaded_photo = st.file_uploader('Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='patient_photo')
+                
                 if st.button('Create Patient Profile', type='primary', use_container_width=True):
-                    users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True}
+                    base64_photo = None
+                    if uploaded_photo:
+                        base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
+                        
+                    users[st.session_state.signup_email] = {
+                        'password': st.session_state.signup_password, 
+                        'name': name, 
+                        'phone': phone, 
+                        'age': age, 
+                        'gender': gender, 
+                        'address': address, 
+                        'medical_history': '', 
+                        'user_type': 'patient', 
+                        'profile_created': True,
+                        'profile_pic': base64_photo
+                    }
                     save_json(USERS_FILE, users)
                     add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
                     ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password)
@@ -743,8 +781,33 @@ def create_profile_page():
                 specialization = st.text_input('Specialization', placeholder='Endocrinology')
                 hospital = st.text_input('Hospital / Clinic')
                 license_no = st.text_input('Medical License No.')
+                
+                # Profile Photo Upload
+                uploaded_photo = st.file_uploader('Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='doctor_photo')
+                
                 if st.button('Create Doctor Profile', type='primary', use_container_width=True):
-                    doctors[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no, 'approved': False, 'user_type': 'doctor', 'profile_created': True}; save_json(DOCTORS_FILE, doctors); add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval'); st.success('Doctor profile created. Please wait for admin approval.'); st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
+                    base64_photo = None
+                    if uploaded_photo:
+                        base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
+                        
+                    doctors[st.session_state.signup_email] = {
+                        'password': st.session_state.signup_password, 
+                        'name': name, 
+                        'phone': phone, 
+                        'specialization': specialization, 
+                        'hospital': hospital, 
+                        'license_no': license_no, 
+                        'approved': False, 
+                        'user_type': 'doctor', 
+                        'profile_created': True,
+                        'profile_pic': base64_photo
+                    }
+                    save_json(DOCTORS_FILE, doctors)
+                    add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval')
+                    st.success('Doctor profile created. Please wait for admin approval.')
+                    st.session_state.page = 'auth'
+                    st.session_state.auth_mode = 'signin'
+                    st.rerun()
 
 
 def prediction_page():
@@ -765,38 +828,138 @@ def prediction_page():
             default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30)) if st.session_state.user_type == 'patient' else 30
             age = st.number_input('Age (years)', 1, 100, default_age)
             
-    if st.button('Predict Diabetes Risk  ›', type='primary', use_container_width=True):
-        patient_data = {'Pregnancies': preg, 'Glucose': glucose, 'BloodPressure': bp, 'SkinThickness': skin, 'Insulin': insulin, 'BMI': bmi, 'DiabetesPedigreeFunction': dpf, 'Age': age}; result, confidence = model_predict(patient_data); pred_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S'); name = st.session_state.current_user_name; email = st.session_state.current_user_email; pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time); st.session_state.patient_data = patient_data; st.session_state.prediction_result = result; st.session_state.confidence = confidence; st.session_state.prediction_time = pred_time; st.session_state.pdf_bytes = pdf; st.session_state.prediction_done = True; reports.append({'name': name, 'email': email, 'result': result, 'confidence': confidence, 'time': pred_time, 'data': patient_data}); save_json(REPORTS_FILE, reports); add_audit('Prediction', email, result); st.session_state.page = 'dashboard'; st.rerun()
+    if st.button('Predict Diabetes Risk  ›', type='primary', use_container_width=True, key='predict_action_btn'):
+        patient_data = {
+            'Pregnancies': preg,
+            'Glucose': glucose,
+            'BloodPressure': bp,
+            'SkinThickness': skin,
+            'Insulin': insulin,
+            'BMI': bmi,
+            'DiabetesPedigreeFunction': dpf,
+            'Age': age
+        }
+        res, conf = model_predict(patient_data)
+        st.session_state.prediction_done = True
+        st.session_state.patient_data = patient_data
+        st.session_state.prediction_result = res
+        st.session_state.confidence = conf
+        st.session_state.prediction_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+        
+        # Save assessment to global reports
+        reports.append({
+            'name': st.session_state.current_user_name,
+            'email': st.session_state.current_user_email,
+            'time': st.session_state.prediction_time,
+            'result': res,
+            'confidence': conf,
+            'data': patient_data
+        })
+        save_json(REPORTS_FILE, reports)
+        add_audit('Diabetes Risk Prediction Done', st.session_state.current_user_email, f'Risk: {res} | Confidence: {conf}%')
+        st.session_state.page = 'dashboard'
+        st.rerun()
 
 
 def dashboard_page():
-    st.markdown('<div class="page-head"><div class="page-icon">📊</div><div><div class="page-title">Health Dashboard</div><div class="page-sub">Your prediction result, analytics, and suggestions</div></div></div>', unsafe_allow_html=True)
-    if not st.session_state.prediction_done:
-        st.warning('No prediction found. Please complete a prediction first.')
-        if st.button('Go to Prediction', type='primary'): st.session_state.page = 'prediction'; st.rerun()
+    if not st.session_state.prediction_done or st.session_state.patient_data is None:
+        st.info('Please run a diabetes risk prediction first.')
+        if st.button('Go to Prediction Screen', type='primary'):
+            st.session_state.page = 'prediction'
+            st.rerun()
         return
-    result = st.session_state.prediction_result; confidence = st.session_state.confidence; patient_data = st.session_state.patient_data
+
+    patient_data = st.session_state.patient_data
+    result = st.session_state.prediction_result
+    confidence = st.session_state.confidence
     
-    st.markdown(f'<div class="{"result-high" if "High" in result else "result-low"}">{"⚠️" if "High" in result else "✅"} {result}<br><span style="font-size:17px;">Confidence: {confidence}%</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-head"><div class="page-icon">📊</div><div><div class="page-title">Personal Health Analytics</div><div class="page-sub">Understand your ML clinical predictions and health metrics</div></div></div>', unsafe_allow_html=True)
+    
+    # 1. Main Assessment banner
+    is_high = 'High' in result
+    st.markdown(f'''
+    <div class="{"result-high" if is_high else "result-low"}">
+        {"⚠️" if is_high else "✅"} Diabetes Assessment: {result.upper()} ({confidence}% Confidence)
+    </div>
+    ''', unsafe_allow_html=True)
+    
     st.write('')
     
-    st.subheader('🧾 Submitted Health Parameters')
-    params = list(patient_data.items()); cols = st.columns(4)
-    for i, (k, v) in enumerate(params):
-        with cols[i % 4]: st.markdown(f'<div class="param-card"><div class="param-label">{k}</div><div class="param-value">{v}</div></div>', unsafe_allow_html=True)
+    # 2. Parameters Grid
+    st.subheader('Clinical Health Parameters')
+    cols = st.columns(4)
+    param_labels = {
+        'Pregnancies': 'Pregnancies',
+        'Glucose': 'Glucose (mg/dL)',
+        'BloodPressure': 'Blood Pressure (mmHg)',
+        'SkinThickness': 'Skin Thickness (mm)',
+        'Insulin': 'Insulin (μU/mL)',
+        'BMI': 'BMI (kg/m²)',
+        'DiabetesPedigreeFunction': 'Diabetes Pedigree Score',
+        'Age': 'Age (years)'
+    }
+    for i, (key, val) in enumerate(patient_data.items()):
+        with cols[i % 4]:
+            st.markdown(f'<div class="param-card"><div class="param-label">{param_labels.get(key, key)}</div><div class="param-value">{val}</div></div>', unsafe_allow_html=True)
+            
+    # 3. Interactive Analytics & Recommendations
+    st.write('')
+    c_left, c_right = st.columns([3, 2])
+    
+    with c_left:
+        st.subheader('Clinical Parameters Analysis')
+        metrics_list = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']
+        values_list = [patient_data[m] for m in metrics_list]
         
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=metrics_list, 
+            y=values_list, 
+            marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], 
+            text=values_list, 
+            textposition='outside'
+        ))
+        fig.update_layout(template=PLOT_TEMPLATE, height=350, title='Key Clinical Health Values', margin=dict(t=40, b=20, l=20, r=20))
+        st.plotly_chart(fig, use_container_width=True)
+        
+    with c_right:
+        st.subheader('💡 Doctor Recommendations')
+        suggestions = get_suggestions(patient_data)
+        s_html = ''.join([f'<li style="margin-bottom:8px;">{s}</li>' for s in suggestions])
+        components.html(f'''
+        <div style="background:#E8F5FF; padding: 20px; border-radius: 16px; font-family: Inter, Arial; height: 100%;">
+            <h4 style="color:#0F172A; margin: 0 0 12px;">Personalized Suggestions</h4>
+            <ul style="color:#006BAA; font-size:15px; line-height:1.6; font-weight:600; padding-left:20px; margin:0;">
+                {s_html}
+            </ul>
+        </div>
+        ''', height=350)
+        
+    # 4. Sharing & PDF Exports
     st.write('')
-    st.subheader('📈 Patient Health Analytics')
-    metrics = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']; values = [patient_data[m] for m in metrics]; fig = go.Figure(); fig.add_trace(go.Bar(x=metrics, y=values, marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], text=values, textposition='outside')); fig.update_layout(template=PLOT_TEMPLATE, height=390, title='Health Parameter Overview'); st.plotly_chart(fig, use_container_width=True)
+    st.subheader('📄 Export & Share Reports')
     
-    suggestions = get_suggestions(patient_data); items = ''.join([f'<li>{s}</li>' for s in suggestions]); components.html(f'<div style="background:#E8F5FF;padding:28px 34px;border-radius:20px;font-family:Inter,Arial;"><h2 style="color:#0F172A;margin:0 0 16px;">💡 Health Suggestions</h2><ul style="color:#006BAA;font-size:16px;line-height:1.8;font-weight:600;">{items}</ul></div>', height=230)
+    # Generate Report Bytes
+    pdf_bytes = generate_pdf(
+        patient_data, 
+        result, 
+        confidence, 
+        st.session_state.current_user_name, 
+        st.session_state.current_user_email, 
+        st.session_state.prediction_time
+    )
     
     col_dl, col_wa = st.columns(2)
     with col_dl:
-        st.download_button('📄 Download Patient Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
-    
+        st.download_button(
+            label='📥 Download Clinical PDF Report',
+            data=pdf_bytes,
+            file_name=f"glucotrack_report_{st.session_state.current_user_name.replace(' ', '_')}.pdf",
+            mime='application/pdf',
+            use_container_width=True
+        )
+        
     with col_wa:
-        # Construct url-encoded WhatsApp message
         msg_text = f"*GlucoTrack Diabetes Risk Report*\n\n" \
                   f"👤 *Patient Name:* {st.session_state.current_user_name}\n" \
                   f"🩺 *Risk Assessment:* {result}\n" \
@@ -1070,11 +1233,49 @@ def profile_page():
     
     with st.container(border=True):
         if utype == 'patient':
-            user = users[email]; name = st.text_input('Name', value=user.get('name', '')); phone = st.text_input('Phone', value=user.get('phone', '')); age = st.number_input('Age', 1, 100, int(user.get('age', 25))); gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(user.get('gender', 'Female')) if user.get('gender') in ['Female', 'Male', 'Other'] else 0); address = st.text_area('Address', value=user.get('address', ''))
-            if st.button('Save Profile', type='primary', use_container_width=True): users[email].update({'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address}); save_json(USERS_FILE, users); st.session_state.current_user_name = name; add_audit('Profile Updated', email, 'Patient profile updated'); st.success('Profile updated.'); st.rerun()
+            user = users[email]
+            name = st.text_input('Name', value=user.get('name', ''))
+            phone = st.text_input('Phone', value=user.get('phone', ''))
+            age = st.number_input('Age', 1, 100, int(user.get('age', 25)))
+            gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(user.get('gender', 'Female')) if user.get('gender') in ['Female', 'Male', 'Other'] else 0)
+            address = st.text_area('Address', value=user.get('address', ''))
+            
+            # Profile Photo Edit
+            uploaded_photo = st.file_uploader('Change Profile Photo', type=['png', 'jpg', 'jpeg'], key='edit_patient_photo')
+            
+            if st.button('Save Profile', type='primary', use_container_width=True):
+                update_data = {'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address}
+                if uploaded_photo:
+                    base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
+                    update_data['profile_pic'] = base64_photo
+                users[email].update(update_data)
+                save_json(USERS_FILE, users)
+                st.session_state.current_user_name = name
+                add_audit('Profile Updated', email, 'Patient profile updated')
+                st.success('Profile updated.')
+                st.rerun()
         elif utype == 'doctor':
-            doctor = doctors[email]; name = st.text_input('Name', value=doctor.get('name', '')); phone = st.text_input('Phone', value=doctor.get('phone', '')); specialization = st.text_input('Specialization', value=doctor.get('specialization', '')); hospital = st.text_input('Hospital', value=doctor.get('hospital', '')); license_no = st.text_input('License No.', value=doctor.get('license_no', ''))
-            if st.button('Save Profile', type='primary', use_container_width=True): doctors[email].update({'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no}); save_json(DOCTORS_FILE, doctors); st.session_state.current_user_name = name; add_audit('Profile Updated', email, 'Doctor profile updated'); st.success('Profile updated.'); st.rerun()
+            doctor = doctors[email]
+            name = st.text_input('Name', value=doctor.get('name', ''))
+            phone = st.text_input('Phone', value=doctor.get('phone', ''))
+            specialization = st.text_input('Specialization', value=doctor.get('specialization', ''))
+            hospital = st.text_input('Hospital', value=doctor.get('hospital', ''))
+            license_no = st.text_input('License No.', value=doctor.get('license_no', ''))
+            
+            # Profile Photo Edit
+            uploaded_photo = st.file_uploader('Change Profile Photo', type=['png', 'jpg', 'jpeg'], key='edit_doctor_photo')
+            
+            if st.button('Save Profile', type='primary', use_container_width=True):
+                update_data = {'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no}
+                if uploaded_photo:
+                    base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
+                    update_data['profile_pic'] = base64_photo
+                doctors[email].update(update_data)
+                save_json(DOCTORS_FILE, doctors)
+                st.session_state.current_user_name = name
+                add_audit('Profile Updated', email, 'Doctor profile updated')
+                st.success('Profile updated.')
+                st.rerun()
         else: st.info('Admin profile editing is not enabled.')
 
 
