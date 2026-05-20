@@ -3,6 +3,7 @@ import json
 import pickle
 from datetime import datetime
 from io import BytesIO
+import urllib.parse
 
 import pandas as pd
 import streamlit as st
@@ -125,11 +126,26 @@ html, body, [class*="css"]{{font-family:'Inter',sans-serif!important;}}
 h1,h2,h3,h4,h5,h6,p,label,span,div{{font-family:'Inter',sans-serif!important;}}
 h1,h2,h3,h4,h5,h6,p,label,span{{color:{TEXT}!important;}}
 [data-testid="stDecoration"]{{display:none!important;}}
-.stTextInput input,.stNumberInput input,.stTextArea textarea{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid #DCE6F2!important;border-radius:14px!important;min-height:54px!important;font-size:16px!important;padding-left:16px!important;}}
-.stSelectbox div[data-baseweb="select"]>div{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid #DCE6F2!important;border-radius:14px!important;min-height:54px!important;}}
-.stButton>button,.stDownloadButton>button,.stFormSubmitButton>button{{background:{BLUE}!important;color:white!important;border:none!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;box-shadow:0 12px 24px rgba(22,166,232,.20)!important;}}
-.stButton>button:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{background:{BLUE_DARK}!important;transform:translateY(-1px);}}
+.stTextInput input,.stNumberInput input,.stTextArea textarea{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;font-size:16px!important;padding-left:16px!important;}}
+.stSelectbox div[data-baseweb="select"]>div{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;}}
+
+/* Card container styling */
+div[data-testid="stVerticalBlockBorderWrapper"] {{
+    background: {CARD}!important;
+    border: 1px solid {BORDER}!important;
+    border-radius: 20px!important;
+    padding: 24px!important;
+    box-shadow: 0 8px 30px rgba(15,23,42,.04)!important;
+}}
+
+/* Button styling */
+.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{BLUE}!important;color:white!important;border:none!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;box-shadow:0 12px 24px rgba(22,166,232,.20)!important;}}
+.stButton>button[kind="primary"]:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{background:{BLUE_DARK}!important;transform:translateY(-1px);}}
+.stButton>button[kind="secondary"]{{background:transparent!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;}}
+.stButton>button[kind="secondary"]:hover{{background:{BORDER}!important;color:{TEXT}!important;transform:translateY(-1px);}}
 button *{{color:white!important;}}
+.stButton>button[kind="secondary"] *{{color:{TEXT}!important;}}
+
 section[data-testid="stSidebar"]{{background:{SIDEBAR}!important;border-right:1px solid {BORDER};}}
 section[data-testid="stSidebar"]>div{{background:transparent!important;padding-top:0!important;}}
 section[data-testid="stSidebar"] *{{color:{TEXT}!important;}}
@@ -144,63 +160,50 @@ div[data-testid="stRadio"]{{padding:20px 7px 0!important;}}
 div[data-testid="stRadio"] label{{border-radius:13px!important;padding:14px 14px!important;margin:4px 0!important;font-size:16px!important;font-weight:800!important;background:transparent!important;}}
 div[data-testid="stRadio"] label:hover{{background:#EEF8FF!important;}}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:none!important;}}
-.public-nav{{height:74px;width:100%;background:white;border-bottom:1px solid #E6EDF5;display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:20;}}
-.public-logo{{display:flex;align-items:center;gap:12px;font-size:25px;font-weight:900;color:#0F172A!important;}}
-.logo-square{{width:40px;height:40px;border-radius:10px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}}
-.nav-actions{{display:flex;align-items:center;gap:24px;}}
-.nav-link{{color:#334155!important;font-weight:800;font-size:16px;}}
-.nav-btn{{background:{BLUE};color:white!important;border-radius:14px;padding:14px 26px;font-weight:900;}}
+
 .hero{{padding:78px 20px 50px;text-align:center;max-width:1050px;margin:0 auto;}}
 .hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid #8BD6FF;background:#EAF7FF;color:#006BAA!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
-.hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;color:#0F172A!important;font-weight:950;margin:42px 0 24px;}}
+.hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;}}
 .hero-blue{{color:{BLUE}!important;display:block;}}
-.hero-sub{{font-size:27px;color:#5B6F91!important;line-height:1.5;max-width:900px;margin:0 auto 48px;}}
-.hero-cta{{display:flex;justify-content:center;gap:18px;align-items:center;flex-wrap:wrap;}}
-.cta-primary{{background:{BLUE};color:white!important;border-radius:18px;padding:22px 40px;font-size:20px;font-weight:900;box-shadow:0 16px 32px rgba(22,166,232,.25);}}
-.cta-secondary{{background:white;color:#0F172A!important;border:1px solid #DCE6F2;border-radius:18px;padding:22px 40px;font-size:20px;font-weight:900;}}
-.stats-wrap{{max-width:1120px;background:white;margin:42px auto 90px;border-radius:26px;border:1px solid #E6EDF5;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,.03);}}
-.stat{{padding:48px 20px;text-align:center;border-right:1px solid #E6EDF5;}}
+.hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;}}
+
+.stats-wrap{{max-width:1120px;margin:42px auto 90px;border-radius:26px;border:1px solid {BORDER};display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,.03);}}
+.stat{{padding:48px 20px;text-align:center;border-right:1px solid {BORDER};}}
 .stat:last-child{{border-right:none;}}
 .stat-num{{font-size:46px;font-weight:950;color:{BLUE}!important;}}
-.stat-label{{font-size:18px;color:#5B6F91!important;margin-top:6px;}}
+.stat-label{{font-size:18px;margin-top:6px;}}
 .section{{padding:0 20px 90px;}}
-.section-title{{text-align:center;font-size:38px;font-weight:950;color:#0F172A!important;margin-bottom:16px;}}
-.section-sub{{text-align:center;font-size:22px;color:#5B6F91!important;margin-bottom:60px;}}
+.section-title{{text-align:center;font-size:38px;font-weight:950;margin-bottom:16px;}}
+.section-sub{{text-align:center;font-size:22px;margin-bottom:60px;}}
 .feature-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1260px;margin:0 auto;}}
 .feature-card{{border-radius:28px;padding:40px;min-height:430px;}}
-.feature-blue{{background:#E8F5FF;}}.feature-green{{background:#E8FFF1;}}.feature-red{{background:#FFECEC;}}
 .pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;}}
-.pill-blue{{border:1px solid #8BD6FF;color:#0074B8!important;}}.pill-green{{border:1px solid #80EDB3;color:#00885A!important;}}.pill-red{{border:1px solid #FFB4C1;color:#D9043D!important;}}
 .icon-box{{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:48px;}}
-.icon-blue{{background:#D4EDFF;color:#008BD8!important;}}.icon-green{{background:#CFF9E4;color:#00A36A!important;}}.icon-red{{background:#FFDDE2;color:#E11D48!important;}}
-.feature-title{{font-size:23px;font-weight:950;color:#0F172A!important;margin-bottom:20px;}}
-.feature-text{{font-size:19px;line-height:1.45;color:#334A67!important;}}
+.feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;}}
+.feature-text{{font-size:19px;line-height:1.45;}}
 .steps-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1260px;margin:0 auto;}}
-.step-card{{background:white;border:1px solid #E6EDF5;border-radius:18px;padding:38px 24px;text-align:center;}}
+.step-card{{border:1px solid {BORDER};border-radius:18px;padding:38px 24px;text-align:center;}}
 .step-num{{color:{BLUE}!important;font-size:46px;font-weight:950;margin-bottom:14px;}}
-.step-title{{font-size:21px;font-weight:950;color:#0F172A!important;margin-bottom:14px;}}
-.step-text{{color:#5B6F91!important;font-size:18px;line-height:1.55;}}
-.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;background:{BLUE};border-radius:28px;padding:58px 70px;color:white!important;}}
-.bottom-cta h2,.bottom-cta p{{color:white!important;}}
+.step-title{{font-size:21px;font-weight:950;margin-bottom:14px;}}
+.step-text{{font-size:18px;line-height:1.55;}}
+.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;}}
 .auth-title{{text-align:center;padding:34px 0 20px;}}
 .auth-logo-row{{display:flex;justify-content:center;align-items:center;gap:12px;font-size:32px;font-weight:950;}}
-.auth-card{{background:white;border:1px solid #E6EDF5;border-radius:28px;max-width:560px;margin:0 auto 40px;padding:38px 40px;box-shadow:0 8px 30px rgba(15,23,42,.04);}}
 .form-row{{display:grid;grid-template-columns:1fr 1fr;gap:18px;}}
-.auth-link{{text-align:center;color:#5B6F91!important;font-size:17px;}}
+.auth-link{{text-align:center;font-size:17px;}}
 .auth-link b{{color:{BLUE}!important;}}
 .page-head{{display:flex;align-items:center;gap:16px;padding:26px 34px 18px;}}
 .page-icon{{width:50px;height:50px;background:#DFF3FF;color:{BLUE}!important;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;}}
-.page-title{{font-size:31px;font-weight:950;color:#0F172A!important;}}
-.page-sub{{color:#5B6F91!important;font-size:18px;margin-top:4px;}}
-.form-card{{background:white;border:1px solid #E6EDF5;border-radius:20px;max-width:900px;margin:22px auto 30px;padding:28px 30px;}}
-.card-heading{{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:950;color:#0F172A!important;margin-bottom:22px;}}
+.page-title{{font-size:31px;font-weight:950;}}
+.page-sub{{font-size:18px;margin-top:4px;}}
+.card-heading{{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:950;margin-bottom:22px;}}
 .badge-num{{width:30px;height:30px;background:#DFF3FF;color:{BLUE}!important;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:950;}}
 .result-high{{background:#FFF1F2;border:1px solid #FECDD3;color:#BE123C!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
 .result-low{{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
-.param-card{{background:white;border:1px solid #E6EDF5;border-radius:15px;padding:16px;text-align:center;}}
-.param-label{{color:#5B6F91!important;font-size:12px;font-weight:800;text-transform:uppercase;}}
-.param-value{{color:#0F172A!important;font-size:23px;font-weight:950;}}
-.footer{{border-top:1px solid #E6EDF5;padding:28px 22px;display:flex;justify-content:space-between;color:#91A0B8!important;}}
+.param-card{{background:{CARD}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;}}
+.param-label{{color:{MUTED}!important;font-size:12px;font-weight:800;text-transform:uppercase;}}
+.param-value{{color:{TEXT}!important;font-size:23px;font-weight:950;}}
+.footer{{border-top:1px solid {BORDER};padding:28px 22px;display:flex;justify-content:space-between;}}
 @media(max-width:900px){{.hero-title{{font-size:55px;}}.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}.form-row{{grid-template-columns:1fr;}}}}
 </style>
 '''
@@ -316,17 +319,50 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     pdf.save(); return buffer.getvalue()
 
 
-def public_nav():
-    st.markdown('<div class="public-nav"><div class="public-logo"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><div class="nav-actions"><div class="nav-link">Sign In</div><div class="nav-btn">Get Started</div></div></div>', unsafe_allow_html=True)
+def public_header():
+    col_logo, col_space, col_theme, col_signin, col_signup = st.columns([3, 3, 1, 1.2, 1.5])
+    with col_logo:
+        st.markdown(f'''
+        <div style="display:flex;align-items:center;gap:12px;font-size:24px;font-weight:900;color:{TEXT};margin-top:8px;">
+            <div style="width:36px;height:36px;border-radius:8px;background:{BLUE};color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">⌁</div>
+            <div>GlucoTrack</div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with col_theme:
+        theme_label = '☀️ Light' if st.session_state.dark_mode else '🌙 Dark'
+        if st.button(theme_label, key='pub_theme_toggle', type='secondary', use_container_width=True):
+            st.session_state.dark_mode = not st.session_state.dark_mode
+            st.rerun()
+    with col_signin:
+        if st.button('Sign In', key='nav_signin', type='secondary', use_container_width=True):
+            st.session_state.started = True
+            st.session_state.page = 'auth'
+            st.session_state.auth_mode = 'signin'
+            st.rerun()
+    with col_signup:
+        if st.button('Get Started', key='nav_signup', type='primary', use_container_width=True):
+            st.session_state.started = True
+            st.session_state.page = 'auth'
+            st.session_state.auth_mode = 'signup'
+            st.session_state.signup_step = 1
+            st.rerun()
+    st.markdown(f'<hr style="margin:10px 0 20px 0;border:0;border-top:1px solid {BORDER};">', unsafe_allow_html=True)
 
 
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
     name = st.session_state.current_user_name; email = st.session_state.current_user_email; role = {'patient': 'User', 'doctor': 'Doctor', 'admin': 'Admin'}.get(st.session_state.user_type, 'User'); init = initials(name)
     st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">⌁</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile"><div class="sb-avatar">{init}</div><div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
-    if st.sidebar.button('👤 Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
+    
+    if st.sidebar.button('👤 Edit Profile', use_container_width=True): 
+        st.session_state.page = 'profile'; st.rerun()
+        
+    if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
+        st.session_state.dark_mode = not st.session_state.dark_mode
+        st.rerun()
+        
     if st.session_state.user_type == 'patient': options = ['prediction', 'dashboard']; labels = ['🩺 Predict', '📊 Health Dashboard']
-    elif st.session_state.user_type == 'doctor': options = ['doctor', 'dashboard']; labels = ['👨‍⚕️ Patient Data', '📊 Health Dashboard']
+    elif st.session_state.user_type == 'doctor': options = ['doctor', 'dashboard']; labels = ['👨⚕️ Patient Data', '📊 Health Dashboard']
     else: options = ['admin', 'prediction', 'dashboard']; labels = ['🛡️ Admin Panel', '🩺 Predict', '📊 Health Dashboard']
     if st.session_state.page not in options and st.session_state.page != 'profile': st.session_state.page = options[0]
     if st.session_state.page != 'profile':
@@ -334,7 +370,7 @@ def dashboard_sidebar():
         selected_label = st.sidebar.radio('', labels, index=idx, label_visibility='collapsed')
         selected_page = options[labels.index(selected_label)]
         if selected_page != st.session_state.page: st.session_state.page = selected_page; st.rerun()
-    st.sidebar.markdown('<div style="height:280px;"></div>', unsafe_allow_html=True)
+    st.sidebar.markdown('<div style="height:200px;"></div>', unsafe_allow_html=True)
     if st.sidebar.button('↪  Sign Out', use_container_width=True):
         add_audit('Logout', st.session_state.current_user_email, 'User logged out')
         for key in ['logged_in', 'user_type', 'current_user_name', 'current_user_email', 'prediction_done', 'patient_data', 'prediction_result', 'confidence', 'prediction_time', 'pdf_bytes']:
@@ -343,92 +379,253 @@ def dashboard_sidebar():
 
 
 def landing_page():
-    public_nav()
-    st.markdown('''<section class="hero"><div class="hero-badge">↯ AI-POWERED HEALTH PLATFORM</div><h1 class="hero-title">Know Your <span class="hero-blue">Diabetes Risk</span></h1><p class="hero-sub">Predict diabetes risk in seconds using Machine Learning. Understand<br>your health. Take action early. Live better.</p><div class="hero-cta"><div class="cta-primary">Start Free Assessment →</div><div class="cta-secondary">Sign In</div></div></section><div class="stats-wrap"><div class="stat"><div class="stat-num">95%+</div><div class="stat-label">Model Accuracy</div></div><div class="stat"><div class="stat-num">8</div><div class="stat-label">Health Parameters</div></div><div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free to Use</div></div></div><section class="section"><h2 class="section-title">What GlucoTrack Does</h2><p class="section-sub">Three powerful features to monitor, predict, and improve your health</p><div class="feature-grid"><div class="feature-card feature-blue"><div class="pill pill-blue">MACHINE LEARNING</div><div class="icon-box icon-blue">🧠</div><div class="feature-title">ML-Based Risk Prediction</div><div class="feature-text">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div></div><div class="feature-card feature-green"><div class="pill pill-green">ANALYTICS</div><div class="icon-box icon-green">⌁</div><div class="feature-title">Patient Health Analytics</div><div class="feature-text">Visualize your health data through interactive charts, glucose gauges, and BMI indicators inside a clean dashboard.</div></div><div class="feature-card feature-red"><div class="pill pill-red">PERSONALIZED</div><div class="icon-box icon-red">♡</div><div class="feature-title">Health Suggestions</div><div class="feature-text">Get targeted, personalized recommendations based on your specific health values to help you take meaningful action.</div></div></div></section><section class="section"><h2 class="section-title">How It Works</h2><p class="section-sub">Get your diabetes risk assessment in 4 simple steps</p><div class="steps-grid"><div class="step-card"><div class="step-num">01</div><div class="step-title">Create Account</div><div class="step-text">Sign up with your name and email address</div></div><div class="step-card"><div class="step-num">02</div><div class="step-title">Enter Health Data</div><div class="step-text">Fill in your clinical health values</div></div><div class="step-card"><div class="step-num">03</div><div class="step-title">Get Prediction</div><div class="step-text">ML model calculates your diabetes risk</div></div><div class="step-card"><div class="step-num">04</div><div class="step-title">View Dashboard</div><div class="step-text">See analytics, share or download your PDF report</div></div></div></section><section class="section"><div class="bottom-cta"><div style="font-size:42px;margin-bottom:18px;">♢</div><h2 style="font-size:38px;font-weight:950;margin:0 0 18px;">Take Control of Your Health</h2><p style="font-size:21px;line-height:1.5;margin-bottom:34px;">Join thousands who use GlucoTrack to monitor their diabetes risk. It's free, fast, and takes less than 2 minutes.</p><div style="display:inline-block;background:white;color:#0284C7;border-radius:18px;padding:20px 42px;font-size:20px;font-weight:950;">Create Free Account →</div></div></section><div class="footer"><div style="font-weight:950;color:#0F172A;">⌁ GlucoTrack</div><div>For educational purposes only. Always consult a medical professional.</div></div>''', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([2.1, 1.2, 2.1])
+    public_header()
+    
+    st.markdown(f'''
+    <section class="hero" style="padding-bottom: 20px;">
+        <div class="hero-badge">↯ AI-POWERED HEALTH PLATFORM</div>
+        <h1 class="hero-title" style="color:{TEXT} !important;">Know Your <span class="hero-blue">Diabetes Risk</span></h1>
+        <p class="hero-sub" style="color:{MUTED} !important;">Predict diabetes risk in seconds using Machine Learning. Understand<br>your health. Take action early. Live better.</p>
+    </section>
+    ''', unsafe_allow_html=True)
+    
+    # Functional buttons aligned correctly
+    c1, c2, c3, c4 = st.columns([1.5, 1.5, 1.2, 1.5])
     with c2:
-        if st.button('Start Free Assessment →', use_container_width=True, key='landing_start_btn'):
-            st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.rerun()
+        if st.button('Start Free Assessment →', type='primary', key='landing_start_btn', use_container_width=True):
+            st.session_state.started = True
+            st.session_state.page = 'auth'
+            st.session_state.auth_mode = 'signup'
+            st.session_state.signup_step = 1
+            st.rerun()
+    with c3:
+        if st.button('Sign In', type='secondary', key='landing_signin_btn', use_container_width=True):
+            st.session_state.started = True
+            st.session_state.page = 'auth'
+            st.session_state.auth_mode = 'signin'
+            st.rerun()
+            
+    st.markdown(f'''
+    <div class="stats-wrap" style="background:{CARD}; border-color:{BORDER};">
+        <div class="stat" style="border-right-color:{BORDER};">
+            <div class="stat-num">95%+</div>
+            <div class="stat-label" style="color:{MUTED} !important;">Model Accuracy</div>
+        </div>
+        <div class="stat" style="border-right-color:{BORDER};">
+            <div class="stat-num">8</div>
+            <div class="stat-label" style="color:{MUTED} !important;">Health Parameters</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">100%</div>
+            <div class="stat-label" style="color:{MUTED} !important;">Free to Use</div>
+        </div>
+    </div>
+    <section class="section">
+        <h2 class="section-title" style="color:{TEXT} !important;">What GlucoTrack Does</h2>
+        <p class="section-sub" style="color:{MUTED} !important;">Three powerful features to monitor, predict, and improve your health</p>
+        <div class="feature-grid">
+            <div class="feature-card feature-blue" style="background:{"#1E293B" if DARK else "#E8F5FF"};">
+                <div class="pill pill-blue" style="background:{"#0F172A" if DARK else "#E8F5FF"}; border-color:{BLUE}; color:{BLUE} !important;">MACHINE LEARNING</div>
+                <div class="icon-box icon-blue" style="background:{"#0F172A" if DARK else "#D4EDFF"};">🧠</div>
+                <div class="feature-title" style="color:{TEXT} !important;">ML-Based Risk Prediction</div>
+                <div class="feature-text" style="color:{TEXT if DARK else "#334A67"} !important;">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div>
+            </div>
+            <div class="feature-card feature-green" style="background:{"#1E293B" if DARK else "#E8FFF1"};">
+                <div class="pill pill-green" style="background:{"#0F172A" if DARK else "#E8FFF1"}; border-color:#80EDB3; color:#00885A !important;">ANALYTICS</div>
+                <div class="icon-box icon-green" style="background:{"#0F172A" if DARK else "#CFF9E4"};">⌁</div>
+                <div class="feature-title" style="color:{TEXT} !important;">Patient Health Analytics</div>
+                <div class="feature-text" style="color:{TEXT if DARK else "#334A67"} !important;">Visualize your health data through interactive charts, glucose gauges, and BMI indicators inside a clean dashboard.</div>
+            </div>
+            <div class="feature-card feature-red" style="background:{"#1E293B" if DARK else "#FFECEC"};">
+                <div class="pill pill-red" style="background:{"#0F172A" if DARK else "#FFECEC"}; border-color:#FFB4C1; color:#D9043D !important;">PERSONALIZED</div>
+                <div class="icon-box icon-red" style="background:{"#0F172A" if DARK else "#FFDDE2"};">♡</div>
+                <div class="feature-title" style="color:{TEXT} !important;">Health Suggestions</div>
+                <div class="feature-text" style="color:{TEXT if DARK else "#334A67"} !important;">Get targeted, personalized recommendations based on your specific health values to help you take meaningful action.</div>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <h2 class="section-title" style="color:{TEXT} !important;">How It Works</h2>
+        <p class="section-sub" style="color:{MUTED} !important;">Get your diabetes risk assessment in 4 simple steps</p>
+        <div class="steps-grid">
+            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+                <div class="step-num">01</div>
+                <div class="step-title" style="color:{TEXT} !important;">Create Account</div>
+                <div class="step-text" style="color:{MUTED} !important;">Sign up with your name and email address</div>
+            </div>
+            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+                <div class="step-num">02</div>
+                <div class="step-title" style="color:{TEXT} !important;">Enter Health Data</div>
+                <div class="step-text" style="color:{MUTED} !important;">Fill in your clinical health values</div>
+            </div>
+            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+                <div class="step-num">03</div>
+                <div class="step-title" style="color:{TEXT} !important;">Get Prediction</div>
+                <div class="step-text" style="color:{MUTED} !important;">ML model calculates your diabetes risk</div>
+            </div>
+            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+                <div class="step-num">04</div>
+                <div class="step-title" style="color:{TEXT} !important;">View Dashboard</div>
+                <div class="step-text" style="color:{MUTED} !important;">See analytics, share or download your PDF report</div>
+            </div>
+        </div>
+    </section>
+    <section class="section" style="padding-bottom:20px;">
+        <div class="bottom-cta" style="background:{BLUE};">
+            <div style="font-size:42px;margin-bottom:18px;">♢</div>
+            <h2 style="font-size:38px;font-weight:950;margin:0 0 18px;color:white !important;">Take Control of Your Health</h2>
+            <p style="font-size:21px;line-height:1.5;margin-bottom:34px;color:white !important;">Join thousands who use GlucoTrack to monitor their diabetes risk. It's free, fast, and takes less than 2 minutes.</p>
+        </div>
+    </section>
+    ''', unsafe_allow_html=True)
+    
+    c1, c2, c3 = st.columns([1.8, 1.4, 1.8])
+    with c2:
+        if st.button('Create Free Account →', key='bottom_signup_btn', type='primary', use_container_width=True):
+            st.session_state.started = True
+            st.session_state.page = 'auth'
+            st.session_state.auth_mode = 'signup'
+            st.session_state.signup_step = 1
+            st.rerun()
+            
+    st.markdown(f'''
+    <div class="footer" style="border-top-color:{BORDER};">
+        <div style="font-weight:950;color:{TEXT};">⌁ GlucoTrack</div>
+        <div style="color:{MUTED} !important;">For educational purposes only. Always consult a medical professional.</div>
+    </div>
+    ''', unsafe_allow_html=True)
 
 
 def auth_page():
-    public_nav()
+    public_header()
+    
+    # Sleek navigation back button
+    if st.button('← Back to Home', key='auth_back_home', type='secondary'):
+        st.session_state.started = False
+        st.session_state.page = 'home'
+        st.rerun()
+        
     if st.session_state.auth_mode == 'signin':
-        st.markdown('<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;">Welcome back</h1><p style="font-size:18px;color:#5B6F91;">Sign in to continue to your dashboard</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="auth-card">', unsafe_allow_html=True)
-        email = st.text_input('Email address', placeholder='you@example.com', key='signin_email'); password = st.text_input('Password', type='password', placeholder='Your password', key='signin_password'); st.write('')
-        if st.button('Sign In →', use_container_width=True, key='signin_btn'):
-            ok, msg = login_user(email, password)
-            if ok: st.rerun()
-            else: st.error(msg)
-        st.markdown('<div style="text-align:center;margin:22px 0;color:#C0CADB;">or</div>', unsafe_allow_html=True)
-        if st.button('Create a free account →', use_container_width=True, key='to_signup'):
-            st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
-        st.markdown('<p style="text-align:center;color:#8FA1BE;margin-top:24px;">🔒 Your data is private and never shared.</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="auth-title"><div class="auth-logo-row" style="color:{TEXT} !important;"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;color:{TEXT} !important;">Welcome back</h1><p style="font-size:18px;color:{MUTED} !important;">Sign in to continue to your dashboard</p></div>', unsafe_allow_html=True)
+        
+        c1, col_card, c3 = st.columns([1, 1.8, 1])
+        with col_card:
+            with st.container(border=True):
+                email = st.text_input('Email address', placeholder='you@example.com', key='signin_email')
+                password = st.text_input('Password', type='password', placeholder='Your password', key='signin_password')
+                st.write('')
+                if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
+                    ok, msg = login_user(email, password)
+                    if ok: st.rerun()
+                    else: st.error(msg)
+                st.markdown(f'<div style="text-align:center;margin:22px 0;color:{MUTED};">or</div>', unsafe_allow_html=True)
+                if st.button('Create a free account →', type='secondary', use_container_width=True, key='to_signup'):
+                    st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
+                st.markdown(f'<p style="text-align:center;color:{MUTED};margin-top:24px;">🔒 Your data is private and never shared.</p>', unsafe_allow_html=True)
     else:
         if st.session_state.signup_step == 1:
-            st.markdown('<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;">Create your account</h1><p style="font-size:18px;color:#5B6F91;">Step 1 of 2 — Personal Details</p><div style="height:7px;background:#16A6E8;border-radius:8px;max-width:560px;margin:34px auto 0;width:50%;"></div></div>', unsafe_allow_html=True)
-            st.markdown('<div class="auth-card">', unsafe_allow_html=True)
-            full_name = st.text_input('Full Name *', placeholder='John Doe', key='reg_name'); email = st.text_input('Email Address *', placeholder='you@example.com', key='reg_email'); phone = st.text_input('Phone Number *', placeholder='+91 98765 43210', key='reg_phone')
-            c1, c2 = st.columns(2)
-            with c1: age = st.number_input('Age *', 1, 100, 25, key='reg_age')
-            with c2: gender = st.selectbox('Gender', ['Select', 'Female', 'Male', 'Other'], key='reg_gender')
-            address = st.text_area('Address', placeholder='Your address (optional)', key='reg_address')
-            if st.button('Continue', use_container_width=True, key='reg_continue'):
-                email_clean = email.strip().lower()
-                if not full_name or not email_clean or not phone: st.error('Please fill all required fields.')
-                elif gender == 'Select': st.error('Please select gender.')
-                elif email_clean in users or email_clean in doctors or email_clean in admins: st.error('Email already registered. Please sign in.')
-                else:
-                    st.session_state.signup_name = full_name.strip(); st.session_state.signup_email = email_clean; st.session_state.signup_phone = phone.strip(); st.session_state.signup_age = age; st.session_state.signup_gender = gender; st.session_state.signup_address = address.strip(); st.session_state.signup_step = 2; st.rerun()
-            st.markdown('<p class="auth-link" style="margin-top:24px;">Already have an account? <b>Sign in</b></p></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="auth-title"><div class="auth-logo-row" style="color:{TEXT} !important;"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;color:{TEXT} !important;">Create your account</h1><p style="font-size:18px;color:{MUTED} !important;">Step 1 of 2 — Personal Details</p><div style="height:7px;background:#16A6E8;border-radius:8px;max-width:560px;margin:34px auto 0;width:50%;"></div></div>', unsafe_allow_html=True)
+            
+            c1, col_card, c3 = st.columns([1, 1.8, 1])
+            with col_card:
+                with st.container(border=True):
+                    full_name = st.text_input('Full Name *', placeholder='John Doe', key='reg_name')
+                    email = st.text_input('Email Address *', placeholder='you@example.com', key='reg_email')
+                    phone = st.text_input('Phone Number *', placeholder='+91 98765 43210', key='reg_phone')
+                    c_a, c_b = st.columns(2)
+                    with c_a: age = st.number_input('Age *', 1, 100, 25, key='reg_age')
+                    with c_b: gender = st.selectbox('Gender', ['Select', 'Female', 'Male', 'Other'], key='reg_gender')
+                    address = st.text_area('Address', placeholder='Your address (optional)', key='reg_address')
+                    if st.button('Continue', type='primary', use_container_width=True, key='reg_continue'):
+                        email_clean = email.strip().lower()
+                        if not full_name or not email_clean or not phone: st.error('Please fill all required fields.')
+                        elif gender == 'Select': st.error('Please select gender.')
+                        elif email_clean in users or email_clean in doctors or email_clean in admins: st.error('Email already registered. Please sign in.')
+                        else:
+                            st.session_state.signup_name = full_name.strip(); st.session_state.signup_email = email_clean; st.session_state.signup_phone = phone.strip(); st.session_state.signup_age = age; st.session_state.signup_gender = gender; st.session_state.signup_address = address.strip(); st.session_state.signup_step = 2; st.rerun()
+                    if st.button('Already have an account? Sign in', type='secondary', use_container_width=True, key='step1_to_signin'):
+                        st.session_state.auth_mode = 'signin'
+                        st.rerun()
         else:
-            st.markdown('<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;">Create your account</h1><p style="font-size:18px;color:#5B6F91;">Step 2 of 2 — Set Password</p><div style="height:7px;background:#16A6E8;border-radius:8px;max-width:560px;margin:34px auto 0;width:100%;"></div></div>', unsafe_allow_html=True)
-            st.markdown('<div class="auth-card">', unsafe_allow_html=True)
-            password = st.text_input('Create Password', type='password', placeholder='At least 6 characters', key='reg_password'); confirm = st.text_input('Confirm Password', type='password', placeholder='Re-enter password', key='reg_confirm')
-            label, color, width, hints = password_strength(password)
-            if password:
-                hint_text = f"add {', '.join(hints)}" if hints else 'Strong password ✓'
-                st.markdown(f'<div style="margin:-4px 0 20px;"><div style="height:5px;border-radius:5px;background:#E2E8F0;overflow:hidden;"><div style="height:100%;width:{width}%;background:{color};border-radius:5px;"></div></div><div style="font-size:13px;color:{color};font-weight:700;margin-top:6px;">{label} · {hint_text}</div></div>', unsafe_allow_html=True)
-            c1, c2 = st.columns(2)
-            with c1:
-                if st.button('Back', use_container_width=True, key='back_signup'):
-                    st.session_state.signup_step = 1; st.rerun()
-            with c2:
-                if st.button('Create Account', use_container_width=True, key='create_account_btn'):
-                    if not password: st.error('Please enter password.')
-                    elif len(password) < 6: st.error('Password must be at least 6 characters.')
-                    elif password != confirm: st.error('Passwords do not match.')
-                    else:
-                        st.session_state.signup_password = password; st.session_state.page = 'create_profile'; st.rerun()
-            st.markdown('<p class="auth-link" style="margin-top:24px;">Already have an account? <b>Sign in</b></p></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="auth-title"><div class="auth-logo-row" style="color:{TEXT} !important;"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;color:{TEXT} !important;">Create your account</h1><p style="font-size:18px;color:{MUTED} !important;">Step 2 of 2 — Set Password</p><div style="height:7px;background:#16A6E8;border-radius:8px;max-width:560px;margin:34px auto 0;width:100%;"></div></div>', unsafe_allow_html=True)
+            
+            c1, col_card, c3 = st.columns([1, 1.8, 1])
+            with col_card:
+                with st.container(border=True):
+                    password = st.text_input('Create Password', type='password', placeholder='At least 6 characters', key='reg_password')
+                    confirm = st.text_input('Confirm Password', type='password', placeholder='Re-enter password', key='reg_confirm')
+                    label, color, width, hints = password_strength(password)
+                    if password:
+                        hint_text = f"add {', '.join(hints)}" if hints else 'Strong password ✓'
+                        st.markdown(f'<div style="margin:-4px 0 20px;"><div style="height:5px;border-radius:5px;background:#E2E8F0;overflow:hidden;"><div style="height:100%;width:{width}%;background:{color};border-radius:5px;"></div></div><div style="font-size:13px;color:{color};font-weight:700;margin-top:6px;">{label} · {hint_text}</div></div>', unsafe_allow_html=True)
+                    c_a, c_b = st.columns(2)
+                    with c_a:
+                        if st.button('Back', type='secondary', use_container_width=True, key='back_signup'):
+                            st.session_state.signup_step = 1; st.rerun()
+                    with c_b:
+                        if st.button('Create Account', type='primary', use_container_width=True, key='create_account_btn'):
+                            if not password: st.error('Please enter password.')
+                            elif len(password) < 6: st.error('Password must be at least 6 characters.')
+                            elif password != confirm: st.error('Passwords do not match.')
+                            else:
+                                st.session_state.signup_password = password; st.session_state.page = 'create_profile'; st.rerun()
+                    if st.button('Already have an account? Sign in', type='secondary', use_container_width=True, key='step2_to_signin'):
+                        st.session_state.auth_mode = 'signin'
+                        st.rerun()
 
 
 def create_profile_page():
-    public_nav(); st.markdown('<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;">Create Profile</h1><p style="font-size:18px;color:#5B6F91;">Choose whether you are a patient or doctor</p></div>', unsafe_allow_html=True)
-    st.markdown('<div class="auth-card">', unsafe_allow_html=True)
-    role = st.radio('I am a', ['Patient', 'Doctor'], horizontal=True); name = st.text_input('Full Name', value=st.session_state.signup_name); email = st.text_input('Email', value=st.session_state.signup_email, disabled=True)
-    if role == 'Patient':
-        phone = st.text_input('Phone', value=st.session_state.signup_phone); age = st.number_input('Age', 1, 100, int(st.session_state.signup_age)); gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(st.session_state.signup_gender) if st.session_state.signup_gender in ['Female', 'Male', 'Other'] else 0); address = st.text_area('Address', value=st.session_state.signup_address)
-        if st.button('Create Patient Profile', use_container_width=True):
-            users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True}; save_json(USERS_FILE, users); add_audit('Account Created', st.session_state.signup_email, 'Patient profile created'); ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password); st.rerun() if ok else st.error(msg)
-    else:
-        phone = st.text_input('Phone', value=st.session_state.signup_phone); specialization = st.text_input('Specialization', placeholder='Endocrinology'); hospital = st.text_input('Hospital / Clinic'); license_no = st.text_input('Medical License No.')
-        if st.button('Create Doctor Profile', use_container_width=True):
-            doctors[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no, 'approved': False, 'user_type': 'doctor', 'profile_created': True}; save_json(DOCTORS_FILE, doctors); add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval'); st.success('Doctor profile created. Please wait for admin approval.'); st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    public_header()
+    
+    if st.button('← Back to Password Setup', key='create_profile_back', type='secondary'):
+        st.session_state.page = 'auth'
+        st.session_state.auth_mode = 'signup'
+        st.session_state.signup_step = 2
+        st.rerun()
+        
+    st.markdown(f'<div class="auth-title"><div class="auth-logo-row" style="color:{TEXT} !important;"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;color:{TEXT} !important;">Create Profile</h1><p style="font-size:18px;color:{MUTED} !important;">Choose whether you are a patient or doctor</p></div>', unsafe_allow_html=True)
+    
+    c1, col_card, c3 = st.columns([1, 1.8, 1])
+    with col_card:
+        with st.container(border=True):
+            role = st.radio('I am a', ['Patient', 'Doctor'], horizontal=True)
+            name = st.text_input('Full Name', value=st.session_state.signup_name)
+            email = st.text_input('Email', value=st.session_state.signup_email, disabled=True)
+            if role == 'Patient':
+                phone = st.text_input('Phone', value=st.session_state.signup_phone)
+                age = st.number_input('Age', 1, 100, int(st.session_state.signup_age))
+                gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(st.session_state.signup_gender) if st.session_state.signup_gender in ['Female', 'Male', 'Other'] else 0)
+                address = st.text_area('Address', value=st.session_state.signup_address)
+                if st.button('Create Patient Profile', type='primary', use_container_width=True):
+                    users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True}; save_json(USERS_FILE, users); add_audit('Account Created', st.session_state.signup_email, 'Patient profile created'); ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password); st.rerun() if ok else st.error(msg)
+            else:
+                phone = st.text_input('Phone', value=st.session_state.signup_phone)
+                specialization = st.text_input('Specialization', placeholder='Endocrinology')
+                hospital = st.text_input('Hospital / Clinic')
+                license_no = st.text_input('Medical License No.')
+                if st.button('Create Doctor Profile', type='primary', use_container_width=True):
+                    doctors[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no, 'approved': False, 'user_type': 'doctor', 'profile_created': True}; save_json(DOCTORS_FILE, doctors); add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval'); st.success('Doctor profile created. Please wait for admin approval.'); st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
 
 
 def prediction_page():
     st.markdown('<div class="page-head"><div class="page-icon">🩺</div><div><div class="page-title">Diabetes Risk Prediction</div><div class="page-sub">Enter your clinical parameters for an AI-powered assessment</div></div></div>', unsafe_allow_html=True)
-    st.markdown('<div class="form-card"><div class="card-heading"><div class="badge-num">1</div>Clinical Health Parameters</div>', unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
-    with c1:
-        preg = st.number_input('Pregnancies', 0, 20, 1); bp = st.number_input('Blood Pressure (mm Hg)', 30, 140, 70); insulin = st.number_input('Insulin (μU/mL)', 0, 400, 100); dpf = st.number_input('Diabetes Pedigree', 0.0, 3.0, 0.5)
-    with c2:
-        glucose = st.number_input('Glucose (mg/dL)', 50, 250, 120); skin = st.number_input('Skin Thickness (mm)', 0, 100, 20); bmi = st.number_input('BMI', 10.0, 70.0, 25.0); default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30)) if st.session_state.user_type == 'patient' else 30; age = st.number_input('Age (years)', 1, 100, default_age)
-    st.markdown('</div>', unsafe_allow_html=True)
-    if st.button('Predict Diabetes Risk  ›', use_container_width=True):
+    
+    with st.container(border=True):
+        st.markdown('<div class="card-heading"><div class="badge-num">1</div>Clinical Health Parameters</div>', unsafe_allow_html=True)
+        c1, c2 = st.columns(2)
+        with c1:
+            preg = st.number_input('Pregnancies', 0, 20, 1)
+            bp = st.number_input('Blood Pressure (mm Hg)', 30, 140, 70)
+            insulin = st.number_input('Insulin (μU/mL)', 0, 400, 100)
+            dpf = st.number_input('Diabetes Pedigree', 0.0, 3.0, 0.5)
+        with c2:
+            glucose = st.number_input('Glucose (mg/dL)', 50, 250, 120)
+            skin = st.number_input('Skin Thickness (mm)', 0, 100, 20)
+            bmi = st.number_input('BMI', 10.0, 70.0, 25.0)
+            default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30)) if st.session_state.user_type == 'patient' else 30
+            age = st.number_input('Age (years)', 1, 100, default_age)
+            
+    if st.button('Predict Diabetes Risk  ›', type='primary', use_container_width=True):
         patient_data = {'Pregnancies': preg, 'Glucose': glucose, 'BloodPressure': bp, 'SkinThickness': skin, 'Insulin': insulin, 'BMI': bmi, 'DiabetesPedigreeFunction': dpf, 'Age': age}; result, confidence = model_predict(patient_data); pred_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S'); name = st.session_state.current_user_name; email = st.session_state.current_user_email; pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time); st.session_state.patient_data = patient_data; st.session_state.prediction_result = result; st.session_state.confidence = confidence; st.session_state.prediction_time = pred_time; st.session_state.pdf_bytes = pdf; st.session_state.prediction_done = True; reports.append({'name': name, 'email': email, 'result': result, 'confidence': confidence, 'time': pred_time, 'data': patient_data}); save_json(REPORTS_FILE, reports); add_audit('Prediction', email, result); st.session_state.page = 'dashboard'; st.rerun()
 
 
@@ -436,55 +633,132 @@ def dashboard_page():
     st.markdown('<div class="page-head"><div class="page-icon">📊</div><div><div class="page-title">Health Dashboard</div><div class="page-sub">Your prediction result, analytics, and suggestions</div></div></div>', unsafe_allow_html=True)
     if not st.session_state.prediction_done:
         st.warning('No prediction found. Please complete a prediction first.')
-        if st.button('Go to Prediction'): st.session_state.page = 'prediction'; st.rerun()
+        if st.button('Go to Prediction', type='primary'): st.session_state.page = 'prediction'; st.rerun()
         return
     result = st.session_state.prediction_result; confidence = st.session_state.confidence; patient_data = st.session_state.patient_data
+    
     st.markdown(f'<div class="{"result-high" if "High" in result else "result-low"}">{"⚠️" if "High" in result else "✅"} {result}<br><span style="font-size:17px;">Confidence: {confidence}%</span></div>', unsafe_allow_html=True)
-    st.write(''); st.subheader('🧾 Submitted Health Parameters'); params = list(patient_data.items()); cols = st.columns(4)
+    st.write('')
+    
+    st.subheader('🧾 Submitted Health Parameters')
+    params = list(patient_data.items()); cols = st.columns(4)
     for i, (k, v) in enumerate(params):
         with cols[i % 4]: st.markdown(f'<div class="param-card"><div class="param-label">{k}</div><div class="param-value">{v}</div></div>', unsafe_allow_html=True)
-    st.write(''); st.subheader('📈 Patient Health Analytics'); metrics = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']; values = [patient_data[m] for m in metrics]; fig = go.Figure(); fig.add_trace(go.Bar(x=metrics, y=values, marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], text=values, textposition='outside')); fig.update_layout(template=PLOT_TEMPLATE, height=390, title='Health Parameter Overview'); st.plotly_chart(fig, use_container_width=True)
+        
+    st.write('')
+    st.subheader('📈 Patient Health Analytics')
+    metrics = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']; values = [patient_data[m] for m in metrics]; fig = go.Figure(); fig.add_trace(go.Bar(x=metrics, y=values, marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], text=values, textposition='outside')); fig.update_layout(template=PLOT_TEMPLATE, height=390, title='Health Parameter Overview'); st.plotly_chart(fig, use_container_width=True)
+    
     suggestions = get_suggestions(patient_data); items = ''.join([f'<li>{s}</li>' for s in suggestions]); components.html(f'<div style="background:#E8F5FF;padding:28px 34px;border-radius:20px;font-family:Inter,Arial;"><h2 style="color:#0F172A;margin:0 0 16px;">💡 Health Suggestions</h2><ul style="color:#006BAA;font-size:16px;line-height:1.8;font-weight:600;">{items}</ul></div>', height=230)
-    st.download_button('📄 Download Patient Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
-    if st.button('New Prediction', use_container_width=True): reset_prediction_state(); st.session_state.page = 'prediction'; st.rerun()
+    
+    col_dl, col_wa = st.columns(2)
+    with col_dl:
+        st.download_button('📄 Download Patient Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
+    
+    with col_wa:
+        # Construct url-encoded WhatsApp message
+        msg_text = f"*GlucoTrack Diabetes Risk Report*\n\n" \
+                  f"👤 *Patient Name:* {st.session_state.current_user_name}\n" \
+                  f"🩺 *Risk Assessment:* {result}\n" \
+                  f"🎯 *Confidence Level:* {confidence}%\n" \
+                  f"📅 *Date/Time:* {st.session_state.prediction_time}\n\n" \
+                  f"📊 *Clinical Values:*\n" \
+                  f"- Glucose: {patient_data['Glucose']} mg/dL\n" \
+                  f"- BMI: {patient_data['BMI']}\n" \
+                  f"- Blood Pressure: {patient_data['BloodPressure']} mmHg\n" \
+                  f"- Age: {patient_data['Age']} years\n\n" \
+                  f"💡 *Key Recommendations:*\n"
+        for s in suggestions[:2]:
+            msg_text += f"- {s}\n"
+        msg_text += "\n_For educational purposes only. Always consult a medical professional._"
+        encoded_text = urllib.parse.quote(msg_text)
+        whatsapp_url = f"https://api.whatsapp.com/send?text={encoded_text}"
+        
+        st.markdown(f'''
+        <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
+            <div style="background-color:#25D366;color:white;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-66 1.63-66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
+                </svg>
+                Share Report via WhatsApp
+            </div>
+        </a>
+        ''', unsafe_allow_html=True)
+        
+    st.write('')
+    if st.button('New Prediction', type='secondary', use_container_width=True): reset_prediction_state(); st.session_state.page = 'prediction'; st.rerun()
 
 
 def doctor_page():
-    st.markdown('<div class="page-head"><div class="page-icon">👨‍⚕️</div><div><div class="page-title">Patient Data</div><div class="page-sub">View high-risk patient reports</div></div></div>', unsafe_allow_html=True)
-    high = [r for r in reports if 'High' in r.get('result', '')]; c1, c2, c3 = st.columns(3); c1.metric('Total Reports', len(reports)); c2.metric('High Risk Cases', len(high)); c3.metric('Registered Patients', len(users)); st.subheader('⚠️ High Risk Patients')
+    st.markdown('<div class="page-head"><div class="page-icon">👨⚕️</div><div><div class="page-title">Patient Data</div><div class="page-sub">View high-risk patient reports</div></div></div>', unsafe_allow_html=True)
+    high = [r for r in reports if 'High' in r.get('result', '')]
+    
+    with st.container(border=True):
+        c1, c2, c3 = st.columns(3)
+        c1.metric('Total Reports', len(reports))
+        c2.metric('High Risk Cases', len(high))
+        c3.metric('Registered Patients', len(users))
+        
+    st.write('')
+    st.subheader('⚠️ High Risk Patients')
     if not high: st.info('No high-risk cases yet.'); return
     df = pd.DataFrame([{'Patient': r['name'], 'Email': r['email'], 'Risk': r['result'], 'Confidence': r['confidence'], 'Time': r['time']} for r in high]); st.dataframe(df, use_container_width=True)
 
 
 def admin_page():
     st.markdown('<div class="page-head"><div class="page-icon">🛡️</div><div><div class="page-title">Admin Panel</div><div class="page-sub">Manage doctors, users, reports, and audit logs</div></div></div>', unsafe_allow_html=True)
-    pending = {email: d for email, d in doctors.items() if not d.get('approved', False)}; high = [r for r in reports if 'High' in r.get('result', '')]; c1, c2, c3, c4 = st.columns(4); c1.metric('Patients', len(users)); c2.metric('Doctors', len(doctors)); c3.metric('Pending Doctors', len(pending)); c4.metric('High Risk', len(high)); st.subheader('Doctor Approval Requests')
+    pending = {email: d for email, d in doctors.items() if not d.get('approved', False)}; high = [r for r in reports if 'High' in r.get('result', '')]
+    
+    with st.container(border=True):
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric('Patients', len(users))
+        c2.metric('Doctors', len(doctors))
+        c3.metric('Pending Doctors', len(pending))
+        c4.metric('High Risk', len(high))
+        
+    st.write('')
+    st.subheader('Doctor Approval Requests')
     if not pending: st.success('No pending doctor approvals.')
     else:
         for email, d in pending.items():
-            with st.expander(f"{d.get('name')} — {email}"):
-                st.write(f"Specialization: {d.get('specialization')}"); st.write(f"Hospital: {d.get('hospital')}"); st.write(f"License: {d.get('license_no')}"); col1, col2 = st.columns(2)
+            with st.container(border=True):
+                st.write(f"**Name:** {d.get('name')} | **Email:** {email}")
+                st.write(f"Specialization: {d.get('specialization')}")
+                st.write(f"Hospital: {d.get('hospital')}")
+                st.write(f"License: {d.get('license_no')}")
+                col1, col2 = st.columns(2)
                 with col1:
-                    if st.button(f'Approve {email}', key=f'approve_{email}'):
+                    if st.button(f'Approve {email}', key=f'approve_{email}', type='primary', use_container_width=True):
                         doctors[email]['approved'] = True; save_json(DOCTORS_FILE, doctors); add_audit('Doctor Approved', st.session_state.current_user_email, email); st.rerun()
                 with col2:
-                    if st.button(f'Reject {email}', key=f'reject_{email}'):
+                    if st.button(f'Reject {email}', key=f'reject_{email}', type='secondary', use_container_width=True):
                         doctors.pop(email); save_json(DOCTORS_FILE, doctors); add_audit('Doctor Rejected', st.session_state.current_user_email, email); st.rerun()
+                        
+    st.write('')
     st.subheader('Registered Patients'); st.dataframe(pd.DataFrame([{'Name': v.get('name'), 'Email': k, 'Age': v.get('age'), 'Gender': v.get('gender')} for k, v in users.items()]), use_container_width=True)
+    st.write('')
     st.subheader('Registered Doctors'); st.dataframe(pd.DataFrame([{'Name': v.get('name'), 'Email': k, 'Approved': v.get('approved'), 'Specialization': v.get('specialization')} for k, v in doctors.items()]), use_container_width=True)
+    st.write('')
     st.subheader('Audit Log'); logs = load_json(AUDIT_FILE, []); st.dataframe(pd.DataFrame(logs), use_container_width=True) if logs else st.info('No audit logs yet.')
 
 
 def profile_page():
+    back_page = 'prediction' if st.session_state.user_type == 'patient' else ('doctor' if st.session_state.user_type == 'doctor' else 'admin')
+    if st.button('← Back to Dashboard', key='profile_back', type='secondary'):
+        st.session_state.page = back_page
+        st.rerun()
+        
     st.markdown('<div class="page-head"><div class="page-icon">👤</div><div><div class="page-title">My Profile</div><div class="page-sub">Edit your profile details</div></div></div>', unsafe_allow_html=True)
     email = st.session_state.current_user_email; utype = st.session_state.user_type
-    if utype == 'patient':
-        user = users[email]; name = st.text_input('Name', value=user.get('name', '')); phone = st.text_input('Phone', value=user.get('phone', '')); age = st.number_input('Age', 1, 100, int(user.get('age', 25))); gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(user.get('gender', 'Female')) if user.get('gender') in ['Female', 'Male', 'Other'] else 0); address = st.text_area('Address', value=user.get('address', ''))
-        if st.button('Save Profile', use_container_width=True): users[email].update({'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address}); save_json(USERS_FILE, users); st.session_state.current_user_name = name; add_audit('Profile Updated', email, 'Patient profile updated'); st.success('Profile updated.'); st.rerun()
-    elif utype == 'doctor':
-        doctor = doctors[email]; name = st.text_input('Name', value=doctor.get('name', '')); phone = st.text_input('Phone', value=doctor.get('phone', '')); specialization = st.text_input('Specialization', value=doctor.get('specialization', '')); hospital = st.text_input('Hospital', value=doctor.get('hospital', '')); license_no = st.text_input('License No.', value=doctor.get('license_no', ''))
-        if st.button('Save Profile', use_container_width=True): doctors[email].update({'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no}); save_json(DOCTORS_FILE, doctors); st.session_state.current_user_name = name; add_audit('Profile Updated', email, 'Doctor profile updated'); st.success('Profile updated.'); st.rerun()
-    else: st.info('Admin profile editing is not enabled.')
+    
+    with st.container(border=True):
+        if utype == 'patient':
+            user = users[email]; name = st.text_input('Name', value=user.get('name', '')); phone = st.text_input('Phone', value=user.get('phone', '')); age = st.number_input('Age', 1, 100, int(user.get('age', 25))); gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(user.get('gender', 'Female')) if user.get('gender') in ['Female', 'Male', 'Other'] else 0); address = st.text_area('Address', value=user.get('address', ''))
+            if st.button('Save Profile', type='primary', use_container_width=True): users[email].update({'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address}); save_json(USERS_FILE, users); st.session_state.current_user_name = name; add_audit('Profile Updated', email, 'Patient profile updated'); st.success('Profile updated.'); st.rerun()
+        elif utype == 'doctor':
+            doctor = doctors[email]; name = st.text_input('Name', value=doctor.get('name', '')); phone = st.text_input('Phone', value=doctor.get('phone', '')); specialization = st.text_input('Specialization', value=doctor.get('specialization', '')); hospital = st.text_input('Hospital', value=doctor.get('hospital', '')); license_no = st.text_input('License No.', value=doctor.get('license_no', ''))
+            if st.button('Save Profile', type='primary', use_container_width=True): doctors[email].update({'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no}); save_json(DOCTORS_FILE, doctors); st.session_state.current_user_name = name; add_audit('Profile Updated', email, 'Doctor profile updated'); st.success('Profile updated.'); st.rerun()
+        else: st.info('Admin profile editing is not enabled.')
 
 
 if not st.session_state.started:
