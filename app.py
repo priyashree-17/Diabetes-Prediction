@@ -123,9 +123,11 @@ css = f'''
 html, body, [class*="css"]{{font-family:'Inter',sans-serif!important;}}
 .stApp{{background:{BG}!important;}}
 .block-container{{padding-top:2rem!important;padding-left:1.55rem!important;padding-right:1.55rem!important;max-width:100%!important;}}
-h1,h2,h3,h4,h5,h6,p,label,span,div{{font-family:'Inter',sans-serif!important;}}
-h1,h2,h3,h4,h5,h6,p,label,span{{color:{TEXT}!important;}}
+h1,h2,h3,h4,h5,h6,p,label{{font-family:'Inter',sans-serif!important;}}
+h1,h2,h3,h4,h5,h6,p,label{{color:{TEXT}!important;}}
 [data-testid="stDecoration"], header[data-testid="stHeader"]{{display:none!important;}}
+.nav-link{{text-decoration:none!important;color:{TEXT}!important;font-weight:700!important;font-size:16px!important;transition:color 0.2s ease!important;}}
+.nav-link:hover{{color:{BLUE}!important;}}
 .stTextInput input,.stNumberInput input,.stTextArea textarea{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;font-size:16px!important;padding-left:16px!important;}}
 .stSelectbox div[data-baseweb="select"]>div{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;}}
 
@@ -302,30 +304,164 @@ def get_suggestions(patient_data):
 
 
 def generate_pdf(patient_data, result, confidence, name, email, pred_time):
-    buffer = BytesIO(); pdf = canvas.Canvas(buffer, pagesize=A4); width, height = A4
-    pdf.setFillColorRGB(0.06, 0.65, 0.91); pdf.rect(0, height - 90, width, 90, fill=True, stroke=False)
-    pdf.setFillColorRGB(1, 1, 1); pdf.setFont('Helvetica-Bold', 20); pdf.drawString(45, height - 50, 'GlucoTrack Diabetes Risk Report')
-    pdf.setFont('Helvetica', 10); pdf.drawString(45, height - 70, f'Generated: {pred_time}')
-    y = height - 130; pdf.setFillColorRGB(0, 0, 0); pdf.setFont('Helvetica-Bold', 13); pdf.drawString(45, y, 'Patient Details')
-    y -= 25; pdf.setFont('Helvetica', 11); pdf.drawString(60, y, f'Name: {name}'); y -= 20; pdf.drawString(60, y, f'Email: {email}')
-    y -= 40; pdf.setFont('Helvetica-Bold', 13); pdf.drawString(45, y, 'Health Parameters')
-    y -= 25; pdf.setFont('Helvetica', 10)
-    for key, value in patient_data.items(): pdf.drawString(60, y, f'{key}: {value}'); y -= 18
-    y -= 15; pdf.setFont('Helvetica-Bold', 13); pdf.drawString(45, y, 'Prediction Result')
-    y -= 25; pdf.setFont('Helvetica-Bold', 12); pdf.drawString(60, y, f'{result} | Confidence: {confidence}%')
-    y -= 40; pdf.setFont('Helvetica-Bold', 13); pdf.drawString(45, y, 'Health Suggestions')
-    y -= 25; pdf.setFont('Helvetica', 10)
-    for s in get_suggestions(patient_data): pdf.drawString(60, y, f'- {s[:90]}'); y -= 18
-    pdf.save(); return buffer.getvalue()
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+    
+    # 1. Header Banner
+    pdf.setFillColorRGB(0.09, 0.17, 0.31) # #172B4D
+    pdf.rect(0, height - 100, width, 100, fill=True, stroke=False)
+    
+    # Header Title
+    pdf.setFillColorRGB(1.0, 1.0, 1.0)
+    pdf.setFont('Helvetica-Bold', 22)
+    pdf.drawString(40, height - 45, 'GlucoTrack Clinical Health Report')
+    
+    # Header Subtitle
+    pdf.setFont('Helvetica-Oblique', 10)
+    pdf.setFillColorRGB(0.70, 0.85, 1.0)
+    pdf.drawString(40, height - 65, 'AI-Powered Diabetes Risk Assessment & Clinical Analytics')
+    
+    # Generation Timestamp
+    pdf.setFont('Helvetica', 9)
+    pdf.drawString(40, height - 82, f'Date generated: {pred_time}')
+    
+    # 2. Patient Information Card
+    y = height - 145
+    pdf.setFillColorRGB(0.95, 0.97, 1.0) # Light blue box background
+    pdf.rect(40, y - 60, width - 80, 60, fill=True, stroke=False)
+    
+    pdf.setFillColorRGB(0.0, 0.0, 0.0)
+    pdf.setFont('Helvetica-Bold', 12)
+    pdf.drawString(55, y - 18, 'PATIENT DEMOGRAPHICS')
+    
+    pdf.setFont('Helvetica', 10)
+    pdf.drawString(55, y - 36, f'Full Name: {name}')
+    pdf.drawString(55, y - 50, f'Email Address: {email}')
+    
+    # 3. Clinical Assessment (Risk Outcome)
+    y -= 85
+    is_high = 'High' in result
+    if is_high:
+        bg_color = (0.99, 0.92, 0.92) # Reddish background
+        border_color = (0.93, 0.27, 0.27)
+        text_color = (0.75, 0.08, 0.08)
+    else:
+        bg_color = (0.94, 0.99, 0.95) # Greenish background
+        border_color = (0.13, 0.58, 0.25)
+        text_color = (0.09, 0.39, 0.16)
+        
+    # Draw Risk Alert Box
+    pdf.setFillColorRGB(*bg_color)
+    pdf.setStrokeColorRGB(*border_color)
+    pdf.setLineWidth(1.5)
+    pdf.rect(40, y - 55, width - 80, 55, fill=True, stroke=True)
+    
+    # Alert Title & Score
+    pdf.setFillColorRGB(*text_color)
+    pdf.setFont('Helvetica-Bold', 14)
+    pdf.drawString(55, y - 22, f'Risk Assessment: {result.upper()}')
+    
+    pdf.setFont('Helvetica', 11)
+    pdf.drawString(55, y - 42, f'Analysis Confidence Level: {confidence}%')
+    
+    # 4. Clinical Parameter Table
+    y -= 95
+    pdf.setFillColorRGB(0.0, 0.0, 0.0)
+    pdf.setStrokeColorRGB(0.85, 0.85, 0.85)
+    pdf.setLineWidth(0.5)
+    pdf.setFont('Helvetica-Bold', 12)
+    pdf.drawString(40, y, 'CLINICAL MEASUREMENTS')
+    pdf.line(40, y - 5, width - 40, y - 5)
+    
+    # Table Grid Layout
+    y -= 25
+    pdf.setFont('Helvetica-Bold', 10)
+    pdf.setFillColorRGB(0.4, 0.4, 0.4)
+    
+    # Draw 2-column parameter grid
+    items = list(patient_data.items())
+    half = (len(items) + 1) // 2
+    
+    for idx, (key, value) in enumerate(items):
+        col_x = 55 if idx < half else width / 2 + 15
+        row_y = y - (idx % half) * 22
+        
+        # Friendly key labels mapping
+        label_map = {
+            'Pregnancies': 'Pregnancies',
+            'Glucose': 'Glucose (mg/dL)',
+            'BloodPressure': 'Blood Pressure (mmHg)',
+            'SkinThickness': 'Skin Thickness (mm)',
+            'Insulin': 'Insulin (μU/mL)',
+            'BMI': 'BMI (kg/m²)',
+            'DiabetesPedigreeFunction': 'Diabetes Pedigree Score',
+            'Age': 'Age (years)'
+        }
+        friendly_key = label_map.get(key, key)
+        
+        pdf.setFillColorRGB(0.3, 0.3, 0.3)
+        pdf.setFont('Helvetica', 10)
+        pdf.drawString(col_x, row_y, f'{friendly_key}:')
+        
+        pdf.setFillColorRGB(0.0, 0.0, 0.0)
+        pdf.setFont('Helvetica-Bold', 10)
+        pdf.drawString(col_x + 140, row_y, f'{value}')
+        
+        # Subtle separator line
+        pdf.setStrokeColorRGB(0.93, 0.93, 0.93)
+        pdf.line(col_x, row_y - 4, col_x + 230, row_y - 4)
+        
+    # 5. Doctor Clinical Suggestions
+    y = y - (half * 22) - 25
+    pdf.setFillColorRGB(0.0, 0.0, 0.0)
+    pdf.setFont('Helvetica-Bold', 12)
+    pdf.drawString(40, y, 'RECOMMENDED CLINICAL ACTION PLAN')
+    
+    pdf.setStrokeColorRGB(0.85, 0.85, 0.85)
+    pdf.line(40, y - 5, width - 40, y - 5)
+    
+    y -= 25
+    suggestions = get_suggestions(patient_data)
+    pdf.setFont('Helvetica', 10)
+    pdf.setFillColorRGB(0.1, 0.1, 0.1)
+    
+    for s in suggestions:
+        pdf.drawString(55, y, f'•  {s}')
+        y -= 20
+        
+    # 6. Report Footer / Disclaimer
+    pdf.setStrokeColorRGB(0.9, 0.9, 0.9)
+    pdf.line(40, 50, width - 40, 50)
+    
+    pdf.setFillColorRGB(0.5, 0.5, 0.5)
+    pdf.setFont('Helvetica-Oblique', 8)
+    pdf.drawCentredString(width / 2, 38, 'DISCLAIMER: This diagnostic report is generated utilizing machine learning predictive modeling.')
+    pdf.drawCentredString(width / 2, 26, 'It is for educational and screening purposes only and does not constitute official medical advice.')
+    
+    pdf.save()
+    return buffer.getvalue()
 
 
 def public_header():
-    col_logo, col_space, col_theme, col_signin, col_signup = st.columns([3, 3, 1, 1.2, 1.5])
+    col_logo, col_features, col_how, col_theme, col_signin = st.columns([2.5, 2.5, 1.8, 1.2, 1.2])
     with col_logo:
         st.markdown(f'''
         <div style="display:flex;align-items:center;gap:12px;font-size:24px;font-weight:900;color:{TEXT};margin-top:8px;">
             <div style="width:36px;height:36px;border-radius:8px;background:{BLUE};color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">⌁</div>
             <div>GlucoTrack</div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with col_features:
+        st.markdown(f'''
+        <div style="margin-top:14px; text-align:center;">
+            <a href="#features" class="nav-link" target="_self">What GlucoTrack Does</a>
+        </div>
+        ''', unsafe_allow_html=True)
+    with col_how:
+        st.markdown(f'''
+        <div style="margin-top:14px; text-align:center;">
+            <a href="#how-it-works" class="nav-link" target="_self">How It Works</a>
         </div>
         ''', unsafe_allow_html=True)
     with col_theme:
@@ -334,17 +470,10 @@ def public_header():
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     with col_signin:
-        if st.button('Sign In', key='nav_signin', type='secondary', use_container_width=True):
+        if st.button('Sign In', key='nav_signin', type='primary', use_container_width=True):
             st.session_state.started = True
             st.session_state.page = 'auth'
             st.session_state.auth_mode = 'signin'
-            st.rerun()
-    with col_signup:
-        if st.button('Get Started', key='nav_signup', type='primary', use_container_width=True):
-            st.session_state.started = True
-            st.session_state.page = 'auth'
-            st.session_state.auth_mode = 'signup'
-            st.session_state.signup_step = 1
             st.rerun()
     st.markdown(f'<hr style="margin:10px 0 20px 0;border:0;border-top:1px solid {BORDER};">', unsafe_allow_html=True)
 
@@ -389,20 +518,14 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
     
-    # Functional buttons aligned correctly
-    c1, c2, c3, c4 = st.columns([1.5, 1.5, 1.2, 1.5])
+    # Centered single button
+    c1, c2, c3 = st.columns([1.6, 1.2, 1.6])
     with c2:
-        if st.button('Start Free Assessment →', type='primary', key='landing_start_btn', use_container_width=True):
+        if st.button('Get Started', type='primary', key='landing_start_btn', use_container_width=True):
             st.session_state.started = True
             st.session_state.page = 'auth'
             st.session_state.auth_mode = 'signup'
             st.session_state.signup_step = 1
-            st.rerun()
-    with c3:
-        if st.button('Sign In', type='secondary', key='landing_signin_btn', use_container_width=True):
-            st.session_state.started = True
-            st.session_state.page = 'auth'
-            st.session_state.auth_mode = 'signin'
             st.rerun()
             
     st.markdown(f'''
@@ -420,7 +543,7 @@ def landing_page():
             <div class="stat-label" style="color:{MUTED} !important;">Free to Use</div>
         </div>
     </div>
-    <section class="section">
+    <section id="features" class="section">
         <h2 class="section-title" style="color:{TEXT} !important;">What GlucoTrack Does</h2>
         <p class="section-sub" style="color:{MUTED} !important;">Three powerful features to monitor, predict, and improve your health</p>
         <div class="feature-grid">
@@ -444,7 +567,7 @@ def landing_page():
             </div>
         </div>
     </section>
-    <section class="section">
+    <section id="how-it-works" class="section">
         <h2 class="section-title" style="color:{TEXT} !important;">How It Works</h2>
         <p class="section-sub" style="color:{MUTED} !important;">Get your diabetes risk assessment in 4 simple steps</p>
         <div class="steps-grid">
@@ -513,9 +636,16 @@ def auth_page():
             with st.container(border=True):
                 email = st.text_input('Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('Password', type='password', placeholder='Your password', key='signin_password')
-                is_admin = st.checkbox('Are you an admin?', key='is_admin_login')
+                is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
                 if is_admin:
-                    st.info('🔑 Admin Demo Credentials:\n- Email: `admin@glucotrack.com`\n- Password: `admin@123`')
+                    st.info('🔑 **Demo Credentials:**\n\n'
+                            '🛡️ *Admin*:\n'
+                            '- Email: `admin@glucotrack.com`\n'
+                            '- Password: `admin@123`\n\n'
+                            '👨‍⚕️ *Doctor*:\n'
+                            '- Email: `doctor@glucotrack.com`\n'
+                            '- Password: `Doc@1234`\n'
+                            '*(Note: Doctor account must be approved in the Admin Panel first)*')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
                     ok, msg = login_user(email, password)
@@ -600,7 +730,14 @@ def create_profile_page():
                 gender = st.selectbox('Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(st.session_state.signup_gender) if st.session_state.signup_gender in ['Female', 'Male', 'Other'] else 0)
                 address = st.text_area('Address', value=st.session_state.signup_address)
                 if st.button('Create Patient Profile', type='primary', use_container_width=True):
-                    users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True}; save_json(USERS_FILE, users); add_audit('Account Created', st.session_state.signup_email, 'Patient profile created'); ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password); st.rerun() if ok else st.error(msg)
+                    users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True}
+                    save_json(USERS_FILE, users)
+                    add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
+                    ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password)
+                    if ok:
+                        st.rerun()
+                    else:
+                        st.error(msg)
             else:
                 phone = st.text_input('Phone', value=st.session_state.signup_phone)
                 specialization = st.text_input('Specialization', placeholder='Endocrinology')
@@ -693,19 +830,191 @@ def dashboard_page():
 
 
 def doctor_page():
-    st.markdown('<div class="page-head"><div class="page-icon">👨⚕️</div><div><div class="page-title">Patient Data</div><div class="page-sub">View high-risk patient reports</div></div></div>', unsafe_allow_html=True)
-    high = [r for r in reports if 'High' in r.get('result', '')]
+    st.markdown('<div class="page-head"><div class="page-icon">👨‍⚕️</div><div><div class="page-title">Doctor Portal</div><div class="page-sub">Comprehensive Patient Directory & Health Analytics</div></div></div>', unsafe_allow_html=True)
+    
+    # Calculate key portal stats
+    high_cases = [r for r in reports if 'High' in r.get('result', '')]
+    total_cases = len(reports)
+    total_patients = len(users)
     
     with st.container(border=True):
         c1, c2, c3 = st.columns(3)
-        c1.metric('Total Reports', len(reports))
-        c2.metric('High Risk Cases', len(high))
-        c3.metric('Registered Patients', len(users))
+        c1.metric('Total Assessments', total_cases)
+        c2.metric('High Risk Patients ⚠️', len(high_cases))
+        c3.metric('Registered Patients', total_patients)
         
     st.write('')
-    st.subheader('⚠️ High Risk Patients')
-    if not high: st.info('No high-risk cases yet.'); return
-    df = pd.DataFrame([{'Patient': r['name'], 'Email': r['email'], 'Risk': r['result'], 'Confidence': r['confidence'], 'Time': r['time']} for r in high]); st.dataframe(df, use_container_width=True)
+    
+    tab_dir, tab_detail = st.tabs(['📋 Patient Reports Directory', '🔍 Detailed Patient Analysis'])
+    
+    with tab_dir:
+        st.subheader('All Patient Reports')
+        if not reports:
+            st.info('No patient reports available yet.')
+        else:
+            report_data = []
+            for idx, r in enumerate(reports):
+                data_dict = r.get('data', {})
+                report_data.append({
+                    'ID': idx,
+                    'Patient Name': r.get('name'),
+                    'Email': r.get('email'),
+                    'Risk Level': r.get('result'),
+                    'Confidence': f"{r.get('confidence')}%",
+                    'Assessment Time': r.get('time'),
+                    'Glucose': data_dict.get('Glucose', 'N/A'),
+                    'BMI': data_dict.get('BMI', 'N/A'),
+                    'BP': data_dict.get('BloodPressure', 'N/A'),
+                    'Age': data_dict.get('Age', 'N/A')
+                })
+            df_reports = pd.DataFrame(report_data)
+            st.dataframe(df_reports.drop(columns=['ID']), use_container_width=True)
+            
+    with tab_detail:
+        if not reports:
+            st.info('No patient reports available for analysis.')
+        else:
+            # Dropdown options
+            report_options = [f"{r.get('name')} ({r.get('time')}) - {r.get('result')}" for r in reports]
+            selected_idx = st.selectbox('Select Patient Report to Analyze:', range(len(reports)), format_func=lambda x: report_options[x])
+            
+            selected_report = reports[selected_idx]
+            patient_data = selected_report.get('data', {})
+            result = selected_report.get('result')
+            confidence = selected_report.get('confidence')
+            pred_time = selected_report.get('time')
+            name = selected_report.get('name')
+            email = selected_report.get('email')
+            
+            # Fetch details from users db
+            patient_info = users.get(email, {})
+            phone = patient_info.get('phone', 'Not Provided')
+            age = patient_info.get('age', patient_data.get('Age', 'N/A'))
+            gender = patient_info.get('gender', 'Not Provided')
+            
+            # Profile card
+            st.markdown(f'''
+            <div style="background:{CARD}; border: 1px solid {BORDER}; padding: 24px; border-radius: 20px; margin-bottom: 24px;">
+                <h3 style="margin-top:0; color:{TEXT};">👤 Patient Profile: {name}</h3>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                    <div><b>Email:</b> {email}</div>
+                    <div><b>Phone:</b> {phone}</div>
+                    <div><b>Age:</b> {age}</div>
+                    <div><b>Gender:</b> {gender}</div>
+                </div>
+                <div class="{"result-high" if "High" in result else "result-low"}" style="padding: 16px;">
+                    {"⚠️" if "High" in result else "✅"} <b>Assessment:</b> {result} ({confidence}% Confidence)
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+            
+            # Param cards
+            st.subheader('📋 Clinical Health Parameters')
+            cols = st.columns(4)
+            param_labels = {
+                'Pregnancies': 'Pregnancies',
+                'Glucose': 'Glucose (mg/dL)',
+                'BloodPressure': 'Blood Pressure (mmHg)',
+                'SkinThickness': 'Skin Thickness (mm)',
+                'Insulin': 'Insulin (μU/mL)',
+                'BMI': 'BMI (kg/m²)',
+                'DiabetesPedigreeFunction': 'Diabetes Pedigree',
+                'Age': 'Age (years)'
+            }
+            for i, (key, label) in enumerate(param_labels.items()):
+                val = patient_data.get(key, 'N/A')
+                with cols[i % 4]:
+                    st.markdown(f'<div class="param-card"><div class="param-label">{label}</div><div class="param-value">{val}</div></div>', unsafe_allow_html=True)
+            
+            # Charts & Suggestions
+            st.write('')
+            c_left, c_right = st.columns([3, 2])
+            with c_left:
+                st.subheader('📈 Health Parameter Analytics')
+                metrics_list = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']
+                values_list = [patient_data.get(m, 0) for m in metrics_list]
+                fig = go.Figure()
+                fig.add_trace(go.Bar(
+                    x=metrics_list, 
+                    y=values_list, 
+                    marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], 
+                    text=values_list, 
+                    textposition='outside'
+                ))
+                fig.update_layout(template=PLOT_TEMPLATE, height=350, title='Key Metrics Analysis', margin=dict(t=40, b=20, l=20, r=20))
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with c_right:
+                st.subheader('💡 Clinical Suggestions')
+                suggestions = get_suggestions(patient_data)
+                s_html = ''.join([f'<li style="margin-bottom:8px;">{s}</li>' for s in suggestions])
+                components.html(f'''
+                <div style="background:#E8F5FF; padding: 20px; border-radius: 16px; font-family: Inter, Arial; height: 100%;">
+                    <h4 style="color:#0F172A; margin: 0 0 12px;">Recommendations</h4>
+                    <ul style="color:#006BAA; font-size:15px; line-height:1.6; font-weight:600; padding-left:20px; margin:0;">
+                        {s_html}
+                    </ul>
+                </div>
+                ''', height=350)
+                
+            # PDF Generation & WhatsApp Integration
+            st.write('')
+            st.subheader('📄 Export & Share Reports')
+            
+            pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time)
+            
+            col_pdf_dl, col_wa_share = st.columns(2)
+            with col_pdf_dl:
+                st.download_button(
+                    label=f'📥 Download PDF Report for {name}',
+                    data=pdf_data,
+                    file_name=f"glucotrack_{name.replace(' ', '_')}_report.pdf",
+                    mime='application/pdf',
+                    use_container_width=True,
+                    key=f"dl_btn_{selected_idx}"
+                )
+                
+            with col_wa_share:
+                default_phone = phone if phone != 'Not Provided' else ''
+                target_phone = st.text_input('Recipient Phone Number (with Country Code):', value=default_phone, key=f"phone_input_{selected_idx}", placeholder='e.g., +919876543210')
+                
+                # Format clinical report summary for WhatsApp
+                msg_text = f"*GlucoTrack Clinical Health Analytics Report*\n\n" \
+                           f"👤 *Patient Name:* {name}\n" \
+                           f"📧 *Email:* {email}\n" \
+                           f"📞 *Phone:* {phone}\n" \
+                           f"🩺 *Assessment Result:* {result}\n" \
+                           f"🎯 *Model Confidence:* {confidence}%\n" \
+                           f"📅 *Report Generated:* {pred_time}\n\n" \
+                           f"📊 *Clinical Metrics:*\n" \
+                           f"- Glucose: {patient_data.get('Glucose', 'N/A')} mg/dL\n" \
+                           f"- BMI: {patient_data.get('BMI', 'N/A')}\n" \
+                           f"- Blood Pressure: {patient_data.get('BloodPressure', 'N/A')} mmHg\n" \
+                           f"- Insulin: {patient_data.get('Insulin', 'N/A')} μU/mL\n" \
+                           f"- Age: {patient_data.get('Age', 'N/A')} years\n\n" \
+                           f"💡 *Key Doctor Recommendations:*\n"
+                for s in suggestions:
+                    msg_text += f"- {s}\n"
+                msg_text += f"\n_This report was reviewed and shared by Dr. {st.session_state.current_user_name} via GlucoTrack._"
+                
+                encoded_text = urllib.parse.quote(msg_text)
+                clean_phone = ''.join(c for c in target_phone if c.isdigit())
+                
+                if clean_phone:
+                    whatsapp_url = f"https://api.whatsapp.com/send?phone={clean_phone}&text={encoded_text}"
+                else:
+                    whatsapp_url = f"https://api.whatsapp.com/send?text={encoded_text}"
+                
+                st.markdown(f'''
+                <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
+                    <div style="background-color:#25D366;color:white;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-66 1.63-66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
+                        </svg>
+                        Send Report via WhatsApp
+                    </div>
+                </a>
+                ''', unsafe_allow_html=True)
 
 
 def admin_page():
@@ -742,7 +1051,12 @@ def admin_page():
     st.write('')
     st.subheader('Registered Doctors'); st.dataframe(pd.DataFrame([{'Name': v.get('name'), 'Email': k, 'Approved': v.get('approved'), 'Specialization': v.get('specialization')} for k, v in doctors.items()]), use_container_width=True)
     st.write('')
-    st.subheader('Audit Log'); logs = load_json(AUDIT_FILE, []); st.dataframe(pd.DataFrame(logs), use_container_width=True) if logs else st.info('No audit logs yet.')
+    st.subheader('Audit Log')
+    logs = load_json(AUDIT_FILE, [])
+    if logs:
+        st.dataframe(pd.DataFrame(logs), use_container_width=True)
+    else:
+        st.info('No audit logs yet.')
 
 
 def profile_page():
