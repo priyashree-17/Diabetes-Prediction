@@ -398,24 +398,55 @@ def save_pdf_to_reports_folder(pdf_bytes, name):
     return str(file_path.resolve())
 
 
+
 def create_pdf_chart_image(patient_data):
     labels = ['Glucose', 'BMI', 'Insulin', 'BP', 'Age']
     values = [patient_data['Glucose'], patient_data['BMI'], patient_data['Insulin'], patient_data['BloodPressure'], patient_data['Age']]
-    fig, ax = plt.subplots(figsize=(7.2, 3.0), dpi=160)
-    bars = ax.bar(labels, values)
-    ax.set_title('Clinical Parameter Overview', fontsize=13, fontweight='bold')
-    ax.set_ylabel('Value')
-    ax.spines[['top', 'right']].set_visible(False)
-    ax.grid(axis='y', alpha=0.25)
+    colors = ['#2563EB', '#0D9488', '#7C3AED', '#F97316', '#DC2626']
+    fig, ax = plt.subplots(figsize=(7.4, 3.15), dpi=190)
+    fig.patch.set_facecolor('#FFFFFF')
+    ax.set_facecolor('#FFFFFF')
+    bars = ax.bar(labels, values, color=colors, width=0.58, edgecolor='none')
+    ax.set_title('Key Clinical Parameter Overview', fontsize=13, fontweight='bold', pad=14, color='#0F172A')
+    ax.set_ylabel('Recorded value', fontsize=9, color='#475569')
+    ax.spines[['top', 'right', 'left']].set_visible(False)
+    ax.spines['bottom'].set_color('#CBD5E1')
+    ax.tick_params(axis='x', labelsize=8, colors='#334155')
+    ax.tick_params(axis='y', labelsize=8, colors='#64748B', length=0)
+    ax.grid(axis='y', alpha=0.20, color='#94A3B8')
+    ax.set_axisbelow(True)
     for bar, value in zip(bars, values):
-        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height(), str(value), ha='center', va='bottom', fontsize=9, fontweight='bold')
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(values)*0.025, str(value), ha='center', va='bottom', fontsize=8.5, fontweight='bold', color='#0F172A')
     plt.tight_layout()
     img = BytesIO()
-    fig.savefig(img, format='png', bbox_inches='tight', transparent=False)
+    fig.savefig(img, format='png', bbox_inches='tight', facecolor='white')
     plt.close(fig)
     img.seek(0)
     return img
 
+
+def create_risk_gauge_image(confidence, is_high):
+    fig, ax = plt.subplots(figsize=(4.8, 2.45), dpi=190, subplot_kw={'projection': 'polar'})
+    fig.patch.set_facecolor('#FFFFFF')
+    ax.set_facecolor('#FFFFFF')
+    ax.set_theta_offset(3.14159)
+    ax.set_theta_direction(-1)
+    ax.set_ylim(0, 1)
+    ax.axis('off')
+    # Background arc
+    theta = [i * 3.14159 / 180 for i in range(0, 181)]
+    ax.plot(theta, [0.72]*len(theta), color='#E2E8F0', linewidth=22, solid_capstyle='round')
+    val = max(0, min(float(confidence), 100))
+    theta_val = [i * 3.14159 / 180 for i in range(0, int(180*val/100)+1)]
+    color = '#DC2626' if is_high else '#0D9488'
+    ax.plot(theta_val, [0.72]*len(theta_val), color=color, linewidth=22, solid_capstyle='round')
+    ax.text(3.14159/2, 0.30, f'{val:.1f}%', ha='center', va='center', fontsize=24, fontweight='bold', color='#0F172A')
+    ax.text(3.14159/2, 0.10, 'Model confidence', ha='center', va='center', fontsize=9, color='#64748B')
+    img = BytesIO()
+    fig.savefig(img, format='png', bbox_inches='tight', facecolor='white')
+    plt.close(fig)
+    img.seek(0)
+    return img
 
 def whatsapp_pdf_sender(phone, pdf_path, caption):
     """
@@ -452,109 +483,183 @@ def whatsapp_pdf_sender(phone, pdf_path, caption):
         return False, f'Could not automate WhatsApp PDF attach: {e}'
 
 
+
 def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
-    primary = (0.06, 0.46, 0.43)   # teal
+
+    # Professional healthcare palette
     navy = (0.05, 0.10, 0.20)
-    light_teal = (0.91, 0.99, 0.97)
-    soft_gray = (0.96, 0.98, 0.99)
-    dark_text = (0.06, 0.09, 0.16)
+    royal = (0.15, 0.39, 0.92)
+    teal = (0.05, 0.58, 0.53)
+    purple = (0.49, 0.23, 0.93)
+    slate = (0.06, 0.09, 0.16)
+    muted = (0.39, 0.45, 0.55)
+    soft = (0.96, 0.98, 1.00)
+    line = (0.84, 0.88, 0.94)
+    high = 'High' in result
 
-    def draw_round_rect(x, y, w, h, fill, stroke=(0.85, 0.90, 0.94), radius=12):
-        pdf.setFillColorRGB(*fill)
-        pdf.setStrokeColorRGB(*stroke)
-        pdf.roundRect(x, y, w, h, radius, fill=True, stroke=True)
+    def rgb(hex_color):
+        hex_color = hex_color.lstrip('#')
+        return tuple(int(hex_color[i:i+2], 16)/255 for i in (0, 2, 4))
 
-    # Header
-    pdf.setFillColorRGB(*navy)
-    pdf.rect(0, height - 112, width, 112, fill=True, stroke=False)
-    pdf.setFillColorRGB(*primary)
-    pdf.roundRect(40, height - 82, 44, 44, 12, fill=True, stroke=False)
-    pdf.setFillColorRGB(1, 1, 1)
-    pdf.setFont('Helvetica-Bold', 22)
-    pdf.drawString(100, height - 52, 'GlucoTrack Health Analytics Report')
-    pdf.setFont('Helvetica', 10)
-    pdf.setFillColorRGB(0.75, 0.90, 0.88)
-    pdf.drawString(100, height - 72, 'Diabetes Risk Assessment • Clinical Parameters • Health Insights')
-    pdf.drawString(100, height - 90, f'Generated on: {pred_time}')
+    def setc(c):
+        pdf.setFillColorRGB(*c)
 
-    # Patient card
-    y = height - 150
-    draw_round_rect(40, y - 70, width - 80, 70, soft_gray)
-    pdf.setFillColorRGB(*dark_text)
+    def stroke(c):
+        pdf.setStrokeColorRGB(*c)
+
+    def rr(x, y, w, h, fill, border=line, r=14, sw=0.8):
+        setc(fill); stroke(border); pdf.setLineWidth(sw)
+        pdf.roundRect(x, y, w, h, r, fill=True, stroke=True)
+
+    def label_value(x, y, label, value):
+        pdf.setFont('Helvetica', 8)
+        setc(muted)
+        pdf.drawString(x, y + 14, label)
+        pdf.setFont('Helvetica-Bold', 11)
+        setc(slate)
+        pdf.drawRightString(x + 205, y + 14, str(value))
+
+    # ---------------- PAGE BACKGROUND + HEADER ----------------
+    setc((1, 1, 1))
+    pdf.rect(0, 0, width, height, fill=True, stroke=False)
+    setc(navy)
+    pdf.rect(0, height - 132, width, 132, fill=True, stroke=False)
+    setc(teal)
+    pdf.roundRect(38, height - 92, 52, 52, 14, fill=True, stroke=False)
+    setc((1, 1, 1))
+    pdf.setFont('Helvetica-Bold', 20)
+    pdf.drawCentredString(64, height - 72, 'G')
+    pdf.setFont('Helvetica-Bold', 24)
+    pdf.drawString(110, height - 54, 'GlucoTrack Clinical Report')
+    pdf.setFont('Helvetica', 10.5)
+    setc((0.77, 0.86, 0.96))
+    pdf.drawString(110, height - 76, 'Diabetes Risk Assessment  |  Health Analytics  |  Action Plan')
+    pdf.setFont('Helvetica', 9)
+    pdf.drawString(110, height - 96, f'Generated on: {pred_time}')
+
+    # Small status chip
+    chip_fill = rgb('#FEE2E2') if high else rgb('#D1FAE5')
+    chip_text = rgb('#B91C1C') if high else rgb('#047857')
+    rr(width - 190, height - 88, 145, 34, chip_fill, chip_fill, r=17, sw=0)
+    pdf.setFont('Helvetica-Bold', 10)
+    setc(chip_text)
+    pdf.drawCentredString(width - 117, height - 67, 'HIGH RISK' if high else 'LOW RISK')
+
+    # ---------------- PATIENT + RESULT CARDS ----------------
+    y = height - 170
+    rr(38, y - 80, 250, 80, soft, line, r=16)
     pdf.setFont('Helvetica-Bold', 12)
-    pdf.drawString(60, y - 22, 'PATIENT DETAILS')
+    setc(slate)
+    pdf.drawString(58, y - 25, 'Patient Information')
+    pdf.setFont('Helvetica', 9.5)
+    setc(muted)
+    pdf.drawString(58, y - 47, f'Name: {name}')
+    pdf.drawString(58, y - 64, f'Email: {email}')
+
+    risk_bg = rgb('#FEF2F2') if high else rgb('#ECFDF5')
+    risk_border = rgb('#FCA5A5') if high else rgb('#6EE7B7')
+    risk_text = rgb('#B91C1C') if high else rgb('#047857')
+    rr(308, y - 80, width - 346, 80, risk_bg, risk_border, r=16, sw=1.2)
+    pdf.setFont('Helvetica-Bold', 16)
+    setc(risk_text)
+    pdf.drawString(330, y - 30, result)
     pdf.setFont('Helvetica', 10)
-    pdf.drawString(60, y - 42, f'Name: {name}')
-    pdf.drawString(60, y - 58, f'Email: {email}')
-
-    # Risk card
-    y -= 105
-    is_high = 'High' in result
-    if is_high:
-        bg, border, txt = (1.0, 0.94, 0.94), (0.94, 0.27, 0.27), (0.70, 0.08, 0.10)
-        risk_icon = 'HIGH RISK'
-    else:
-        bg, border, txt = (0.91, 0.99, 0.97), (0.08, 0.72, 0.65), (0.04, 0.45, 0.40)
-        risk_icon = 'LOW RISK'
-    draw_round_rect(40, y - 78, width - 80, 78, bg, border, 14)
-    pdf.setFillColorRGB(*txt)
-    pdf.setFont('Helvetica-Bold', 18)
-    pdf.drawCentredString(width / 2, y - 30, f'{risk_icon}: {result}')
+    setc(muted)
+    pdf.drawString(330, y - 52, 'Assessment outcome based on submitted clinical parameters')
     pdf.setFont('Helvetica-Bold', 12)
-    pdf.drawCentredString(width / 2, y - 54, f'Model Confidence: {confidence}%')
+    setc(risk_text)
+    pdf.drawRightString(width - 58, y - 34, f'{confidence}%')
+    pdf.setFont('Helvetica', 8.5)
+    setc(muted)
+    pdf.drawRightString(width - 58, y - 52, 'confidence')
 
-    # Table
-    y -= 112
-    pdf.setFillColorRGB(*dark_text)
+    # ---------------- KEY SUMMARY CARDS ----------------
+    y -= 115
     pdf.setFont('Helvetica-Bold', 13)
-    pdf.drawString(40, y, 'Clinical Measurements')
-    y -= 18
+    setc(slate)
+    pdf.drawString(38, y, 'Quick Health Summary')
+    y -= 50
+    summary = [
+        ('Glucose', f"{patient_data['Glucose']} mg/dL", '#2563EB'),
+        ('BMI', f"{patient_data['BMI']}", '#0D9488'),
+        ('Blood Pressure', f"{patient_data['BloodPressure']} mmHg", '#F97316'),
+        ('Age', f"{patient_data['Age']} years", '#7C3AED'),
+    ]
+    card_w = (width - 96) / 4
+    for i, (title, value, color_hex) in enumerate(summary):
+        x = 38 + i * (card_w + 8)
+        rr(x, y - 62, card_w, 62, (1, 1, 1), line, r=14)
+        setc(rgb(color_hex))
+        pdf.roundRect(x + 12, y - 26, 9, 26, 4, fill=True, stroke=False)
+        pdf.setFont('Helvetica', 8)
+        setc(muted)
+        pdf.drawString(x + 28, y - 20, title)
+        pdf.setFont('Helvetica-Bold', 15)
+        setc(slate)
+        pdf.drawString(x + 28, y - 43, value)
+
+    # ---------------- CLINICAL PARAMETER TABLE ----------------
+    y -= 95
+    pdf.setFont('Helvetica-Bold', 13)
+    setc(slate)
+    pdf.drawString(38, y, 'Clinical Measurements')
+    y -= 22
     items = list(patient_data.items())
-    col_w = (width - 100) / 2
+    col_w = (width - 96) / 2
     row_h = 30
     for idx, (key, value) in enumerate(items):
         col = idx % 2
         row = idx // 2
-        x = 40 + col * (col_w + 20)
+        x = 38 + col * (col_w + 20)
         yy = y - row * row_h
-        draw_round_rect(x, yy - 24, col_w, 24, (1, 1, 1), (0.86, 0.90, 0.94), 6)
-        pdf.setFillColorRGB(0.28, 0.35, 0.45)
-        pdf.setFont('Helvetica', 8.5)
-        pdf.drawString(x + 10, yy - 10, nice_label(key))
-        pdf.setFillColorRGB(*dark_text)
-        pdf.setFont('Helvetica-Bold', 10)
-        pdf.drawRightString(x + col_w - 10, yy - 10, str(value))
+        rr(x, yy - 24, col_w, 24, (1, 1, 1), line, r=7, sw=0.6)
+        label_value(x + 10, yy - 28, nice_label(key), value)
 
-    # Chart image
+    # ---------------- CHARTS ----------------
     y -= 145
-    pdf.setFillColorRGB(*dark_text)
     pdf.setFont('Helvetica-Bold', 13)
-    pdf.drawString(40, y, 'Health Analytics Chart')
+    setc(slate)
+    pdf.drawString(38, y, 'Health Analytics')
+    rr(38, y - 190, 330, 175, (1, 1, 1), line, r=16)
+    rr(382, y - 190, width - 420, 175, (1, 1, 1), line, r=16)
     chart_img = create_pdf_chart_image(patient_data)
-    pdf.drawImage(ImageReader(chart_img), 55, y - 175, width=485, height=155, preserveAspectRatio=True, mask='auto')
+    pdf.drawImage(ImageReader(chart_img), 48, y - 180, width=310, height=145, preserveAspectRatio=True, mask='auto')
+    gauge_img = create_risk_gauge_image(confidence, high)
+    pdf.drawImage(ImageReader(gauge_img), 397, y - 177, width=165, height=130, preserveAspectRatio=True, mask='auto')
+    pdf.setFont('Helvetica-Bold', 10)
+    setc(slate)
+    pdf.drawCentredString(468, y - 170, 'Risk Confidence Gauge')
 
-    # Suggestions
-    y -= 205
-    draw_round_rect(40, y - 95, width - 80, 95, light_teal, (0.65, 0.90, 0.85), 12)
-    pdf.setFillColorRGB(*dark_text)
+    # ---------------- RECOMMENDATIONS ----------------
+    y -= 225
+    rr(38, y - 105, width - 76, 105, rgb('#F0FDFA'), rgb('#99F6E4'), r=16)
     pdf.setFont('Helvetica-Bold', 13)
-    pdf.drawString(60, y - 22, 'Recommended Health Action Plan')
-    pdf.setFont('Helvetica', 10)
-    yy = y - 42
-    for s in get_suggestions(patient_data):
-        pdf.drawString(70, yy, u'• ' + s)
-        yy -= 16
+    setc(slate)
+    pdf.drawString(58, y - 25, 'Recommended Health Action Plan')
+    pdf.setFont('Helvetica', 9.5)
+    setc((0.12, 0.20, 0.30))
+    yy = y - 47
+    for i, s in enumerate(get_suggestions(patient_data), start=1):
+        setc(teal)
+        pdf.circle(64, yy + 3, 6, fill=True, stroke=False)
+        setc((1, 1, 1))
+        pdf.setFont('Helvetica-Bold', 7)
+        pdf.drawCentredString(64, yy + 1, str(i))
+        setc((0.12, 0.20, 0.30))
+        pdf.setFont('Helvetica', 9.5)
+        pdf.drawString(78, yy, s)
+        yy -= 21
 
-    # Footer
-    pdf.setStrokeColorRGB(0.85, 0.90, 0.94)
-    pdf.line(40, 50, width - 40, 50)
-    pdf.setFillColorRGB(0.45, 0.50, 0.58)
-    pdf.setFont('Helvetica-Oblique', 8)
-    pdf.drawCentredString(width / 2, 36, 'Disclaimer: This report is for educational/screening purposes only and is not medical advice.')
-    pdf.drawCentredString(width / 2, 24, 'Please consult a qualified healthcare professional for diagnosis and treatment.')
+    # ---------------- FOOTER ----------------
+    stroke(line)
+    pdf.line(38, 48, width - 38, 48)
+    pdf.setFont('Helvetica-Oblique', 7.5)
+    setc((0.45, 0.50, 0.58))
+    pdf.drawCentredString(width / 2, 34, 'Disclaimer: This report is generated for educational and screening purposes only. It is not a medical diagnosis.')
+    pdf.drawCentredString(width / 2, 22, 'Please consult a qualified healthcare professional before making medical decisions.')
 
     pdf.save()
     return buffer.getvalue()
