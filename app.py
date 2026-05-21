@@ -392,6 +392,12 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     animation: fadeInUp 0.7s ease 0.2s both;
 }}
 
+/* Hide the real Streamlit hero_start_btn that appears below the hero section */
+div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"] + div[data-testid="stHorizontalBlock"],
+div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) {{
+    display: none !important;
+}}
+
 /* ── Hero CTA card ── */
 .hero-cta-card {{
     position: relative; z-index: 1;
@@ -1041,7 +1047,7 @@ def dashboard_sidebar():
 def landing_page():
     public_header()
 
-    # ── Hero section: title + subtitle rendered as pure HTML ──────────────────
+    # ── Hero: badge + title + subtitle as HTML, CTA card as components.html ──
     st.markdown(f'''
     <section class="hero-section">
         <div class="hero-bg"></div>
@@ -1059,29 +1065,89 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
-    # ── "Get Started" button lives inside a styled card below the hero text ──
-    _, col_card, _ = st.columns([1.8, 1.5, 1.8])
-    with col_card:
-        with st.container(border=True):
-            st.markdown(
-                f'<div style="text-align:center;padding:4px 0 12px;">'
-                f'<div style="font-family:\'Sora\',sans-serif;font-size:18px;font-weight:800;color:{TEXT};margin-bottom:6px;">🩺 Know Your Diabetes Risk</div>'
-                f'<div style="font-size:14px;color:{MUTED};margin-bottom:18px;">Free · Private · Results in seconds</div>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-            if st.button('🚀 Get Started Free', type='primary', key='hero_start_btn', use_container_width=True):
-                st.session_state.started = True
-                st.session_state.page = 'auth'
-                st.session_state.auth_mode = 'signup'
-                st.session_state.signup_step = 1
-                st.rerun()
-            st.markdown(
-                f'<div style="text-align:center;margin-top:14px;font-size:13px;color:{MUTED};">'
-                f'✅ Free forever &nbsp;·&nbsp; 🔒 Private &amp; secure &nbsp;·&nbsp; ⚡ Instant results'
-                f'</div>',
-                unsafe_allow_html=True
-            )
+    # CTA card rendered via components so the button click can trigger Streamlit
+    components.html(f'''
+    <style>
+        body {{ margin:0; padding:0; background:transparent; font-family:'DM Sans',Arial,sans-serif; }}
+        .cta-wrap {{
+            display:flex; justify-content:center;
+            margin-top:-60px; position:relative; z-index:10;
+        }}
+        .cta-card {{
+            background:{CARD};
+            border:1px solid {BORDER};
+            border-radius:28px;
+            padding:32px 44px 28px;
+            width:420px;
+            box-shadow:0 12px 48px rgba(14,165,233,0.13),0 2px 8px rgba(0,0,0,0.07);
+            text-align:center;
+        }}
+        .cta-title {{
+            font-family:'Sora',Arial,sans-serif;
+            font-size:19px; font-weight:800;
+            color:{TEXT}; margin:0 0 6px;
+        }}
+        .cta-sub {{
+            font-size:14px; color:{MUTED};
+            margin:0 0 20px; line-height:1.5;
+        }}
+        .cta-btn {{
+            display:block; width:100%;
+            background:linear-gradient(135deg,{GRAD1} 0%,{GRAD2} 100%);
+            color:white; border:none; border-radius:14px;
+            font-weight:700; font-size:16px; padding:16px 0;
+            cursor:pointer; text-align:center;
+            box-shadow:0 8px 24px rgba(14,165,233,0.35);
+            transition:all 0.2s ease;
+            font-family:'DM Sans',Arial,sans-serif;
+            letter-spacing:0.2px;
+        }}
+        .cta-btn:hover {{
+            transform:translateY(-2px);
+            box-shadow:0 14px 36px rgba(14,165,233,0.45);
+            filter:brightness(1.06);
+        }}
+        .cta-trust {{
+            margin-top:16px;
+            font-size:13px; color:{MUTED};
+            display:flex; justify-content:center; gap:16px; flex-wrap:wrap;
+        }}
+    </style>
+    <div class="cta-wrap">
+        <div class="cta-card">
+            <div class="cta-title">🩺 Know Your Diabetes Risk</div>
+            <div class="cta-sub">Free · Private · Results in seconds</div>
+            <button class="cta-btn" onclick="triggerStart()">🚀 Get Started Free</button>
+            <div class="cta-trust">
+                <span>✅ Free forever</span>
+                <span>🔒 Private &amp; secure</span>
+                <span>⚡ Instant results</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        function triggerStart() {{
+            // Walk up to the Streamlit parent and click the hidden real button
+            var btns = window.parent.document.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {{
+                if (btns[i].innerText && btns[i].innerText.trim().startsWith('🚀 Get Started Free')) {{
+                    btns[i].click();
+                    return;
+                }}
+            }}
+        }}
+    </script>
+    ''', height=210)
+
+    # Real Streamlit button — visually hidden but functional (clicked by JS above)
+    st.markdown('<div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">', unsafe_allow_html=True)
+    if st.button('🚀 Get Started Free', type='primary', key='hero_start_btn'):
+        st.session_state.started = True
+        st.session_state.page = 'auth'
+        st.session_state.auth_mode = 'signup'
+        st.session_state.signup_step = 1
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Stats
     st.markdown(f'''
