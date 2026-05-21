@@ -166,127 +166,141 @@ else:
 css = f'''
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 *{{box-sizing:border-box;}}
 html, body, [class*="css"]{{font-family:'Inter',sans-serif!important;}}
 .stApp{{background:{BG}!important;}}
 .block-container{{padding-top:2rem!important;padding-left:1.55rem!important;padding-right:1.55rem!important;max-width:100%!important;}}
+
 h1,h2,h3,h4,h5,h6,p,label{{font-family:'Inter',sans-serif!important;}}
 h1,h2,h3,h4,h5,h6,p,label{{color:{TEXT}!important;}}
+
 [data-testid="stDecoration"]{{display:none!important;}}
 header[data-testid="stHeader"]{{background:transparent!important;box-shadow:none!important;border:none!important;}}
 header[data-testid="stHeader"] [data-testid="stAppDeployButton"]{{display:none!important;}}
-header[data-testid="stHeader"] #MainMenu{{display:none!important;}}
-header[data-testid="stHeader"] [data-testid="stConnectionStatus"]{{display:none!important;}}
-.nav-link{{text-decoration:none!important;color:{TEXT}!important;font-weight:700!important;font-size:16px!important;transition:color 0.2s ease!important;}}
-.nav-link:hover{{color:{BLUE}!important;}}
-.stTextInput input,.stNumberInput input,.stTextArea textarea{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;font-size:16px!important;padding-left:16px!important;}}
-.stSelectbox div[data-baseweb="select"]>div{{background:{INPUT}!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;min-height:54px!important;}}
+header[data-testid="stHeader"] [data-testid="stToolbar"]{{display:none!important;}}
 
-/* Card container styling */
-div[data-testid="stVerticalBlockBorderWrapper"] {{
-    background: {CARD}!important;
-    border: 1px solid {BORDER}!important;
-    border-radius: 20px!important;
-    padding: 24px!important;
-    box-shadow: 0 8px 30px rgba(15,23,42,.04)!important;
+.nav-link{{text-decoration:none!important;color:{TEXT}!important;font-weight:700!important;font-size:16px!important;}}
+.nav-link:hover{{color:{BLUE}!important;}}
+
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea{{
+    background:{INPUT}!important;
+    color:{TEXT}!important;
+    border:1px solid {BORDER}!important;
+    border-radius:14px!important;
+    min-height:54px!important;
+    font-size:16px!important;
 }}
 
-/* Button styling */
-.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{BLUE}!important;color:white!important;border:none!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;box-shadow:0 12px 24px rgba(22,166,232,.20)!important;}}
-.stButton>button[kind="primary"]:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{background:{BLUE_DARK}!important;transform:translateY(-1px);}}
-.stButton>button[kind="secondary"]{{background:transparent!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;}}
-.stButton>button[kind="secondary"]:hover{{background:{BORDER}!important;color:{TEXT}!important;transform:translateY(-1px);}}
-button *{{color:white!important;}}
-.stButton>button[kind="secondary"] *{{color:{TEXT}!important;}}
+.stSelectbox div[data-baseweb="select"]>div{{
+    background:{INPUT}!important;
+    color:{TEXT}!important;
+    border:1px solid {BORDER}!important;
+    border-radius:14px!important;
+}}
 
-section[data-testid="stSidebar"]{{background:{SIDEBAR}!important;border-right:1px solid {BORDER};}}
-section[data-testid="stSidebar"]>div{{background:transparent!important;padding-top:0!important;}}
-section[data-testid="stSidebar"] *{{color:{TEXT}!important;}}
-.sb-header{{height:82px;display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid {BORDER};}}
-.sb-logo-box{{width:40px;height:40px;background:{BLUE};color:white!important;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:21px;}}
-.sb-brand{{font-size:22px;font-weight:900;color:{TEXT}!important;}}
-.sb-profile{{display:flex;align-items:center;gap:14px;padding:22px 18px;border-bottom:1px solid {BORDER};}}
-.sb-avatar{{width:50px;height:50px;border-radius:16px;background:#E0F2FE;color:{BLUE}!important;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;}}
-.sb-name{{font-size:16px;font-weight:900;color:{TEXT}!important;margin-bottom:4px;}}
-.sb-role{{font-size:14px;color:#8CA0BF!important;font-weight:500;}}
-div[data-testid="stRadio"]{{padding:20px 7px 0!important;}}
-div[data-testid="stRadio"] label{{border-radius:13px!important;padding:14px 14px!important;margin:4px 0!important;font-size:16px!important;font-weight:800!important;background:transparent!important;}}
-div[data-testid="stRadio"] label:hover{{background:#EEF8FF!important;}}
-div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:none!important;}}
+div[data-testid="stVerticalBlockBorderWrapper"]{{
+    background:{CARD}!important;
+    border:1px solid {BORDER}!important;
+    border-radius:20px!important;
+    padding:24px!important;
+    box-shadow:0 8px 30px rgba(15,23,42,.04)!important;
+}}
 
-.hero{{padding:78px 20px 50px;text-align:center;max-width:1050px;margin:0 auto;}}
-.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid {'#0284C7' if DARK else '#8BD6FF'};background:{'#0C4A6E' if DARK else '#EAF7FF'};color:{'#38BDF8' if DARK else '#006BAA'}!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
-.hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;color:{TEXT}!important;}}
-.hero-blue{{color:{BLUE}!important;display:block;}}
-.hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;color:{MUTED}!important;}}
+.stButton>button[kind="primary"],
+.stDownloadButton>button,
+.stFormSubmitButton>button{{
+    background:{BLUE}!important;
+    color:white!important;
+    border:none!important;
+    border-radius:14px!important;
+    font-weight:800!important;
+    font-size:16px!important;
+    min-height:52px!important;
+}}
 
-.stats-wrap{{max-width:1120px;margin:42px auto 90px;border-radius:26px;border:1px solid {BORDER};display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,.03);background:{CARD}!important;}}
-.stat{{padding:48px 20px;text-align:center;border-right:1px solid {BORDER};}}
-.stat:last-child{{border-right:none;}}
-.stat-num{{font-size:46px;font-weight:950;color:{BLUE}!important;}}
-.stat-label{{font-size:18px;margin-top:6px;color:{MUTED}!important;}}
-.section{{padding:0 20px 90px;}}
-.section-title{{text-align:center;font-size:38px;font-weight:950;margin-bottom:16px;color:{TEXT}!important;}}
-.section-sub{{text-align:center;font-size:22px;margin-bottom:60px;color:{MUTED}!important;}}
-.feature-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1260px;margin:0 auto;}}
-.feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;}}
-.feature-blue{{background:{'#1E293B' if DARK else '#E8F5FF'}!important;}}
-.feature-green{{background:{'#1E293B' if DARK else '#E8FFF1'}!important;}}
-.feature-red{{background:{'#1E293B' if DARK else '#FFECEC'}!important;}}
-.pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;border:1px solid transparent;}}
-.pill-blue{{background:{'#0F172A' if DARK else '#E8F5FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
-.pill-green{{background:{'#0F172A' if DARK else '#E8FFF1'}!important;border-color:{'#059669' if DARK else '#80EDB3'}!important;color:{'#34D399' if DARK else '#00885A'}!important;}}
-.pill-red{{background:{'#0F172A' if DARK else '#FFECEC'}!important;border-color:{'#DC2626' if DARK else '#FFB4C1'}!important;color:{'#F87171' if DARK else '#D9043D'}!important;}}
-.icon-box{{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:48px;}}
-.icon-blue{{background:{'#0F172A' if DARK else '#D4EDFF'}!important;}}
-.icon-green{{background:{'#0F172A' if DARK else '#CFF9E4'}!important;}}
-.icon-red{{background:{'#0F172A' if DARK else '#FFDDE2'}!important;}}
-.feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;color:{TEXT}!important;}}
-.feature-text{{font-size:19px;line-height:1.45;color:{TEXT if DARK else '#475569'}!important;}}
-.steps-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1260px;margin:0 auto;}}
-.step-card{{border:1px solid {BORDER};border-radius:18px;padding:38px 24px;text-align:center;background:{CARD}!important;}}
-.step-num{{color:{BLUE}!important;font-size:46px;font-weight:950;margin-bottom:14px;}}
-.step-title{{font-size:21px;font-weight:950;margin-bottom:14px;color:{TEXT}!important;}}
-.step-text{{font-size:18px;line-height:1.55;color:{MUTED}!important;}}
-.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;}}
-.auth-title{{text-align:center;padding:34px 0 20px;}}
-.auth-title h1{{font-size:32px;margin:28px 0 6px;color:{TEXT}!important;}}
-.auth-title p{{font-size:18px;color:{MUTED}!important;}}
-.auth-logo-row{{display:flex;justify-content:center;align-items:center;gap:12px;font-size:32px;font-weight:950;color:{TEXT}!important;}}
-.form-row{{display:grid;grid-template-columns:1fr 1fr;gap:18px;}}
-.auth-link{{text-align:center;font-size:17px;}}
-.auth-link b{{color:{BLUE}!important;}}
-.page-head{{display:flex;align-items:center;gap:16px;padding:26px 34px 18px;}}
-.page-icon{{width:50px;height:50px;background:#DFF3FF;color:{BLUE}!important;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;}}
-.page-title{{font-size:31px;font-weight:950;}}
-.page-sub{{font-size:18px;margin-top:4px;color:{MUTED}!important;}}
-.card-heading{{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:950;margin-bottom:22px;}}
-.badge-num{{width:30px;height:30px;background:#DFF3FF;color:{BLUE}!important;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:950;}}
-.result-high{{background:{RESULT_HIGH_BG};border:1px solid {RESULT_HIGH_BORDER};color:{RESULT_HIGH_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
-.result-low{{background:{RESULT_LOW_BG};border:1px solid {RESULT_LOW_BORDER};color:{RESULT_LOW_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
-.param-card{{background:{CARD}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;}}
-.param-label{{color:{MUTED}!important;font-size:12px;font-weight:800;text-transform:uppercase;}}
-.param-value{{color:{TEXT}!important;font-size:23px;font-weight:950;}}
-.footer{{border-top:1px solid {BORDER};padding:28px 22px;display:flex;justify-content:space-between;color:{MUTED}!important;}}
-.footer-logo{{font-weight:950;color:{TEXT}!important;}}
-@media(max-width:900px){{.hero-title{{font-size:55px;}}.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}.form-row{{grid-template-columns:1fr;}}}}
+.stButton>button[kind="secondary"]{{
+    background:transparent!important;
+    color:{TEXT}!important;
+    border:1px solid {BORDER}!important;
+}}
 
-/* Strong visibility fixes for dark mode */
-.stMarkdown, .stMarkdown *, .page-title, .page-sub, .card-heading, .section-title, .section-sub,
-.auth-title h1, .auth-title p, .param-value, .param-label, div[data-testid="stMetricValue"],
-div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {
-    color: {TEXT} !important;
-}
-.page-sub, .section-sub, .hero-sub, .step-text, .stat-label { color: {MUTED} !important; }
-.stDataFrame, .stDataFrame * { color: {TEXT} !important; }
-[data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * { color: {TEXT} !important; font-weight:700!important; }
-.logo-square{width:42px;height:42px;border-radius:12px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}
-.whatsapp-card{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}
-.whatsapp-card:hover{filter:brightness(.96);transform:translateY(-1px);}
+section[data-testid="stSidebar"]{{
+    background:{SIDEBAR}!important;
+    border-right:1px solid {BORDER};
+}}
+
+section[data-testid="stSidebar"] *{{
+    color:{TEXT}!important;
+}}
+
+.sb-header{{
+    height:82px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:0 18px;
+    border-bottom:1px solid {BORDER};
+}}
+
+.sb-logo-box{{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:{BLUE};
+    color:white!important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+}}
+
+.hero-title{{color:{TEXT}!important;}}
+.hero-sub{{color:{MUTED}!important;}}
+.section-title{{color:{TEXT}!important;}}
+.section-sub{{color:{MUTED}!important;}}
+
+.page-title,
+.page-sub,
+.card-heading,
+.param-value,
+.param-label{{
+    color:{TEXT}!important;
+}}
+
+.stMarkdown,
+.stMarkdown *,
+.stDataFrame,
+.stDataFrame *,
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] *{{
+    color:{TEXT}!important;
+}}
+
+div[data-testid="stNumberInput"] button{{
+    color:{TEXT}!important;
+    background:{CARD}!important;
+    border:1px solid {BORDER}!important;
+}}
+
+.whatsapp-card{{
+    background:#25D366;
+    color:white!important;
+    text-align:center;
+    padding:14px;
+    border-radius:14px;
+    font-weight:800;
+}}
+
+button[title="View fullscreen"]{{
+    display:none!important;
+}}
+
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-
 
 def initials(name):
     parts = str(name or 'User').strip().split()
