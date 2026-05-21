@@ -121,61 +121,47 @@ for k, v in defaults.items():
 
 DARK = st.session_state.dark_mode
 
-# Color Hunt theme: #6367FF #8494FF #C9BEFF #FFFDBF
+# Professional medical theme
 if DARK:
     BG = '#0B1120'
     CARD = '#111827'
-    TEXT = '#F8FAFC'
+    TEXT = '#F9FAFB'
     MUTED = '#CBD5E1'
     BORDER = '#334155'
-    INPUT = '#1E293B'
-    BLUE = '#6367FF'
-    BLUE_DARK = '#4F46E5'
-    SECONDARY = '#8494FF'
-    ACCENT = '#C9BEFF'
-    SOFT = '#FFFDBF'
-    TEAL = '#8494FF'
-    PURPLE = '#C9BEFF'
-    GRADIENT = 'linear-gradient(135deg, #6367FF 0%, #8494FF 52%, #C9BEFF 100%)'
-    CARD_GRADIENT = 'linear-gradient(135deg, rgba(99,103,255,0.20), rgba(132,148,255,0.14), rgba(201,190,255,0.12))'
+    INPUT = '#172033'
+    BLUE = '#14B8A6'          # teal primary
+    BLUE_DARK = '#0F766E'
     SIDEBAR = '#0F172A'
     PLOT_TEMPLATE = 'plotly_dark'
-    RESULT_HIGH_BG = '#3B0A0A'
+    RESULT_HIGH_BG = '#3F1216'
     RESULT_HIGH_BORDER = '#EF4444'
     RESULT_HIGH_TEXT = '#FECACA'
-    RESULT_LOW_BG = '#052E16'
-    RESULT_LOW_BORDER = '#22C55E'
-    RESULT_LOW_TEXT = '#BBF7D0'
+    RESULT_LOW_BG = '#052E2B'
+    RESULT_LOW_BORDER = '#14B8A6'
+    RESULT_LOW_TEXT = '#CCFBF1'
     BOX_SUGGESTION_BG = '#111827'
-    BOX_SUGGESTION_TITLE = '#F8FAFC'
-    BOX_SUGGESTION_TEXT = '#C9BEFF'
+    BOX_SUGGESTION_TITLE = '#F9FAFB'
+    BOX_SUGGESTION_TEXT = '#99F6E4'
 else:
-    BG = '#F8FAFF'
+    BG = '#F8FAFC'
     CARD = '#FFFFFF'
     TEXT = '#0F172A'
-    MUTED = '#64748B'
-    BORDER = '#E2E8F0'
+    MUTED = '#475569'
+    BORDER = '#D8E3EA'
     INPUT = '#FFFFFF'
-    BLUE = '#6367FF'
-    BLUE_DARK = '#4F46E5'
-    SECONDARY = '#8494FF'
-    ACCENT = '#C9BEFF'
-    SOFT = '#FFFDBF'
-    TEAL = '#8494FF'
-    PURPLE = '#C9BEFF'
-    GRADIENT = 'linear-gradient(135deg, #6367FF 0%, #8494FF 52%, #C9BEFF 100%)'
-    CARD_GRADIENT = 'linear-gradient(135deg, rgba(255,253,191,0.42), rgba(201,190,255,0.24), rgba(132,148,255,0.12))'
+    BLUE = '#0F766E'          # professional teal
+    BLUE_DARK = '#115E59'
     SIDEBAR = '#FFFFFF'
     PLOT_TEMPLATE = 'plotly_white'
-    RESULT_HIGH_BG = '#FEF2F2'
-    RESULT_HIGH_BORDER = '#F87171'
-    RESULT_HIGH_TEXT = '#B91C1C'
-    RESULT_LOW_BG = '#F0FDF4'
-    RESULT_LOW_BORDER = '#22C55E'
-    RESULT_LOW_TEXT = '#166534'
-    BOX_SUGGESTION_BG = '#F5F3FF'
+    RESULT_HIGH_BG = '#FFF1F2'
+    RESULT_HIGH_BORDER = '#FB7185'
+    RESULT_HIGH_TEXT = '#BE123C'
+    RESULT_LOW_BG = '#F0FDFA'
+    RESULT_LOW_BORDER = '#5EEAD4'
+    RESULT_LOW_TEXT = '#0F766E'
+    BOX_SUGGESTION_BG = '#ECFDF5'
     BOX_SUGGESTION_TITLE = '#0F172A'
-    BOX_SUGGESTION_TEXT = '#4F46E5'
+    BOX_SUGGESTION_TEXT = '#0F766E'
 
 css = f'''
 <style>
@@ -206,18 +192,18 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
 }}
 
 /* Button styling */
-.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{GRADIENT}!important;color:white!important;border:none!important;border-radius:16px!important;font-weight:850!important;font-size:16px!important;min-height:54px!important;box-shadow:0 14px 32px rgba(99,103,255,.28)!important;transition:all .22s ease!important;}}
-.stButton>button[kind="primary"]:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{filter:brightness(1.04)!important;transform:translateY(-2px);box-shadow:0 18px 40px rgba(13,148,136,.35)!important;}}
+.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{BLUE}!important;color:white!important;border:none!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;box-shadow:0 12px 24px rgba(22,166,232,.20)!important;}}
+.stButton>button[kind="primary"]:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{background:{BLUE_DARK}!important;transform:translateY(-1px);}}
 .stButton>button[kind="secondary"]{{background:transparent!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;}}
 .stButton>button[kind="secondary"]:hover{{background:{BORDER}!important;color:{TEXT}!important;transform:translateY(-1px);}}
-button[kind="primary"] *{{color:white!important;}}
+button *{{color:white!important;}}
 .stButton>button[kind="secondary"] *{{color:{TEXT}!important;}}
 
 section[data-testid="stSidebar"]{{background:{SIDEBAR}!important;border-right:1px solid {BORDER};}}
 section[data-testid="stSidebar"]>div{{background:transparent!important;padding-top:0!important;}}
 section[data-testid="stSidebar"] *{{color:{TEXT}!important;}}
 .sb-header{{height:82px;display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid {BORDER};}}
-.sb-logo-box{{width:44px;height:44px;background:{GRADIENT};color:white!important;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:21px;box-shadow:0 8px 24px rgba(99,103,255,.35);}}
+.sb-logo-box{{width:40px;height:40px;background:{BLUE};color:white!important;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:21px;}}
 .sb-brand{{font-size:22px;font-weight:900;color:{TEXT}!important;}}
 .sb-profile{{display:flex;align-items:center;gap:14px;padding:22px 18px;border-bottom:1px solid {BORDER};}}
 .sb-avatar{{width:50px;height:50px;border-radius:16px;background:#E0F2FE;color:{BLUE}!important;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;}}
@@ -229,9 +215,9 @@ div[data-testid="stRadio"] label:hover{{background:#EEF8FF!important;}}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:none!important;}}
 
 .hero{{padding:78px 20px 50px;text-align:center;max-width:1050px;margin:0 auto;}}
-.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(201,190,255,.85);background:{CARD_GRADIENT};color:{BLUE}!important;border-radius:999px;padding:12px 22px;letter-spacing:2.5px;font-weight:950;font-size:14px;box-shadow:0 8px 25px rgba(99,103,255,.15);}}
+.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid {'#0284C7' if DARK else '#8BD6FF'};background:{'#0C4A6E' if DARK else '#EAF7FF'};color:{'#38BDF8' if DARK else '#006BAA'}!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
 .hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;color:{TEXT}!important;}}
-.hero-blue{{background:{GRADIENT};-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;}}
+.hero-blue{{color:{BLUE}!important;display:block;}}
 .hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;color:{MUTED}!important;}}
 
 .stats-wrap{{max-width:1120px;margin:42px auto 90px;border-radius:26px;border:1px solid {BORDER};display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,.03);background:{CARD}!important;}}
@@ -243,27 +229,26 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .section-title{{text-align:center;font-size:38px;font-weight:950;margin-bottom:16px;color:{TEXT}!important;}}
 .section-sub{{text-align:center;font-size:22px;margin-bottom:60px;color:{MUTED}!important;}}
 .feature-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1260px;margin:0 auto;}}
-.feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;box-shadow:0 18px 45px rgba(15,23,42,.08)!important;transition:all .22s ease;}}
-.feature-card:hover{{transform:translateY(-6px);box-shadow:0 24px 60px rgba(37,99,235,.16)!important;}}
-.feature-blue{{background:linear-gradient(135deg, {'#1E1B4B' if DARK else '#EEF2FF'}, {'#FFFDBF' if not DARK else '#0F172A'})!important;}}
-.feature-green{{background:linear-gradient(135deg, {'#312E81' if DARK else '#F5F3FF'}, {'#FFFFFF' if not DARK else '#0F172A'})!important;}}
-.feature-red{{background:linear-gradient(135deg, {'#312E81' if DARK else '#FFFDBF'}, {'#FFFFFF' if not DARK else '#0F172A'})!important;}}
+.feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;}}
+.feature-blue{{background:{'#1E293B' if DARK else '#E8F5FF'}!important;}}
+.feature-green{{background:{'#1E293B' if DARK else '#E8FFF1'}!important;}}
+.feature-red{{background:{'#1E293B' if DARK else '#FFECEC'}!important;}}
 .pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;border:1px solid transparent;}}
-.pill-blue{{background:{'#0F172A' if DARK else '#EEF2FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
-.pill-green{{background:{'#0F172A' if DARK else '#F5F3FF'}!important;border-color:{ACCENT}!important;color:{BLUE_DARK}!important;}}
-.pill-red{{background:{'#0F172A' if DARK else '#FFFDBF'}!important;border-color:{ACCENT}!important;color:{BLUE_DARK}!important;}}
+.pill-blue{{background:{'#0F172A' if DARK else '#E8F5FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
+.pill-green{{background:{'#0F172A' if DARK else '#E8FFF1'}!important;border-color:{'#059669' if DARK else '#80EDB3'}!important;color:{'#34D399' if DARK else '#00885A'}!important;}}
+.pill-red{{background:{'#0F172A' if DARK else '#FFECEC'}!important;border-color:{'#DC2626' if DARK else '#FFB4C1'}!important;color:{'#F87171' if DARK else '#D9043D'}!important;}}
 .icon-box{{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:48px;}}
-.icon-blue{{background:{'#0F172A' if DARK else '#EEF2FF'}!important;}}
-.icon-green{{background:{'#0F172A' if DARK else '#F5F3FF'}!important;}}
-.icon-red{{background:{'#0F172A' if DARK else '#FFFDBF'}!important;}}
+.icon-blue{{background:{'#0F172A' if DARK else '#D4EDFF'}!important;}}
+.icon-green{{background:{'#0F172A' if DARK else '#CFF9E4'}!important;}}
+.icon-red{{background:{'#0F172A' if DARK else '#FFDDE2'}!important;}}
 .feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;color:{TEXT}!important;}}
 .feature-text{{font-size:19px;line-height:1.45;color:{TEXT if DARK else '#475569'}!important;}}
 .steps-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1260px;margin:0 auto;}}
-.step-card{{border:1px solid {BORDER};border-radius:20px;padding:38px 24px;text-align:center;background:{CARD_GRADIENT}!important;box-shadow:0 12px 34px rgba(15,23,42,.06)!important;}}
+.step-card{{border:1px solid {BORDER};border-radius:18px;padding:38px 24px;text-align:center;background:{CARD}!important;}}
 .step-num{{color:{BLUE}!important;font-size:46px;font-weight:950;margin-bottom:14px;}}
 .step-title{{font-size:21px;font-weight:950;margin-bottom:14px;color:{TEXT}!important;}}
 .step-text{{font-size:18px;line-height:1.55;color:{MUTED}!important;}}
-.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;background:{GRADIENT}!important;box-shadow:0 20px 55px rgba(99,103,255,.28)!important;}}
+.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;}}
 .auth-title{{text-align:center;padding:34px 0 20px;}}
 .auth-title h1{{font-size:32px;margin:28px 0 6px;color:{TEXT}!important;}}
 .auth-title p{{font-size:18px;color:{MUTED}!important;}}
@@ -272,14 +257,14 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .auth-link{{text-align:center;font-size:17px;}}
 .auth-link b{{color:{BLUE}!important;}}
 .page-head{{display:flex;align-items:center;gap:16px;padding:26px 34px 18px;}}
-.page-icon{{width:50px;height:50px;background:#EEF2FF;color:{BLUE}!important;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;}}
+.page-icon{{width:50px;height:50px;background:#DFF3FF;color:{BLUE}!important;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;}}
 .page-title{{font-size:31px;font-weight:950;}}
 .page-sub{{font-size:18px;margin-top:4px;color:{MUTED}!important;}}
 .card-heading{{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:950;margin-bottom:22px;}}
-.badge-num{{width:30px;height:30px;background:#EEF2FF;color:{BLUE}!important;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:950;}}
+.badge-num{{width:30px;height:30px;background:#DFF3FF;color:{BLUE}!important;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:950;}}
 .result-high{{background:{RESULT_HIGH_BG};border:1px solid {RESULT_HIGH_BORDER};color:{RESULT_HIGH_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
 .result-low{{background:{RESULT_LOW_BG};border:1px solid {RESULT_LOW_BORDER};color:{RESULT_LOW_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
-.param-card{{background:{CARD_GRADIENT}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.05)!important;}}
+.param-card{{background:{CARD}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;}}
 .param-label{{color:{MUTED}!important;font-size:12px;font-weight:800;text-transform:uppercase;}}
 .param-value{{color:{TEXT}!important;font-size:23px;font-weight:950;}}
 .footer{{border-top:1px solid {BORDER};padding:28px 22px;display:flex;justify-content:space-between;color:{MUTED}!important;}}
@@ -287,27 +272,17 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 @media(max-width:900px){{.hero-title{{font-size:55px;}}.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}.form-row{{grid-template-columns:1fr;}}}}
 
 /* Strong visibility fixes for dark mode */
-.stMarkdown, .stMarkdown *, .page-title, .card-heading, .section-title, .auth-title h1, .param-value, div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {{ color: {TEXT} !important; }}
-.page-sub, .section-sub, .hero-sub, .step-text, .stat-label, .auth-title p, .param-label {{ color: {MUTED} !important; }}
-.stDataFrame, .stDataFrame *, [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * {{ color: {TEXT} !important; font-weight:700!important; }}
-.logo-square{{width:42px;height:42px;border-radius:12px;background:{GRADIENT};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}}
-.whatsapp-card{{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}}
-.whatsapp-card:hover{{filter:brightness(.96);transform:translateY(-1px);}}
-
-/* Dark mode number input +/- visibility */
-button[data-testid="stNumberInputStepUp"],
-button[data-testid="stNumberInputStepDown"] {{
-    background: {'#334155' if DARK else '#E2E8F0'} !important;
-    color: {'#FFFFFF' if DARK else '#0F172A'} !important;
-    border: 1px solid {BORDER} !important;
-}}
-button[data-testid="stNumberInputStepUp"] svg,
-button[data-testid="stNumberInputStepDown"] svg {{
-    fill: {'#FFFFFF' if DARK else '#0F172A'} !important;
-    color: {'#FFFFFF' if DARK else '#0F172A'} !important;
-}}
-.sb-avatar {{ background:#EEF2FF!important;color:{BLUE}!important; }}
-
+.stMarkdown, .stMarkdown *, .page-title, .page-sub, .card-heading, .section-title, .section-sub,
+.auth-title h1, .auth-title p, .param-value, .param-label, div[data-testid="stMetricValue"],
+div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {
+    color: {TEXT} !important;
+}
+.page-sub, .section-sub, .hero-sub, .step-text, .stat-label { color: {MUTED} !important; }
+.stDataFrame, .stDataFrame * { color: {TEXT} !important; }
+[data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * { color: {TEXT} !important; font-weight:700!important; }
+.logo-square{width:42px;height:42px;border-radius:12px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}
+.whatsapp-card{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}
+.whatsapp-card:hover{filter:brightness(.96);transform:translateY(-1px);}
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
@@ -428,55 +403,24 @@ def save_pdf_to_reports_folder(pdf_bytes, name):
     return str(file_path.resolve())
 
 
-
 def create_pdf_chart_image(patient_data):
     labels = ['Glucose', 'BMI', 'Insulin', 'BP', 'Age']
     values = [patient_data['Glucose'], patient_data['BMI'], patient_data['Insulin'], patient_data['BloodPressure'], patient_data['Age']]
-    colors = ['#6367FF', '#8494FF', '#C9BEFF', '#FFFDBF', '#4F46E5']
-    fig, ax = plt.subplots(figsize=(7.4, 3.15), dpi=190)
-    fig.patch.set_facecolor('#FFFFFF')
-    ax.set_facecolor('#FFFFFF')
-    bars = ax.bar(labels, values, color=colors, width=0.58, edgecolor='none')
-    ax.set_title('Key Clinical Parameter Overview', fontsize=13, fontweight='bold', pad=14, color='#0F172A')
-    ax.set_ylabel('Recorded value', fontsize=9, color='#475569')
-    ax.spines[['top', 'right', 'left']].set_visible(False)
-    ax.spines['bottom'].set_color('#CBD5E1')
-    ax.tick_params(axis='x', labelsize=8, colors='#334155')
-    ax.tick_params(axis='y', labelsize=8, colors='#64748B', length=0)
-    ax.grid(axis='y', alpha=0.20, color='#94A3B8')
-    ax.set_axisbelow(True)
+    fig, ax = plt.subplots(figsize=(7.2, 3.0), dpi=160)
+    bars = ax.bar(labels, values)
+    ax.set_title('Clinical Parameter Overview', fontsize=13, fontweight='bold')
+    ax.set_ylabel('Value')
+    ax.spines[['top', 'right']].set_visible(False)
+    ax.grid(axis='y', alpha=0.25)
     for bar, value in zip(bars, values):
-        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(values)*0.025, str(value), ha='center', va='bottom', fontsize=8.5, fontweight='bold', color='#0F172A')
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height(), str(value), ha='center', va='bottom', fontsize=9, fontweight='bold')
     plt.tight_layout()
     img = BytesIO()
-    fig.savefig(img, format='png', bbox_inches='tight', facecolor='white')
+    fig.savefig(img, format='png', bbox_inches='tight', transparent=False)
     plt.close(fig)
     img.seek(0)
     return img
 
-
-def create_risk_gauge_image(confidence, is_high):
-    fig, ax = plt.subplots(figsize=(4.8, 2.45), dpi=190, subplot_kw={'projection': 'polar'})
-    fig.patch.set_facecolor('#FFFFFF')
-    ax.set_facecolor('#FFFFFF')
-    ax.set_theta_offset(3.14159)
-    ax.set_theta_direction(-1)
-    ax.set_ylim(0, 1)
-    ax.axis('off')
-    # Background arc
-    theta = [i * 3.14159 / 180 for i in range(0, 181)]
-    ax.plot(theta, [0.72]*len(theta), color='#E2E8F0', linewidth=22, solid_capstyle='round')
-    val = max(0, min(float(confidence), 100))
-    theta_val = [i * 3.14159 / 180 for i in range(0, int(180*val/100)+1)]
-    color = '#EF4444' if is_high else '#6367FF'
-    ax.plot(theta_val, [0.72]*len(theta_val), color=color, linewidth=22, solid_capstyle='round')
-    ax.text(3.14159/2, 0.30, f'{val:.1f}%', ha='center', va='center', fontsize=24, fontweight='bold', color='#0F172A')
-    ax.text(3.14159/2, 0.10, 'Model confidence', ha='center', va='center', fontsize=9, color='#64748B')
-    img = BytesIO()
-    fig.savefig(img, format='png', bbox_inches='tight', facecolor='white')
-    plt.close(fig)
-    img.seek(0)
-    return img
 
 def whatsapp_pdf_sender(phone, pdf_path, caption):
     """
@@ -513,183 +457,109 @@ def whatsapp_pdf_sender(phone, pdf_path, caption):
         return False, f'Could not automate WhatsApp PDF attach: {e}'
 
 
-
 def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
-
-    # Professional healthcare palette
+    primary = (0.06, 0.46, 0.43)   # teal
     navy = (0.05, 0.10, 0.20)
-    royal = rgb('#6367FF')
-    teal = rgb('#8494FF')
-    purple = rgb('#C9BEFF')
-    slate = (0.06, 0.09, 0.16)
-    muted = (0.39, 0.45, 0.55)
-    soft = (0.96, 0.98, 1.00)
-    line = (0.84, 0.88, 0.94)
-    high = 'High' in result
+    light_teal = (0.91, 0.99, 0.97)
+    soft_gray = (0.96, 0.98, 0.99)
+    dark_text = (0.06, 0.09, 0.16)
 
-    def rgb(hex_color):
-        hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16)/255 for i in (0, 2, 4))
+    def draw_round_rect(x, y, w, h, fill, stroke=(0.85, 0.90, 0.94), radius=12):
+        pdf.setFillColorRGB(*fill)
+        pdf.setStrokeColorRGB(*stroke)
+        pdf.roundRect(x, y, w, h, radius, fill=True, stroke=True)
 
-    def setc(c):
-        pdf.setFillColorRGB(*c)
-
-    def stroke(c):
-        pdf.setStrokeColorRGB(*c)
-
-    def rr(x, y, w, h, fill, border=line, r=14, sw=0.8):
-        setc(fill); stroke(border); pdf.setLineWidth(sw)
-        pdf.roundRect(x, y, w, h, r, fill=True, stroke=True)
-
-    def label_value(x, y, label, value):
-        pdf.setFont('Helvetica', 8)
-        setc(muted)
-        pdf.drawString(x, y + 14, label)
-        pdf.setFont('Helvetica-Bold', 11)
-        setc(slate)
-        pdf.drawRightString(x + 205, y + 14, str(value))
-
-    # ---------------- PAGE BACKGROUND + HEADER ----------------
-    setc((1, 1, 1))
-    pdf.rect(0, 0, width, height, fill=True, stroke=False)
-    setc(navy)
-    pdf.rect(0, height - 132, width, 132, fill=True, stroke=False)
-    setc(royal)
-    pdf.roundRect(38, height - 92, 52, 52, 14, fill=True, stroke=False)
-    setc((1, 1, 1))
-    pdf.setFont('Helvetica-Bold', 20)
-    pdf.drawCentredString(64, height - 72, 'G')
-    pdf.setFont('Helvetica-Bold', 24)
-    pdf.drawString(110, height - 54, 'GlucoTrack Clinical Report')
-    pdf.setFont('Helvetica', 10.5)
-    setc((0.77, 0.86, 0.96))
-    pdf.drawString(110, height - 76, 'Diabetes Risk Assessment  |  Health Analytics  |  Action Plan')
-    pdf.setFont('Helvetica', 9)
-    pdf.drawString(110, height - 96, f'Generated on: {pred_time}')
-
-    # Small status chip
-    chip_fill = rgb('#FEE2E2') if high else rgb('#D1FAE5')
-    chip_text = rgb('#B91C1C') if high else rgb('#047857')
-    rr(width - 190, height - 88, 145, 34, chip_fill, chip_fill, r=17, sw=0)
-    pdf.setFont('Helvetica-Bold', 10)
-    setc(chip_text)
-    pdf.drawCentredString(width - 117, height - 67, 'HIGH RISK' if high else 'LOW RISK')
-
-    # ---------------- PATIENT + RESULT CARDS ----------------
-    y = height - 170
-    rr(38, y - 80, 250, 80, soft, line, r=16)
-    pdf.setFont('Helvetica-Bold', 12)
-    setc(slate)
-    pdf.drawString(58, y - 25, 'Patient Information')
-    pdf.setFont('Helvetica', 9.5)
-    setc(muted)
-    pdf.drawString(58, y - 47, f'Name: {name}')
-    pdf.drawString(58, y - 64, f'Email: {email}')
-
-    risk_bg = rgb('#FEF2F2') if high else rgb('#ECFDF5')
-    risk_border = rgb('#FCA5A5') if high else rgb('#6EE7B7')
-    risk_text = rgb('#B91C1C') if high else rgb('#047857')
-    rr(308, y - 80, width - 346, 80, risk_bg, risk_border, r=16, sw=1.2)
-    pdf.setFont('Helvetica-Bold', 16)
-    setc(risk_text)
-    pdf.drawString(330, y - 30, result)
+    # Header
+    pdf.setFillColorRGB(*navy)
+    pdf.rect(0, height - 112, width, 112, fill=True, stroke=False)
+    pdf.setFillColorRGB(*primary)
+    pdf.roundRect(40, height - 82, 44, 44, 12, fill=True, stroke=False)
+    pdf.setFillColorRGB(1, 1, 1)
+    pdf.setFont('Helvetica-Bold', 22)
+    pdf.drawString(100, height - 52, 'GlucoTrack Health Analytics Report')
     pdf.setFont('Helvetica', 10)
-    setc(muted)
-    pdf.drawString(330, y - 52, 'Assessment outcome based on submitted clinical parameters')
+    pdf.setFillColorRGB(0.75, 0.90, 0.88)
+    pdf.drawString(100, height - 72, 'Diabetes Risk Assessment • Clinical Parameters • Health Insights')
+    pdf.drawString(100, height - 90, f'Generated on: {pred_time}')
+
+    # Patient card
+    y = height - 150
+    draw_round_rect(40, y - 70, width - 80, 70, soft_gray)
+    pdf.setFillColorRGB(*dark_text)
     pdf.setFont('Helvetica-Bold', 12)
-    setc(risk_text)
-    pdf.drawRightString(width - 58, y - 34, f'{confidence}%')
-    pdf.setFont('Helvetica', 8.5)
-    setc(muted)
-    pdf.drawRightString(width - 58, y - 52, 'confidence')
+    pdf.drawString(60, y - 22, 'PATIENT DETAILS')
+    pdf.setFont('Helvetica', 10)
+    pdf.drawString(60, y - 42, f'Name: {name}')
+    pdf.drawString(60, y - 58, f'Email: {email}')
 
-    # ---------------- KEY SUMMARY CARDS ----------------
-    y -= 115
-    pdf.setFont('Helvetica-Bold', 13)
-    setc(slate)
-    pdf.drawString(38, y, 'Quick Health Summary')
-    y -= 50
-    summary = [
-        ('Glucose', f"{patient_data['Glucose']} mg/dL", '#6367FF'),
-        ('BMI', f"{patient_data['BMI']}", '#8494FF'),
-        ('Blood Pressure', f"{patient_data['BloodPressure']} mmHg", '#C9BEFF'),
-        ('Age', f"{patient_data['Age']} years", '#4F46E5'),
-    ]
-    card_w = (width - 96) / 4
-    for i, (title, value, color_hex) in enumerate(summary):
-        x = 38 + i * (card_w + 8)
-        rr(x, y - 62, card_w, 62, (1, 1, 1), line, r=14)
-        setc(rgb(color_hex))
-        pdf.roundRect(x + 12, y - 26, 9, 26, 4, fill=True, stroke=False)
-        pdf.setFont('Helvetica', 8)
-        setc(muted)
-        pdf.drawString(x + 28, y - 20, title)
-        pdf.setFont('Helvetica-Bold', 15)
-        setc(slate)
-        pdf.drawString(x + 28, y - 43, value)
+    # Risk card
+    y -= 105
+    is_high = 'High' in result
+    if is_high:
+        bg, border, txt = (1.0, 0.94, 0.94), (0.94, 0.27, 0.27), (0.70, 0.08, 0.10)
+        risk_icon = 'HIGH RISK'
+    else:
+        bg, border, txt = (0.91, 0.99, 0.97), (0.08, 0.72, 0.65), (0.04, 0.45, 0.40)
+        risk_icon = 'LOW RISK'
+    draw_round_rect(40, y - 78, width - 80, 78, bg, border, 14)
+    pdf.setFillColorRGB(*txt)
+    pdf.setFont('Helvetica-Bold', 18)
+    pdf.drawCentredString(width / 2, y - 30, f'{risk_icon}: {result}')
+    pdf.setFont('Helvetica-Bold', 12)
+    pdf.drawCentredString(width / 2, y - 54, f'Model Confidence: {confidence}%')
 
-    # ---------------- CLINICAL PARAMETER TABLE ----------------
-    y -= 95
+    # Table
+    y -= 112
+    pdf.setFillColorRGB(*dark_text)
     pdf.setFont('Helvetica-Bold', 13)
-    setc(slate)
-    pdf.drawString(38, y, 'Clinical Measurements')
-    y -= 22
+    pdf.drawString(40, y, 'Clinical Measurements')
+    y -= 18
     items = list(patient_data.items())
-    col_w = (width - 96) / 2
+    col_w = (width - 100) / 2
     row_h = 30
     for idx, (key, value) in enumerate(items):
         col = idx % 2
         row = idx // 2
-        x = 38 + col * (col_w + 20)
+        x = 40 + col * (col_w + 20)
         yy = y - row * row_h
-        rr(x, yy - 24, col_w, 24, (1, 1, 1), line, r=7, sw=0.6)
-        label_value(x + 10, yy - 28, nice_label(key), value)
+        draw_round_rect(x, yy - 24, col_w, 24, (1, 1, 1), (0.86, 0.90, 0.94), 6)
+        pdf.setFillColorRGB(0.28, 0.35, 0.45)
+        pdf.setFont('Helvetica', 8.5)
+        pdf.drawString(x + 10, yy - 10, nice_label(key))
+        pdf.setFillColorRGB(*dark_text)
+        pdf.setFont('Helvetica-Bold', 10)
+        pdf.drawRightString(x + col_w - 10, yy - 10, str(value))
 
-    # ---------------- CHARTS ----------------
+    # Chart image
     y -= 145
+    pdf.setFillColorRGB(*dark_text)
     pdf.setFont('Helvetica-Bold', 13)
-    setc(slate)
-    pdf.drawString(38, y, 'Health Analytics')
-    rr(38, y - 190, 330, 175, (1, 1, 1), line, r=16)
-    rr(382, y - 190, width - 420, 175, (1, 1, 1), line, r=16)
+    pdf.drawString(40, y, 'Health Analytics Chart')
     chart_img = create_pdf_chart_image(patient_data)
-    pdf.drawImage(ImageReader(chart_img), 48, y - 180, width=310, height=145, preserveAspectRatio=True, mask='auto')
-    gauge_img = create_risk_gauge_image(confidence, high)
-    pdf.drawImage(ImageReader(gauge_img), 397, y - 177, width=165, height=130, preserveAspectRatio=True, mask='auto')
-    pdf.setFont('Helvetica-Bold', 10)
-    setc(slate)
-    pdf.drawCentredString(468, y - 170, 'Risk Confidence Gauge')
+    pdf.drawImage(ImageReader(chart_img), 55, y - 175, width=485, height=155, preserveAspectRatio=True, mask='auto')
 
-    # ---------------- RECOMMENDATIONS ----------------
-    y -= 225
-    rr(38, y - 105, width - 76, 105, rgb('#F5F3FF'), rgb('#C9BEFF'), r=16)
+    # Suggestions
+    y -= 205
+    draw_round_rect(40, y - 95, width - 80, 95, light_teal, (0.65, 0.90, 0.85), 12)
+    pdf.setFillColorRGB(*dark_text)
     pdf.setFont('Helvetica-Bold', 13)
-    setc(slate)
-    pdf.drawString(58, y - 25, 'Recommended Health Action Plan')
-    pdf.setFont('Helvetica', 9.5)
-    setc((0.12, 0.20, 0.30))
-    yy = y - 47
-    for i, s in enumerate(get_suggestions(patient_data), start=1):
-        setc(royal)
-        pdf.circle(64, yy + 3, 6, fill=True, stroke=False)
-        setc((1, 1, 1))
-        pdf.setFont('Helvetica-Bold', 7)
-        pdf.drawCentredString(64, yy + 1, str(i))
-        setc((0.12, 0.20, 0.30))
-        pdf.setFont('Helvetica', 9.5)
-        pdf.drawString(78, yy, s)
-        yy -= 21
+    pdf.drawString(60, y - 22, 'Recommended Health Action Plan')
+    pdf.setFont('Helvetica', 10)
+    yy = y - 42
+    for s in get_suggestions(patient_data):
+        pdf.drawString(70, yy, u'• ' + s)
+        yy -= 16
 
-    # ---------------- FOOTER ----------------
-    stroke(line)
-    pdf.line(38, 48, width - 38, 48)
-    pdf.setFont('Helvetica-Oblique', 7.5)
-    setc((0.45, 0.50, 0.58))
-    pdf.drawCentredString(width / 2, 34, 'Disclaimer: This report is generated for educational and screening purposes only. It is not a medical diagnosis.')
-    pdf.drawCentredString(width / 2, 22, 'Please consult a qualified healthcare professional before making medical decisions.')
+    # Footer
+    pdf.setStrokeColorRGB(0.85, 0.90, 0.94)
+    pdf.line(40, 50, width - 40, 50)
+    pdf.setFillColorRGB(0.45, 0.50, 0.58)
+    pdf.setFont('Helvetica-Oblique', 8)
+    pdf.drawCentredString(width / 2, 36, 'Disclaimer: This report is for educational/screening purposes only and is not medical advice.')
+    pdf.drawCentredString(width / 2, 24, 'Please consult a qualified healthcare professional for diagnosis and treatment.')
 
     pdf.save()
     return buffer.getvalue()
@@ -699,7 +569,7 @@ def public_header():
     with col_logo:
         st.markdown(f'''
         <div style="display:flex;align-items:center;gap:12px;font-size:24px;font-weight:900;color:{TEXT};margin-top:8px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:{GRADIENT};color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">🩺</div>
+            <div style="width:36px;height:36px;border-radius:8px;background:{BLUE};color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">⌁</div>
             <div>GlucoTrack</div>
         </div>
         ''', unsafe_allow_html=True)
@@ -740,7 +610,7 @@ def dashboard_sidebar():
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
         
-    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">🩺</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
+    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">⌁</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
     
     if st.sidebar.button('👤 Edit Profile', use_container_width=True): 
         st.session_state.page = 'profile'; st.rerun()
@@ -783,8 +653,8 @@ def landing_page():
     
     st.markdown(f'''
     <section class="hero" style="padding-bottom: 20px;">
-        <div class="hero-badge">🧠 AI-POWERED HEALTH PLATFORM</div>
-        <h1 class="hero-title">🩺 Know Your <span class="hero-blue">Diabetes Risk</span></h1>
+        <div class="hero-badge">↯ AI-POWERED HEALTH PLATFORM</div>
+        <h1 class="hero-title">Know Your <span class="hero-blue">Diabetes Risk</span></h1>
         <p class="hero-sub">Predict diabetes risk in seconds using Machine Learning. Understand<br>your health. Take action early. Live better.</p>
     </section>
     ''', unsafe_allow_html=True)
@@ -803,70 +673,70 @@ def landing_page():
     <div class="stats-wrap">
         <div class="stat">
             <div class="stat-num">95%+</div>
-            <div class="stat-label">🎯 Model Accuracy</div>
+            <div class="stat-label">Model Accuracy</div>
         </div>
         <div class="stat">
             <div class="stat-num">8</div>
-            <div class="stat-label">🧪 Health Parameters</div>
+            <div class="stat-label">Health Parameters</div>
         </div>
         <div class="stat">
             <div class="stat-num">100%</div>
-            <div class="stat-label">💙 Free to Use</div>
+            <div class="stat-label">Free to Use</div>
         </div>
     </div>
     <section id="features" class="section">
-        <h2 class="section-title">✨ What GlucoTrack Does</h2>
+        <h2 class="section-title">What GlucoTrack Does</h2>
         <p class="section-sub">Three powerful features to monitor, predict, and improve your health</p>
         <div class="feature-grid">
             <div class="feature-card feature-blue">
-                <div class="pill pill-blue">🧠 MACHINE LEARNING</div>
+                <div class="pill pill-blue">MACHINE LEARNING</div>
                 <div class="icon-box icon-blue">🧠</div>
-                <div class="feature-title">🧠 ML-Based Risk Prediction</div>
+                <div class="feature-title">ML-Based Risk Prediction</div>
                 <div class="feature-text">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div>
             </div>
             <div class="feature-card feature-green">
-                <div class="pill pill-green">📊 ANALYTICS</div>
-                <div class="icon-box icon-green">📈</div>
-                <div class="feature-title">📊 Patient Health Analytics</div>
+                <div class="pill pill-green">ANALYTICS</div>
+                <div class="icon-box icon-green">⌁</div>
+                <div class="feature-title">Patient Health Analytics</div>
                 <div class="feature-text">Visualize your health data through interactive charts, glucose gauges, and BMI indicators inside a clean dashboard.</div>
             </div>
             <div class="feature-card feature-red">
-                <div class="pill pill-red">💡 PERSONALIZED</div>
-                <div class="icon-box icon-red">💙</div>
-                <div class="feature-title">💡 Health Suggestions</div>
+                <div class="pill pill-red">PERSONALIZED</div>
+                <div class="icon-box icon-red">♡</div>
+                <div class="feature-title">Health Suggestions</div>
                 <div class="feature-text">Get targeted, personalized recommendations based on your specific health values to help you take meaningful action.</div>
             </div>
         </div>
     </section>
     <section id="how-it-works" class="section">
-        <h2 class="section-title">🚀 How It Works</h2>
+        <h2 class="section-title">How It Works</h2>
         <p class="section-sub">Get your diabetes risk assessment in 4 simple steps</p>
         <div class="steps-grid">
             <div class="step-card">
                 <div class="step-num">01</div>
-                <div class="step-title">👤 Create Account</div>
+                <div class="step-title">Create Account</div>
                 <div class="step-text">Sign up with your name and email address</div>
             </div>
             <div class="step-card">
                 <div class="step-num">02</div>
-                <div class="step-title">📝 Enter Health Data</div>
+                <div class="step-title">Enter Health Data</div>
                 <div class="step-text">Fill in your clinical health values</div>
             </div>
             <div class="step-card">
                 <div class="step-num">03</div>
-                <div class="step-title">⚡ Get Prediction</div>
+                <div class="step-title">Get Prediction</div>
                 <div class="step-text">ML model calculates your diabetes risk</div>
             </div>
             <div class="step-card">
                 <div class="step-num">04</div>
-                <div class="step-title">📊 View Dashboard</div>
+                <div class="step-title">View Dashboard</div>
                 <div class="step-text">See analytics, share or download your PDF report</div>
             </div>
         </div>
     </section>
     <section class="section" style="padding-bottom:20px;">
-        <div class="bottom-cta">
-            <div style="font-size:46px;margin-bottom:18px;">💙</div>
+        <div class="bottom-cta" style="background:{BLUE};">
+            <div style="font-size:42px;margin-bottom:18px;">♢</div>
             <h2 style="font-size:38px;font-weight:950;margin:0 0 18px;color:white !important;">Take Control of Your Health</h2>
             <p style="font-size:21px;line-height:1.5;margin-bottom:34px;color:white !important;">Join thousands who use GlucoTrack to monitor their diabetes risk. It's free, fast, and takes less than 2 minutes.</p>
         </div>
@@ -884,7 +754,7 @@ def landing_page():
             
     st.markdown('''
     <div class="footer">
-        <div class="footer-logo">🩺 GlucoTrack</div>
+        <div class="footer-logo">⌁ GlucoTrack</div>
         <div>For educational purposes only. Always consult a medical professional.</div>
     </div>
     ''', unsafe_allow_html=True)
@@ -1102,7 +972,7 @@ def dashboard_page():
         
     st.write('')
     st.subheader('📈 Patient Health Analytics')
-    metrics = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']; values = [patient_data[m] for m in metrics]; fig = go.Figure(); fig.add_trace(go.Bar(x=metrics, y=values, marker_color=[BLUE, SECONDARY, ACCENT, SOFT, BLUE_DARK], text=values, textposition='outside')); fig.update_layout(template=PLOT_TEMPLATE, height=390, title='Health Parameter Overview'); st.plotly_chart(fig, use_container_width=True)
+    metrics = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']; values = [patient_data[m] for m in metrics]; fig = go.Figure(); fig.add_trace(go.Bar(x=metrics, y=values, marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], text=values, textposition='outside')); fig.update_layout(template=PLOT_TEMPLATE, height=390, title='Health Parameter Overview'); st.plotly_chart(fig, use_container_width=True)
     
     suggestions = get_suggestions(patient_data); items = ''.join([f'<li>{s}</li>' for s in suggestions]); components.html(f'<div style="background:{BOX_SUGGESTION_BG};padding:28px 34px;border-radius:20px;border:1px solid {BORDER};font-family:Inter,Arial;"><h2 style="color:{BOX_SUGGESTION_TITLE};margin:0 0 16px;font-weight:900;">💡 Health Suggestions</h2><ul style="color:{BOX_SUGGESTION_TEXT};font-size:16px;line-height:1.8;font-weight:600;">{items}</ul></div>', height=230)
     
@@ -1237,7 +1107,7 @@ def doctor_page():
                 fig.add_trace(go.Bar(
                     x=metrics_list, 
                     y=values_list, 
-                    marker_color=[BLUE, SECONDARY, ACCENT, SOFT, BLUE_DARK], 
+                    marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], 
                     text=values_list, 
                     textposition='outside'
                 ))
