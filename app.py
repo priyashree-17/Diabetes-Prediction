@@ -129,8 +129,12 @@ if DARK:
     MUTED = '#CBD5E1'
     BORDER = '#334155'
     INPUT = '#172033'
-    BLUE = '#14B8A6'          # teal primary
-    BLUE_DARK = '#0F766E'
+    BLUE = '#2563EB'          # royal blue primary
+    BLUE_DARK = '#1D4ED8'
+    TEAL = '#0D9488'
+    PURPLE = '#7C3AED'
+    GRADIENT = 'linear-gradient(135deg, #2563EB 0%, #0D9488 55%, #7C3AED 100%)'
+    CARD_GRADIENT = 'linear-gradient(135deg, rgba(37,99,235,0.18), rgba(13,148,136,0.12), rgba(124,58,237,0.12))'
     SIDEBAR = '#0F172A'
     PLOT_TEMPLATE = 'plotly_dark'
     RESULT_HIGH_BG = '#3F1216'
@@ -149,8 +153,12 @@ else:
     MUTED = '#475569'
     BORDER = '#D8E3EA'
     INPUT = '#FFFFFF'
-    BLUE = '#0F766E'          # professional teal
-    BLUE_DARK = '#115E59'
+    BLUE = '#2563EB'          # royal blue primary
+    BLUE_DARK = '#1D4ED8'
+    TEAL = '#0D9488'
+    PURPLE = '#7C3AED'
+    GRADIENT = 'linear-gradient(135deg, #2563EB 0%, #0D9488 55%, #7C3AED 100%)'
+    CARD_GRADIENT = 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(13,148,136,0.08), rgba(124,58,237,0.06))'
     SIDEBAR = '#FFFFFF'
     PLOT_TEMPLATE = 'plotly_white'
     RESULT_HIGH_BG = '#FFF1F2'
@@ -192,18 +200,18 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
 }}
 
 /* Button styling */
-.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{BLUE}!important;color:white!important;border:none!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;box-shadow:0 12px 24px rgba(22,166,232,.20)!important;}}
-.stButton>button[kind="primary"]:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{background:{BLUE_DARK}!important;transform:translateY(-1px);}}
+.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{GRADIENT}!important;color:white!important;border:none!important;border-radius:16px!important;font-weight:850!important;font-size:16px!important;min-height:54px!important;box-shadow:0 14px 32px rgba(37,99,235,.25)!important;transition:all .22s ease!important;}}
+.stButton>button[kind="primary"]:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{filter:brightness(1.04)!important;transform:translateY(-2px);box-shadow:0 18px 40px rgba(13,148,136,.35)!important;}}
 .stButton>button[kind="secondary"]{{background:transparent!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;}}
 .stButton>button[kind="secondary"]:hover{{background:{BORDER}!important;color:{TEXT}!important;transform:translateY(-1px);}}
-button *{{color:white!important;}}
+button[kind="primary"] *{{color:white!important;}}
 .stButton>button[kind="secondary"] *{{color:{TEXT}!important;}}
 
 section[data-testid="stSidebar"]{{background:{SIDEBAR}!important;border-right:1px solid {BORDER};}}
 section[data-testid="stSidebar"]>div{{background:transparent!important;padding-top:0!important;}}
 section[data-testid="stSidebar"] *{{color:{TEXT}!important;}}
 .sb-header{{height:82px;display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid {BORDER};}}
-.sb-logo-box{{width:40px;height:40px;background:{BLUE};color:white!important;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:21px;}}
+.sb-logo-box{{width:44px;height:44px;background:{GRADIENT};color:white!important;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:21px;box-shadow:0 8px 24px rgba(37,99,235,.35);}}
 .sb-brand{{font-size:22px;font-weight:900;color:{TEXT}!important;}}
 .sb-profile{{display:flex;align-items:center;gap:14px;padding:22px 18px;border-bottom:1px solid {BORDER};}}
 .sb-avatar{{width:50px;height:50px;border-radius:16px;background:#E0F2FE;color:{BLUE}!important;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;}}
@@ -215,9 +223,9 @@ div[data-testid="stRadio"] label:hover{{background:#EEF8FF!important;}}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:none!important;}}
 
 .hero{{padding:78px 20px 50px;text-align:center;max-width:1050px;margin:0 auto;}}
-.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid {'#0284C7' if DARK else '#8BD6FF'};background:{'#0C4A6E' if DARK else '#EAF7FF'};color:{'#38BDF8' if DARK else '#006BAA'}!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
+.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(37,99,235,.35);background:{CARD_GRADIENT};color:{BLUE}!important;border-radius:999px;padding:12px 22px;letter-spacing:2.5px;font-weight:950;font-size:14px;box-shadow:0 8px 25px rgba(37,99,235,.12);}}
 .hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;color:{TEXT}!important;}}
-.hero-blue{{color:{BLUE}!important;display:block;}}
+.hero-blue{{background:{GRADIENT};-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;}}
 .hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;color:{MUTED}!important;}}
 
 .stats-wrap{{max-width:1120px;margin:42px auto 90px;border-radius:26px;border:1px solid {BORDER};display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,.03);background:{CARD}!important;}}
@@ -229,10 +237,11 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .section-title{{text-align:center;font-size:38px;font-weight:950;margin-bottom:16px;color:{TEXT}!important;}}
 .section-sub{{text-align:center;font-size:22px;margin-bottom:60px;color:{MUTED}!important;}}
 .feature-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1260px;margin:0 auto;}}
-.feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;}}
-.feature-blue{{background:{'#1E293B' if DARK else '#E8F5FF'}!important;}}
-.feature-green{{background:{'#1E293B' if DARK else '#E8FFF1'}!important;}}
-.feature-red{{background:{'#1E293B' if DARK else '#FFECEC'}!important;}}
+.feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;box-shadow:0 18px 45px rgba(15,23,42,.08)!important;transition:all .22s ease;}}
+.feature-card:hover{{transform:translateY(-6px);box-shadow:0 24px 60px rgba(37,99,235,.16)!important;}}
+.feature-blue{{background:linear-gradient(135deg, {'#172554' if DARK else '#EFF6FF'}, {'#ECFEFF' if not DARK else '#0F172A'})!important;}}
+.feature-green{{background:linear-gradient(135deg, {'#064E3B' if DARK else '#ECFDF5'}, {'#EFF6FF' if not DARK else '#0F172A'})!important;}}
+.feature-red{{background:linear-gradient(135deg, {'#581C87' if DARK else '#F5F3FF'}, {'#FFF1F2' if not DARK else '#0F172A'})!important;}}
 .pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;border:1px solid transparent;}}
 .pill-blue{{background:{'#0F172A' if DARK else '#E8F5FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
 .pill-green{{background:{'#0F172A' if DARK else '#E8FFF1'}!important;border-color:{'#059669' if DARK else '#80EDB3'}!important;color:{'#34D399' if DARK else '#00885A'}!important;}}
@@ -244,11 +253,11 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;color:{TEXT}!important;}}
 .feature-text{{font-size:19px;line-height:1.45;color:{TEXT if DARK else '#475569'}!important;}}
 .steps-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1260px;margin:0 auto;}}
-.step-card{{border:1px solid {BORDER};border-radius:18px;padding:38px 24px;text-align:center;background:{CARD}!important;}}
+.step-card{{border:1px solid {BORDER};border-radius:20px;padding:38px 24px;text-align:center;background:{CARD_GRADIENT}!important;box-shadow:0 12px 34px rgba(15,23,42,.06)!important;}}
 .step-num{{color:{BLUE}!important;font-size:46px;font-weight:950;margin-bottom:14px;}}
 .step-title{{font-size:21px;font-weight:950;margin-bottom:14px;color:{TEXT}!important;}}
 .step-text{{font-size:18px;line-height:1.55;color:{MUTED}!important;}}
-.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;}}
+.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;background:{GRADIENT}!important;box-shadow:0 20px 55px rgba(37,99,235,.28)!important;}}
 .auth-title{{text-align:center;padding:34px 0 20px;}}
 .auth-title h1{{font-size:32px;margin:28px 0 6px;color:{TEXT}!important;}}
 .auth-title p{{font-size:18px;color:{MUTED}!important;}}
@@ -264,7 +273,7 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .badge-num{{width:30px;height:30px;background:#DFF3FF;color:{BLUE}!important;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:950;}}
 .result-high{{background:{RESULT_HIGH_BG};border:1px solid {RESULT_HIGH_BORDER};color:{RESULT_HIGH_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
 .result-low{{background:{RESULT_LOW_BG};border:1px solid {RESULT_LOW_BORDER};color:{RESULT_LOW_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
-.param-card{{background:{CARD}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;}}
+.param-card{{background:{CARD_GRADIENT}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.05)!important;}}
 .param-label{{color:{MUTED}!important;font-size:12px;font-weight:800;text-transform:uppercase;}}
 .param-value{{color:{TEXT}!important;font-size:23px;font-weight:950;}}
 .footer{{border-top:1px solid {BORDER};padding:28px 22px;display:flex;justify-content:space-between;color:{MUTED}!important;}}
@@ -278,6 +287,21 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .logo-square{{width:42px;height:42px;border-radius:12px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}}
 .whatsapp-card{{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}}
 .whatsapp-card:hover{{filter:brightness(.96);transform:translateY(-1px);}}
+
+/* Dark mode number input +/- visibility */
+button[data-testid="stNumberInputStepUp"],
+button[data-testid="stNumberInputStepDown"] {{
+    background: {'#334155' if DARK else '#E2E8F0'} !important;
+    color: {'#FFFFFF' if DARK else '#0F172A'} !important;
+    border: 1px solid {BORDER} !important;
+}}
+button[data-testid="stNumberInputStepUp"] svg,
+button[data-testid="stNumberInputStepDown"] svg {{
+    fill: {'#FFFFFF' if DARK else '#0F172A'} !important;
+    color: {'#FFFFFF' if DARK else '#0F172A'} !important;
+}}
+.sb-avatar {{ background:#DFF3FF!important;color:{BLUE}!important; }}
+
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
@@ -669,7 +693,7 @@ def public_header():
     with col_logo:
         st.markdown(f'''
         <div style="display:flex;align-items:center;gap:12px;font-size:24px;font-weight:900;color:{TEXT};margin-top:8px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:{BLUE};color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">⌁</div>
+            <div style="width:36px;height:36px;border-radius:8px;background:{GRADIENT};color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">⌁</div>
             <div>GlucoTrack</div>
         </div>
         ''', unsafe_allow_html=True)
@@ -753,8 +777,8 @@ def landing_page():
     
     st.markdown(f'''
     <section class="hero" style="padding-bottom: 20px;">
-        <div class="hero-badge">↯ AI-POWERED HEALTH PLATFORM</div>
-        <h1 class="hero-title">Know Your <span class="hero-blue">Diabetes Risk</span></h1>
+        <div class="hero-badge">🧠 AI-POWERED HEALTH PLATFORM</div>
+        <h1 class="hero-title">🩺 Know Your <span class="hero-blue">Diabetes Risk</span></h1>
         <p class="hero-sub">Predict diabetes risk in seconds using Machine Learning. Understand<br>your health. Take action early. Live better.</p>
     </section>
     ''', unsafe_allow_html=True)
@@ -773,70 +797,70 @@ def landing_page():
     <div class="stats-wrap">
         <div class="stat">
             <div class="stat-num">95%+</div>
-            <div class="stat-label">Model Accuracy</div>
+            <div class="stat-label">🎯 Model Accuracy</div>
         </div>
         <div class="stat">
             <div class="stat-num">8</div>
-            <div class="stat-label">Health Parameters</div>
+            <div class="stat-label">🧪 Health Parameters</div>
         </div>
         <div class="stat">
             <div class="stat-num">100%</div>
-            <div class="stat-label">Free to Use</div>
+            <div class="stat-label">💙 Free to Use</div>
         </div>
     </div>
     <section id="features" class="section">
-        <h2 class="section-title">What GlucoTrack Does</h2>
+        <h2 class="section-title">✨ What GlucoTrack Does</h2>
         <p class="section-sub">Three powerful features to monitor, predict, and improve your health</p>
         <div class="feature-grid">
             <div class="feature-card feature-blue">
-                <div class="pill pill-blue">MACHINE LEARNING</div>
+                <div class="pill pill-blue">🧠 MACHINE LEARNING</div>
                 <div class="icon-box icon-blue">🧠</div>
-                <div class="feature-title">ML-Based Risk Prediction</div>
+                <div class="feature-title">🧠 ML-Based Risk Prediction</div>
                 <div class="feature-text">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div>
             </div>
             <div class="feature-card feature-green">
-                <div class="pill pill-green">ANALYTICS</div>
-                <div class="icon-box icon-green">⌁</div>
-                <div class="feature-title">Patient Health Analytics</div>
+                <div class="pill pill-green">📊 ANALYTICS</div>
+                <div class="icon-box icon-green">📈</div>
+                <div class="feature-title">📊 Patient Health Analytics</div>
                 <div class="feature-text">Visualize your health data through interactive charts, glucose gauges, and BMI indicators inside a clean dashboard.</div>
             </div>
             <div class="feature-card feature-red">
-                <div class="pill pill-red">PERSONALIZED</div>
-                <div class="icon-box icon-red">♡</div>
-                <div class="feature-title">Health Suggestions</div>
+                <div class="pill pill-red">💡 PERSONALIZED</div>
+                <div class="icon-box icon-red">💙</div>
+                <div class="feature-title">💡 Health Suggestions</div>
                 <div class="feature-text">Get targeted, personalized recommendations based on your specific health values to help you take meaningful action.</div>
             </div>
         </div>
     </section>
     <section id="how-it-works" class="section">
-        <h2 class="section-title">How It Works</h2>
+        <h2 class="section-title">🚀 How It Works</h2>
         <p class="section-sub">Get your diabetes risk assessment in 4 simple steps</p>
         <div class="steps-grid">
             <div class="step-card">
                 <div class="step-num">01</div>
-                <div class="step-title">Create Account</div>
+                <div class="step-title">👤 Create Account</div>
                 <div class="step-text">Sign up with your name and email address</div>
             </div>
             <div class="step-card">
                 <div class="step-num">02</div>
-                <div class="step-title">Enter Health Data</div>
+                <div class="step-title">📝 Enter Health Data</div>
                 <div class="step-text">Fill in your clinical health values</div>
             </div>
             <div class="step-card">
                 <div class="step-num">03</div>
-                <div class="step-title">Get Prediction</div>
+                <div class="step-title">⚡ Get Prediction</div>
                 <div class="step-text">ML model calculates your diabetes risk</div>
             </div>
             <div class="step-card">
                 <div class="step-num">04</div>
-                <div class="step-title">View Dashboard</div>
+                <div class="step-title">📊 View Dashboard</div>
                 <div class="step-text">See analytics, share or download your PDF report</div>
             </div>
         </div>
     </section>
     <section class="section" style="padding-bottom:20px;">
-        <div class="bottom-cta" style="background:{BLUE};">
-            <div style="font-size:42px;margin-bottom:18px;">♢</div>
+        <div class="bottom-cta">
+            <div style="font-size:46px;margin-bottom:18px;">💙</div>
             <h2 style="font-size:38px;font-weight:950;margin:0 0 18px;color:white !important;">Take Control of Your Health</h2>
             <p style="font-size:21px;line-height:1.5;margin-bottom:34px;color:white !important;">Join thousands who use GlucoTrack to monitor their diabetes risk. It's free, fast, and takes less than 2 minutes.</p>
         </div>
