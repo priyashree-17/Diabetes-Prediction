@@ -124,45 +124,51 @@ DARK = st.session_state.dark_mode
 
 # Professional medical theme
 if DARK:
-    BG = '#0B1120'
-    CARD = '#111827'
-    TEXT = '#F9FAFB'
+    BG = '#0F172A'
+    CARD = '#1E293B'
+    TEXT = '#F8FAFC'
     MUTED = '#CBD5E1'
     BORDER = '#334155'
-    INPUT = '#172033'
-    BLUE = '#14B8A6'          # teal primary
-    BLUE_DARK = '#0F766E'
-    SIDEBAR = '#0F172A'
+    INPUT = '#1E293B'
+    BLUE = '#6367FF'
+    BLUE_DARK = '#8494FF'
+    ACCENT = '#C9BEFF'
+    SOFT = '#FFFDBF'
+    PINK = '#FF69B4'
+    SIDEBAR = '#111827'
     PLOT_TEMPLATE = 'plotly_dark'
-    RESULT_HIGH_BG = '#3F1216'
-    RESULT_HIGH_BORDER = '#EF4444'
+    RESULT_HIGH_BG = '#450A0A'
+    RESULT_HIGH_BORDER = '#DC2626'
     RESULT_HIGH_TEXT = '#FECACA'
-    RESULT_LOW_BG = '#052E2B'
-    RESULT_LOW_BORDER = '#14B8A6'
-    RESULT_LOW_TEXT = '#CCFBF1'
-    BOX_SUGGESTION_BG = '#111827'
-    BOX_SUGGESTION_TITLE = '#F9FAFB'
-    BOX_SUGGESTION_TEXT = '#99F6E4'
+    RESULT_LOW_BG = '#052E16'
+    RESULT_LOW_BORDER = '#22C55E'
+    RESULT_LOW_TEXT = '#BBF7D0'
+    BOX_SUGGESTION_BG = '#1E293B'
+    BOX_SUGGESTION_TITLE = '#F8FAFC'
+    BOX_SUGGESTION_TEXT = '#C9BEFF'
 else:
-    BG = '#F8FAFC'
+    BG = '#F8FAFF'
     CARD = '#FFFFFF'
     TEXT = '#0F172A'
-    MUTED = '#475569'
-    BORDER = '#D8E3EA'
+    MUTED = '#64748B'
+    BORDER = '#E2E8F0'
     INPUT = '#FFFFFF'
-    BLUE = '#0F766E'          # professional teal
-    BLUE_DARK = '#115E59'
+    BLUE = '#6367FF'
+    BLUE_DARK = '#8494FF'
+    ACCENT = '#C9BEFF'
+    SOFT = '#FFFDBF'
+    PINK = '#FF69B4'
     SIDEBAR = '#FFFFFF'
     PLOT_TEMPLATE = 'plotly_white'
-    RESULT_HIGH_BG = '#FFF1F2'
-    RESULT_HIGH_BORDER = '#FB7185'
-    RESULT_HIGH_TEXT = '#BE123C'
-    RESULT_LOW_BG = '#F0FDFA'
-    RESULT_LOW_BORDER = '#5EEAD4'
-    RESULT_LOW_TEXT = '#0F766E'
-    BOX_SUGGESTION_BG = '#ECFDF5'
+    RESULT_HIGH_BG = '#FEF2F2'
+    RESULT_HIGH_BORDER = '#F87171'
+    RESULT_HIGH_TEXT = '#B91C1C'
+    RESULT_LOW_BG = '#F0FDF4'
+    RESULT_LOW_BORDER = '#22C55E'
+    RESULT_LOW_TEXT = '#166534'
+    BOX_SUGGESTION_BG = '#F4F0FF'
     BOX_SUGGESTION_TITLE = '#0F172A'
-    BOX_SUGGESTION_TEXT = '#0F766E'
+    BOX_SUGGESTION_TEXT = '#6367FF'
 
 css = f'''
 <style>
@@ -193,7 +199,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
 }}
 
 /* Button styling */
-.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{BLUE}!important;color:white!important;border:none!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;box-shadow:0 12px 24px rgba(22,166,232,.20)!important;}}
+.stButton>button[kind="primary"],.stDownloadButton>button,.stFormSubmitButton>button{{background:{BLUE}!important;color:white!important;border:none!important;border-radius:16px!important;font-weight:800!important;font-size:16px!important;min-height:54px!important;box-shadow:0 10px 24px rgba(99,103,255,.25)!important;}}
 .stButton>button[kind="primary"]:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{{background:{BLUE_DARK}!important;transform:translateY(-1px);}}
 .stButton>button[kind="secondary"]{{background:transparent!important;color:{TEXT}!important;border:1px solid {BORDER}!important;border-radius:14px!important;font-weight:800!important;font-size:16px!important;min-height:52px!important;}}
 .stButton>button[kind="secondary"]:hover{{background:{BORDER}!important;color:{TEXT}!important;transform:translateY(-1px);}}
@@ -216,7 +222,7 @@ div[data-testid="stRadio"] label:hover{{background:#EEF8FF!important;}}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:none!important;}}
 
 .hero{{padding:78px 20px 50px;text-align:center;max-width:1050px;margin:0 auto;}}
-.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid {'#0284C7' if DARK else '#8BD6FF'};background:{'#0C4A6E' if DARK else '#EAF7FF'};color:{'#38BDF8' if DARK else '#006BAA'}!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
+.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid {ACCENT};background:{SOFT};color:{BLUE}!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
 .hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;color:{TEXT}!important;}}
 .hero-blue{{color:{BLUE}!important;display:block;}}
 .hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;color:{MUTED}!important;}}
@@ -231,17 +237,17 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .section-sub{{text-align:center;font-size:22px;margin-bottom:60px;color:{MUTED}!important;}}
 .feature-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1260px;margin:0 auto;}}
 .feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;}}
-.feature-blue{{background:{'#1E293B' if DARK else '#E8F5FF'}!important;}}
-.feature-green{{background:{'#1E293B' if DARK else '#E8FFF1'}!important;}}
-.feature-red{{background:{'#1E293B' if DARK else '#FFECEC'}!important;}}
+.feature-blue{{background:{'#252B46' if DARK else '#EEF0FF'}!important;}}
+.feature-green{{background:{'#2B2746' if DARK else '#F4F0FF'}!important;}}
+.feature-red{{background:{'#3A3550' if DARK else '#FFFDE0'}!important;}}
 .pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;border:1px solid transparent;}}
-.pill-blue{{background:{'#0F172A' if DARK else '#E8F5FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
-.pill-green{{background:{'#0F172A' if DARK else '#E8FFF1'}!important;border-color:{'#059669' if DARK else '#80EDB3'}!important;color:{'#34D399' if DARK else '#00885A'}!important;}}
-.pill-red{{background:{'#0F172A' if DARK else '#FFECEC'}!important;border-color:{'#DC2626' if DARK else '#FFB4C1'}!important;color:{'#F87171' if DARK else '#D9043D'}!important;}}
+.pill-blue{{background:{'#1E293B' if DARK else '#EEF0FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
+.pill-green{{background:{'#1E293B' if DARK else '#F4F0FF'}!important;border-color:{ACCENT}!important;color:{ACCENT if DARK else BLUE}!important;}}
+.pill-red{{background:{'#1E293B' if DARK else '#FFFDE0'}!important;border-color:{SOFT}!important;color:{PINK if DARK else '#D94695'}!important;}}
 .icon-box{{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:48px;}}
-.icon-blue{{background:{'#0F172A' if DARK else '#D4EDFF'}!important;}}
-.icon-green{{background:{'#0F172A' if DARK else '#CFF9E4'}!important;}}
-.icon-red{{background:{'#0F172A' if DARK else '#FFDDE2'}!important;}}
+.icon-blue{{background:{'#111827' if DARK else '#EEF0FF'}!important;}}
+.icon-green{{background:{'#111827' if DARK else '#F4F0FF'}!important;}}
+.icon-red{{background:{'#111827' if DARK else '#FFFDE0'}!important;}}
 .feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;color:{TEXT}!important;}}
 .feature-text{{font-size:19px;line-height:1.45;color:{TEXT if DARK else '#475569'}!important;}}
 .steps-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1260px;margin:0 auto;}}
@@ -685,19 +691,19 @@ def landing_page():
             <div class="feature-card feature-blue">
                 <div class="pill pill-blue">MACHINE LEARNING</div>
                 <div class="icon-box icon-blue">🧠</div>
-                <div class="feature-title">ML-Based Risk Prediction</div>
+                <div class="feature-title">🧠 ML-Based Risk Prediction</div>
                 <div class="feature-text">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div>
             </div>
             <div class="feature-card feature-green">
                 <div class="pill pill-green">ANALYTICS</div>
                 <div class="icon-box icon-green">⌁</div>
-                <div class="feature-title">Patient Health Analytics</div>
+                <div class="feature-title">📊 Patient Health Analytics</div>
                 <div class="feature-text">Visualize your health data through interactive charts, glucose gauges, and BMI indicators inside a clean dashboard.</div>
             </div>
             <div class="feature-card feature-red">
                 <div class="pill pill-red">PERSONALIZED</div>
                 <div class="icon-box icon-red">♡</div>
-                <div class="feature-title">Health Suggestions</div>
+                <div class="feature-title">💡 Health Suggestions</div>
                 <div class="feature-text">Get targeted, personalized recommendations based on your specific health values to help you take meaningful action.</div>
             </div>
         </div>
@@ -708,30 +714,30 @@ def landing_page():
         <div class="steps-grid">
             <div class="step-card">
                 <div class="step-num">01</div>
-                <div class="step-title">Create Account</div>
+                <div class="step-title">👤 Create Account</div>
                 <div class="step-text">Sign up with your name and email address</div>
             </div>
             <div class="step-card">
                 <div class="step-num">02</div>
-                <div class="step-title">Enter Health Data</div>
+                <div class="step-title">📝 Enter Health Data</div>
                 <div class="step-text">Fill in your clinical health values</div>
             </div>
             <div class="step-card">
                 <div class="step-num">03</div>
-                <div class="step-title">Get Prediction</div>
+                <div class="step-title">⚡ Get Prediction</div>
                 <div class="step-text">ML model calculates your diabetes risk</div>
             </div>
             <div class="step-card">
                 <div class="step-num">04</div>
-                <div class="step-title">View Dashboard</div>
+                <div class="step-title">📊 View Dashboard</div>
                 <div class="step-text">See analytics, share or download your PDF report</div>
             </div>
         </div>
     </section>
     <section class="section" style="padding-bottom:20px;">
-        <div class="bottom-cta" style="background:{BLUE};">
-            <div style="font-size:42px;margin-bottom:18px;">♢</div>
-            <h2 style="font-size:38px;font-weight:950;margin:0 0 18px;color:white !important;">Take Control of Your Health</h2>
+        <div class="bottom-cta" style="background:{ACCENT};">
+            <div style="font-size:42px;margin-bottom:18px;color:{PINK}!important;">💗</div>
+            <h2 style="font-size:38px;font-weight:950;margin:0 0 18px;color:white !important;">💗 Take Control of Your Health</h2>
             <p style="font-size:21px;line-height:1.5;margin-bottom:34px;color:white !important;">Join thousands who use GlucoTrack to monitor their diabetes risk. It's free, fast, and takes less than 2 minutes.</p>
         </div>
     </section>
