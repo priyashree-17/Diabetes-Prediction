@@ -5,6 +5,11 @@ import base64
 from datetime import datetime
 from io import BytesIO
 import urllib.parse
+import tempfile
+import time
+import webbrowser
+from pathlib import Path
+
 
 import pandas as pd
 import streamlit as st
@@ -12,6 +17,9 @@ import plotly.graph_objects as go
 import streamlit.components.v1 as components
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+import matplotlib.pyplot as plt
+
 
 st.set_page_config(page_title='GlucoTrack', page_icon='🩺', layout='wide', initial_sidebar_state='expanded')
 
@@ -112,16 +120,48 @@ for k, v in defaults.items():
         st.session_state[k] = v
 
 DARK = st.session_state.dark_mode
+
+# Professional medical theme
 if DARK:
-    BG = '#0F172A'; CARD = '#1E293B'; TEXT = '#F8FAFC'; MUTED = '#94A3B8'; BORDER = '#334155'; INPUT = '#172033'; BLUE = '#38BDF8'; BLUE_DARK = '#0284C7'; SIDEBAR = '#0F172A'; PLOT_TEMPLATE = 'plotly_dark'
-    RESULT_HIGH_BG = '#450A0A'; RESULT_HIGH_BORDER = '#7F1D1D'; RESULT_HIGH_TEXT = '#FCA5A5'
-    RESULT_LOW_BG = '#022C22'; RESULT_LOW_BORDER = '#064E3B'; RESULT_LOW_TEXT = '#A7F3D0'
-    BOX_SUGGESTION_BG = '#1E293B'; BOX_SUGGESTION_TITLE = '#F8FAFC'; BOX_SUGGESTION_TEXT = '#38BDF8'
+    BG = '#0B1120'
+    CARD = '#111827'
+    TEXT = '#F9FAFB'
+    MUTED = '#CBD5E1'
+    BORDER = '#334155'
+    INPUT = '#172033'
+    BLUE = '#14B8A6'          # teal primary
+    BLUE_DARK = '#0F766E'
+    SIDEBAR = '#0F172A'
+    PLOT_TEMPLATE = 'plotly_dark'
+    RESULT_HIGH_BG = '#3F1216'
+    RESULT_HIGH_BORDER = '#EF4444'
+    RESULT_HIGH_TEXT = '#FECACA'
+    RESULT_LOW_BG = '#052E2B'
+    RESULT_LOW_BORDER = '#14B8A6'
+    RESULT_LOW_TEXT = '#CCFBF1'
+    BOX_SUGGESTION_BG = '#111827'
+    BOX_SUGGESTION_TITLE = '#F9FAFB'
+    BOX_SUGGESTION_TEXT = '#99F6E4'
 else:
-    BG = '#F6F9FC'; CARD = '#FFFFFF'; TEXT = '#0F172A'; MUTED = '#91A0B8'; BORDER = '#E6EDF5'; INPUT = '#F8FAFD'; BLUE = '#16A6E8'; BLUE_DARK = '#0284C7'; SIDEBAR = '#FFFFFF'; PLOT_TEMPLATE = 'plotly_white'
-    RESULT_HIGH_BG = '#FFF1F2'; RESULT_HIGH_BORDER = '#FECDD3'; RESULT_HIGH_TEXT = '#BE123C'
-    RESULT_LOW_BG = '#F0FDF4'; RESULT_LOW_BORDER = '#BBF7D0'; RESULT_LOW_TEXT = '#166534'
-    BOX_SUGGESTION_BG = '#E8F5FF'; BOX_SUGGESTION_TITLE = '#0F172A'; BOX_SUGGESTION_TEXT = '#006BAA'
+    BG = '#F8FAFC'
+    CARD = '#FFFFFF'
+    TEXT = '#0F172A'
+    MUTED = '#475569'
+    BORDER = '#D8E3EA'
+    INPUT = '#FFFFFF'
+    BLUE = '#0F766E'          # professional teal
+    BLUE_DARK = '#115E59'
+    SIDEBAR = '#FFFFFF'
+    PLOT_TEMPLATE = 'plotly_white'
+    RESULT_HIGH_BG = '#FFF1F2'
+    RESULT_HIGH_BORDER = '#FB7185'
+    RESULT_HIGH_TEXT = '#BE123C'
+    RESULT_LOW_BG = '#F0FDFA'
+    RESULT_LOW_BORDER = '#5EEAD4'
+    RESULT_LOW_TEXT = '#0F766E'
+    BOX_SUGGESTION_BG = '#ECFDF5'
+    BOX_SUGGESTION_TITLE = '#0F172A'
+    BOX_SUGGESTION_TEXT = '#0F766E'
 
 css = f'''
 <style>
@@ -230,6 +270,19 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .footer{{border-top:1px solid {BORDER};padding:28px 22px;display:flex;justify-content:space-between;color:{MUTED}!important;}}
 .footer-logo{{font-weight:950;color:{TEXT}!important;}}
 @media(max-width:900px){{.hero-title{{font-size:55px;}}.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}.form-row{{grid-template-columns:1fr;}}}}
+
+/* Strong visibility fixes for dark mode */
+.stMarkdown, .stMarkdown *, .page-title, .page-sub, .card-heading, .section-title, .section-sub,
+.auth-title h1, .auth-title p, .param-value, .param-label, div[data-testid="stMetricValue"],
+div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {
+    color: {TEXT} !important;
+}
+.page-sub, .section-sub, .hero-sub, .step-text, .stat-label { color: {MUTED} !important; }
+.stDataFrame, .stDataFrame * { color: {TEXT} !important; }
+[data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * { color: {TEXT} !important; font-weight:700!important; }
+.logo-square{width:42px;height:42px;border-radius:12px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}
+.whatsapp-card{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}
+.whatsapp-card:hover{filter:brightness(.96);transform:translateY(-1px);}
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
@@ -326,145 +379,190 @@ def get_suggestions(patient_data):
     return ['Maintain a balanced nutritious diet.', 'Exercise regularly to stay active.', 'Drink enough water and get adequate sleep.']
 
 
+
+def nice_label(key):
+    label_map = {
+        'Pregnancies': 'Pregnancies',
+        'Glucose': 'Glucose (mg/dL)',
+        'BloodPressure': 'Blood Pressure (mmHg)',
+        'SkinThickness': 'Skin Thickness (mm)',
+        'Insulin': 'Insulin (μU/mL)',
+        'BMI': 'BMI',
+        'DiabetesPedigreeFunction': 'Diabetes Pedigree Function',
+        'Age': 'Age (years)'
+    }
+    return label_map.get(key, key)
+
+
+def save_pdf_to_reports_folder(pdf_bytes, name):
+    reports_dir = Path('generated_reports')
+    reports_dir.mkdir(exist_ok=True)
+    safe_name = ''.join(ch if ch.isalnum() or ch in ('_', '-') else '_' for ch in str(name))
+    file_path = reports_dir / f"glucotrack_{safe_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+    file_path.write_bytes(pdf_bytes)
+    return str(file_path.resolve())
+
+
+def create_pdf_chart_image(patient_data):
+    labels = ['Glucose', 'BMI', 'Insulin', 'BP', 'Age']
+    values = [patient_data['Glucose'], patient_data['BMI'], patient_data['Insulin'], patient_data['BloodPressure'], patient_data['Age']]
+    fig, ax = plt.subplots(figsize=(7.2, 3.0), dpi=160)
+    bars = ax.bar(labels, values)
+    ax.set_title('Clinical Parameter Overview', fontsize=13, fontweight='bold')
+    ax.set_ylabel('Value')
+    ax.spines[['top', 'right']].set_visible(False)
+    ax.grid(axis='y', alpha=0.25)
+    for bar, value in zip(bars, values):
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height(), str(value), ha='center', va='bottom', fontsize=9, fontweight='bold')
+    plt.tight_layout()
+    img = BytesIO()
+    fig.savefig(img, format='png', bbox_inches='tight', transparent=False)
+    plt.close(fig)
+    img.seek(0)
+    return img
+
+
+def whatsapp_pdf_sender(phone, pdf_path, caption):
+    """
+    Sends/attaches the PDF through WhatsApp Web on a LOCAL computer.
+    Note: WhatsApp web links cannot attach PDF automatically. This uses pyautogui.
+    It will not work on Streamlit Cloud because the server has no browser UI.
+    """
+    try:
+        import pywhatkit
+        import pyautogui
+        import pyperclip
+    except Exception:
+        return False, 'Install required libraries: pip install pywhatkit pyautogui pyperclip'
+
+    clean_phone = str(phone).replace(' ', '').replace('-', '')
+    if not clean_phone.startswith('+'):
+        return False, 'Enter phone number with country code, for example +919876543210.'
+
+    try:
+        # Opens WhatsApp Web chat and sends a short caption/message first.
+        pywhatkit.sendwhatmsg_instantly(clean_phone, caption, wait_time=18, tab_close=False, close_time=3)
+        time.sleep(8)
+
+        # Attach the PDF using keyboard automation.
+        pyautogui.hotkey('ctrl', 'shift', 'u')  # In many browsers this may not attach; fallback below is manual.
+        time.sleep(1)
+        pyperclip.copy(pdf_path)
+        pyautogui.hotkey('ctrl', 'v')
+        pyautogui.press('enter')
+        time.sleep(2)
+        pyautogui.press('enter')
+        return True, 'WhatsApp opened. If the PDF is not attached automatically, click the attach icon and select the generated PDF shown below.'
+    except Exception as e:
+        return False, f'Could not automate WhatsApp PDF attach: {e}'
+
+
 def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
-    
-    # 1. Header Banner
-    pdf.setFillColorRGB(0.09, 0.17, 0.31) # #172B4D
-    pdf.rect(0, height - 100, width, 100, fill=True, stroke=False)
-    
-    # Header Title
-    pdf.setFillColorRGB(1.0, 1.0, 1.0)
+    primary = (0.06, 0.46, 0.43)   # teal
+    navy = (0.05, 0.10, 0.20)
+    light_teal = (0.91, 0.99, 0.97)
+    soft_gray = (0.96, 0.98, 0.99)
+    dark_text = (0.06, 0.09, 0.16)
+
+    def draw_round_rect(x, y, w, h, fill, stroke=(0.85, 0.90, 0.94), radius=12):
+        pdf.setFillColorRGB(*fill)
+        pdf.setStrokeColorRGB(*stroke)
+        pdf.roundRect(x, y, w, h, radius, fill=True, stroke=True)
+
+    # Header
+    pdf.setFillColorRGB(*navy)
+    pdf.rect(0, height - 112, width, 112, fill=True, stroke=False)
+    pdf.setFillColorRGB(*primary)
+    pdf.roundRect(40, height - 82, 44, 44, 12, fill=True, stroke=False)
+    pdf.setFillColorRGB(1, 1, 1)
     pdf.setFont('Helvetica-Bold', 22)
-    pdf.drawString(40, height - 45, 'GlucoTrack Clinical Health Report')
-    
-    # Header Subtitle
-    pdf.setFont('Helvetica-Oblique', 10)
-    pdf.setFillColorRGB(0.70, 0.85, 1.0)
-    pdf.drawString(40, height - 65, 'AI-Powered Diabetes Risk Assessment & Clinical Analytics')
-    
-    # Generation Timestamp
-    pdf.setFont('Helvetica', 9)
-    pdf.drawString(40, height - 82, f'Date generated: {pred_time}')
-    
-    # 2. Patient Information Card
-    y = height - 145
-    pdf.setFillColorRGB(0.95, 0.97, 1.0) # Light blue box background
-    pdf.rect(40, y - 60, width - 80, 60, fill=True, stroke=False)
-    
-    pdf.setFillColorRGB(0.0, 0.0, 0.0)
-    pdf.setFont('Helvetica-Bold', 12)
-    pdf.drawString(55, y - 18, 'PATIENT DEMOGRAPHICS')
-    
+    pdf.drawString(100, height - 52, 'GlucoTrack Health Analytics Report')
     pdf.setFont('Helvetica', 10)
-    pdf.drawString(55, y - 36, f'Full Name: {name}')
-    pdf.drawString(55, y - 50, f'Email Address: {email}')
-    
-    # 3. Clinical Assessment (Risk Outcome)
-    y -= 85
+    pdf.setFillColorRGB(0.75, 0.90, 0.88)
+    pdf.drawString(100, height - 72, 'Diabetes Risk Assessment • Clinical Parameters • Health Insights')
+    pdf.drawString(100, height - 90, f'Generated on: {pred_time}')
+
+    # Patient card
+    y = height - 150
+    draw_round_rect(40, y - 70, width - 80, 70, soft_gray)
+    pdf.setFillColorRGB(*dark_text)
+    pdf.setFont('Helvetica-Bold', 12)
+    pdf.drawString(60, y - 22, 'PATIENT DETAILS')
+    pdf.setFont('Helvetica', 10)
+    pdf.drawString(60, y - 42, f'Name: {name}')
+    pdf.drawString(60, y - 58, f'Email: {email}')
+
+    # Risk card
+    y -= 105
     is_high = 'High' in result
     if is_high:
-        bg_color = (0.99, 0.92, 0.92) # Reddish background
-        border_color = (0.93, 0.27, 0.27)
-        text_color = (0.75, 0.08, 0.08)
+        bg, border, txt = (1.0, 0.94, 0.94), (0.94, 0.27, 0.27), (0.70, 0.08, 0.10)
+        risk_icon = 'HIGH RISK'
     else:
-        bg_color = (0.94, 0.99, 0.95) # Greenish background
-        border_color = (0.13, 0.58, 0.25)
-        text_color = (0.09, 0.39, 0.16)
-        
-    # Draw Risk Alert Box
-    pdf.setFillColorRGB(*bg_color)
-    pdf.setStrokeColorRGB(*border_color)
-    pdf.setLineWidth(1.5)
-    pdf.rect(40, y - 55, width - 80, 55, fill=True, stroke=True)
-    
-    # Alert Title & Score
-    pdf.setFillColorRGB(*text_color)
-    pdf.setFont('Helvetica-Bold', 14)
-    pdf.drawString(55, y - 22, f'Risk Assessment: {result.upper()}')
-    
-    pdf.setFont('Helvetica', 11)
-    pdf.drawString(55, y - 42, f'Analysis Confidence Level: {confidence}%')
-    
-    # 4. Clinical Parameter Table
-    y -= 95
-    pdf.setFillColorRGB(0.0, 0.0, 0.0)
-    pdf.setStrokeColorRGB(0.85, 0.85, 0.85)
-    pdf.setLineWidth(0.5)
+        bg, border, txt = (0.91, 0.99, 0.97), (0.08, 0.72, 0.65), (0.04, 0.45, 0.40)
+        risk_icon = 'LOW RISK'
+    draw_round_rect(40, y - 78, width - 80, 78, bg, border, 14)
+    pdf.setFillColorRGB(*txt)
+    pdf.setFont('Helvetica-Bold', 18)
+    pdf.drawCentredString(width / 2, y - 30, f'{risk_icon}: {result}')
     pdf.setFont('Helvetica-Bold', 12)
-    pdf.drawString(40, y, 'CLINICAL MEASUREMENTS')
-    pdf.line(40, y - 5, width - 40, y - 5)
-    
-    # Table Grid Layout
-    y -= 25
-    pdf.setFont('Helvetica-Bold', 10)
-    pdf.setFillColorRGB(0.4, 0.4, 0.4)
-    
-    # Draw 2-column parameter grid
+    pdf.drawCentredString(width / 2, y - 54, f'Model Confidence: {confidence}%')
+
+    # Table
+    y -= 112
+    pdf.setFillColorRGB(*dark_text)
+    pdf.setFont('Helvetica-Bold', 13)
+    pdf.drawString(40, y, 'Clinical Measurements')
+    y -= 18
     items = list(patient_data.items())
-    half = (len(items) + 1) // 2
-    
+    col_w = (width - 100) / 2
+    row_h = 30
     for idx, (key, value) in enumerate(items):
-        col_x = 55 if idx < half else width / 2 + 15
-        row_y = y - (idx % half) * 22
-        
-        # Friendly key labels mapping
-        label_map = {
-            'Pregnancies': 'Pregnancies',
-            'Glucose': 'Glucose (mg/dL)',
-            'BloodPressure': 'Blood Pressure (mmHg)',
-            'SkinThickness': 'Skin Thickness (mm)',
-            'Insulin': 'Insulin (μU/mL)',
-            'BMI': 'BMI (kg/m²)',
-            'DiabetesPedigreeFunction': 'Diabetes Pedigree Score',
-            'Age': 'Age (years)'
-        }
-        friendly_key = label_map.get(key, key)
-        
-        pdf.setFillColorRGB(0.3, 0.3, 0.3)
-        pdf.setFont('Helvetica', 10)
-        pdf.drawString(col_x, row_y, f'{friendly_key}:')
-        
-        pdf.setFillColorRGB(0.0, 0.0, 0.0)
+        col = idx % 2
+        row = idx // 2
+        x = 40 + col * (col_w + 20)
+        yy = y - row * row_h
+        draw_round_rect(x, yy - 24, col_w, 24, (1, 1, 1), (0.86, 0.90, 0.94), 6)
+        pdf.setFillColorRGB(0.28, 0.35, 0.45)
+        pdf.setFont('Helvetica', 8.5)
+        pdf.drawString(x + 10, yy - 10, nice_label(key))
+        pdf.setFillColorRGB(*dark_text)
         pdf.setFont('Helvetica-Bold', 10)
-        pdf.drawString(col_x + 140, row_y, f'{value}')
-        
-        # Subtle separator line
-        pdf.setStrokeColorRGB(0.93, 0.93, 0.93)
-        pdf.line(col_x, row_y - 4, col_x + 230, row_y - 4)
-        
-    # 5. Doctor Clinical Suggestions
-    y = y - (half * 22) - 25
-    pdf.setFillColorRGB(0.0, 0.0, 0.0)
-    pdf.setFont('Helvetica-Bold', 12)
-    pdf.drawString(40, y, 'RECOMMENDED CLINICAL ACTION PLAN')
-    
-    pdf.setStrokeColorRGB(0.85, 0.85, 0.85)
-    pdf.line(40, y - 5, width - 40, y - 5)
-    
-    y -= 25
-    suggestions = get_suggestions(patient_data)
+        pdf.drawRightString(x + col_w - 10, yy - 10, str(value))
+
+    # Chart image
+    y -= 145
+    pdf.setFillColorRGB(*dark_text)
+    pdf.setFont('Helvetica-Bold', 13)
+    pdf.drawString(40, y, 'Health Analytics Chart')
+    chart_img = create_pdf_chart_image(patient_data)
+    pdf.drawImage(ImageReader(chart_img), 55, y - 175, width=485, height=155, preserveAspectRatio=True, mask='auto')
+
+    # Suggestions
+    y -= 205
+    draw_round_rect(40, y - 95, width - 80, 95, light_teal, (0.65, 0.90, 0.85), 12)
+    pdf.setFillColorRGB(*dark_text)
+    pdf.setFont('Helvetica-Bold', 13)
+    pdf.drawString(60, y - 22, 'Recommended Health Action Plan')
     pdf.setFont('Helvetica', 10)
-    pdf.setFillColorRGB(0.1, 0.1, 0.1)
-    
-    for s in suggestions:
-        pdf.drawString(55, y, f'•  {s}')
-        y -= 20
-        
-    # 6. Report Footer / Disclaimer
-    pdf.setStrokeColorRGB(0.9, 0.9, 0.9)
+    yy = y - 42
+    for s in get_suggestions(patient_data):
+        pdf.drawString(70, yy, u'• ' + s)
+        yy -= 16
+
+    # Footer
+    pdf.setStrokeColorRGB(0.85, 0.90, 0.94)
     pdf.line(40, 50, width - 40, 50)
-    
-    pdf.setFillColorRGB(0.5, 0.5, 0.5)
+    pdf.setFillColorRGB(0.45, 0.50, 0.58)
     pdf.setFont('Helvetica-Oblique', 8)
-    pdf.drawCentredString(width / 2, 38, 'DISCLAIMER: This diagnostic report is generated utilizing machine learning predictive modeling.')
-    pdf.drawCentredString(width / 2, 26, 'It is for educational and screening purposes only and does not constitute official medical advice.')
-    
+    pdf.drawCentredString(width / 2, 36, 'Disclaimer: This report is for educational/screening purposes only and is not medical advice.')
+    pdf.drawCentredString(width / 2, 24, 'Please consult a qualified healthcare professional for diagnosis and treatment.')
+
     pdf.save()
     return buffer.getvalue()
-
 
 def public_header():
     col_logo, col_nav, col_spacer, col_theme, col_signin = st.columns([2.5, 4.0, 2.0, 1.2, 1.2])
@@ -870,7 +968,7 @@ def dashboard_page():
     st.subheader('🧾 Submitted Health Parameters')
     params = list(patient_data.items()); cols = st.columns(4)
     for i, (k, v) in enumerate(params):
-        with cols[i % 4]: st.markdown(f'<div class="param-card"><div class="param-label">{k}</div><div class="param-value">{v}</div></div>', unsafe_allow_html=True)
+        with cols[i % 4]: st.markdown(f'<div class="param-card"><div class="param-label">{nice_label(k)}</div><div class="param-value">{v}</div></div>', unsafe_allow_html=True)
         
     st.write('')
     st.subheader('📈 Patient Health Analytics')
@@ -880,39 +978,23 @@ def dashboard_page():
     
     col_dl, col_wa = st.columns(2)
     with col_dl:
-        st.download_button('📄 Download Patient Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
-    
+        st.download_button('📄 Download Attractive PDF Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
+
     with col_wa:
-        # Construct url-encoded WhatsApp message
-        msg_text = f"*GlucoTrack Diabetes Risk Report*\n\n" \
-                  f"👤 *Patient Name:* {st.session_state.current_user_name}\n" \
-                  f"🩺 *Risk Assessment:* {result}\n" \
-                  f"🎯 *Confidence Level:* {confidence}%\n" \
-                  f"📅 *Date/Time:* {st.session_state.prediction_time}\n\n" \
-                  f"📊 *Clinical Values:*\n" \
-                  f"- Glucose: {patient_data['Glucose']} mg/dL\n" \
-                  f"- BMI: {patient_data['BMI']}\n" \
-                  f"- Blood Pressure: {patient_data['BloodPressure']} mmHg\n" \
-                  f"- Age: {patient_data['Age']} years\n\n" \
-                  f"💡 *Key Recommendations:*\n"
-        for s in suggestions[:2]:
-            msg_text += f"- {s}\n"
-        msg_text += "\n_For educational purposes only. Always consult a medical professional._"
-        encoded_text = urllib.parse.quote(msg_text)
-        whatsapp_url = f"https://api.whatsapp.com/send?text={encoded_text}"
-        
-        st.markdown(f'''
-        <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
-            <div style="background-color:#25D366;color:white;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-66 1.63-66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
-                </svg>
-                Share Report via WhatsApp
-            </div>
-        </a>
-        <div style="font-size:12px;color:{MUTED};margin-top:8px;font-weight:500;text-align:center;">💡 <i>Tip: Download the PDF report first, then click here to send the clinical text summary and attach the downloaded PDF.</i></div>
-        ''', unsafe_allow_html=True)
-        
+        st.markdown('**Send PDF report on WhatsApp**')
+        phone = st.text_input('Phone number with country code', placeholder='+919876543210', key='patient_whatsapp_phone')
+        if st.button('🟢 Send PDF Report via WhatsApp', type='primary', use_container_width=True, key='send_patient_pdf_wa'):
+            pdf_path = save_pdf_to_reports_folder(st.session_state.pdf_bytes, st.session_state.current_user_name)
+            caption = f"GlucoTrack PDF Health Report for {st.session_state.current_user_name}\nRisk: {result}\nConfidence: {confidence}%"
+            ok, msg = whatsapp_pdf_sender(phone, pdf_path, caption)
+            if ok:
+                st.success(msg)
+            else:
+                st.error(msg)
+            st.info(f'PDF saved here: {pdf_path}')
+            wa_text = urllib.parse.quote(caption + f"\nPDF file path on this computer: {pdf_path}")
+            st.markdown(f'<a href="https://wa.me/{phone.replace("+", "").replace(" ", "")}?text={wa_text}" target="_blank">Open WhatsApp chat manually</a>', unsafe_allow_html=True)
+        st.caption('Note: automatic PDF attachment works only when running locally on your laptop with WhatsApp Web login. Streamlit Cloud cannot control your browser to attach files.')
     st.write('')
     if st.button('New Prediction', type='secondary', use_container_width=True): reset_prediction_state(); st.session_state.page = 'prediction'; st.rerun()
 
