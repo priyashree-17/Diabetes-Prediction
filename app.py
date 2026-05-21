@@ -272,17 +272,12 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 @media(max-width:900px){{.hero-title{{font-size:55px;}}.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}.form-row{{grid-template-columns:1fr;}}}}
 
 /* Strong visibility fixes for dark mode */
-.stMarkdown, .stMarkdown *, .page-title, .page-sub, .card-heading, .section-title, .section-sub,
-.auth-title h1, .auth-title p, .param-value, .param-label, div[data-testid="stMetricValue"],
-div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {
-    color: {TEXT} !important;
-}
-.page-sub, .section-sub, .hero-sub, .step-text, .stat-label { color: {MUTED} !important; }
-.stDataFrame, .stDataFrame * { color: {TEXT} !important; }
-[data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * { color: {TEXT} !important; font-weight:700!important; }
-.logo-square{width:42px;height:42px;border-radius:12px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}
-.whatsapp-card{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}
-.whatsapp-card:hover{filter:brightness(.96);transform:translateY(-1px);}
+.stMarkdown, .stMarkdown *, .page-title, .card-heading, .section-title, .auth-title h1, .param-value, div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {{ color: {TEXT} !important; }}
+.page-sub, .section-sub, .hero-sub, .step-text, .stat-label, .auth-title p, .param-label {{ color: {MUTED} !important; }}
+.stDataFrame, .stDataFrame *, [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * {{ color: {TEXT} !important; font-weight:700!important; }}
+.logo-square{{width:42px;height:42px;border-radius:12px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}}
+.whatsapp-card{{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}}
+.whatsapp-card:hover{{filter:brightness(.96);transform:translateY(-1px);}}
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
