@@ -297,7 +297,50 @@ div[data-testid="stNumberInput"] button{{
 button[title="View fullscreen"]{{
     display:none!important;
 }}
+.hero{{padding:78px 20px 50px;text-align:center;max-width:1050px;margin:0 auto;}}
+.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid {ACCENT};background:{SOFT};color:{BLUE}!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
+.hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;color:{TEXT}!important;}}
+.hero-blue{{color:{BLUE}!important;display:block;}}
+.hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;color:{MUTED}!important;}}
 
+.stats-wrap{{max-width:1120px;margin:42px auto 90px;border-radius:26px;border:1px solid {BORDER};display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;background:{CARD}!important;box-shadow:0 10px 28px rgba(15,23,42,.06);}}
+.stat{{padding:48px 20px;text-align:center;border-right:1px solid {BORDER};}}
+.stat:last-child{{border-right:none;}}
+.stat-num{{font-size:46px;font-weight:950;color:{BLUE}!important;}}
+.stat-label{{font-size:18px;margin-top:6px;color:{MUTED}!important;}}
+
+.section{{padding:0 20px 90px;}}
+.feature-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1260px;margin:0 auto;}}
+.feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;box-shadow:0 10px 28px rgba(15,23,42,.06);}}
+.feature-blue{{background:{'#1E293B' if DARK else '#EEF0FF'}!important;}}
+.feature-green{{background:{'#1E293B' if DARK else '#F4F0FF'}!important;}}
+.feature-red{{background:{'#1E293B' if DARK else '#FFFDE0'}!important;}}
+
+.pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;border:1px solid transparent;}}
+.pill-blue{{background:{'#0F172A' if DARK else '#EEF0FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
+.pill-green{{background:{'#0F172A' if DARK else '#F4F0FF'}!important;border-color:{ACCENT}!important;color:{BLUE}!important;}}
+.pill-red{{background:{'#0F172A' if DARK else '#FFFDE0'}!important;border-color:{SOFT}!important;color:{BLUE}!important;}}
+
+.icon-box{{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:48px;}}
+.icon-blue{{background:{'#0F172A' if DARK else '#EEF0FF'}!important;}}
+.icon-green{{background:{'#0F172A' if DARK else '#F4F0FF'}!important;}}
+.icon-red{{background:{'#0F172A' if DARK else '#FFFDE0'}!important;}}
+
+.feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;color:{TEXT}!important;}}
+.feature-text{{font-size:19px;line-height:1.45;color:{MUTED}!important;}}
+
+.steps-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1260px;margin:0 auto;}}
+.step-card{{border:1px solid {BORDER};border-radius:18px;padding:38px 24px;text-align:center;background:{CARD}!important;box-shadow:0 10px 28px rgba(15,23,42,.05);}}
+.step-num{{color:{BLUE}!important;font-size:46px;font-weight:950;margin-bottom:14px;}}
+.step-title{{font-size:21px;font-weight:950;margin-bottom:14px;color:{TEXT}!important;}}
+.step-text{{font-size:18px;line-height:1.55;color:{MUTED}!important;}}
+
+.bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;background:{ACCENT}!important;}}
+
+@media(max-width:900px){{
+.hero-title{{font-size:55px;}}
+.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}
+}}
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
