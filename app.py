@@ -788,30 +788,6 @@ def create_risk_gauge_image(confidence, is_high):
     return img
 
 
-def whatsapp_pdf_sender(phone, pdf_path, caption):
-    try:
-        import pywhatkit
-        import pyautogui
-        import pyperclip
-    except Exception:
-        return False, 'Install required libraries: pip install pywhatkit pyautogui pyperclip'
-    clean_phone = str(phone).replace(' ', '').replace('-', '')
-    if not clean_phone.startswith('+'):
-        return False, 'Enter phone number with country code, for example +919876543210.'
-    try:
-        pywhatkit.sendwhatmsg_instantly(clean_phone, caption, wait_time=18, tab_close=False, close_time=3)
-        time.sleep(8)
-        pyautogui.hotkey('ctrl', 'shift', 'u')
-        time.sleep(1)
-        pyperclip.copy(pdf_path)
-        pyautogui.hotkey('ctrl', 'v')
-        pyautogui.press('enter')
-        time.sleep(2)
-        pyautogui.press('enter')
-        return True, 'WhatsApp opened. If the PDF is not attached automatically, click the attach icon and select the generated PDF shown below.'
-    except Exception as e:
-        return False, f'Could not automate WhatsApp PDF attach: {e}'
-
 
 def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     buffer = BytesIO()
@@ -1362,62 +1338,140 @@ def prediction_page():
 
 # FIX 4: WhatsApp share widget — now also used standalone for doctors
 def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidence, pred_time, patient_data, selected_idx=None):
-    st.markdown(f'''
-    <div style="background:{'#031A0F' if DARK else '#F0FDF4'};border:1px solid {'#14532D44' if DARK else '#BBF7D0'};border-radius:18px;padding:22px;margin-top:8px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    """Share PDF via browser native Web Share API — no API keys required."""
+    import base64 as _b64
+
+    DARK_LOCAL = st.session_state.dark_mode
+    bg_col     = '#031A0F' if DARK_LOCAL else '#F0FDF4'
+    border_col = '#166534' if DARK_LOCAL else '#BBF7D0'
+    text_col   = '#F0F6FF' if DARK_LOCAL else '#0A1628'
+    muted_col  = '#8BA4C8' if DARK_LOCAL else '#4A6589'
+
+    # Header card
+    st.markdown(f"""
+    <div style="background:{bg_col};border:1.5px solid {border_col};border-radius:18px;
+                padding:20px 24px;margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
             <span style="font-size:22px;">📱</span>
-            <span style="font-family:'Sora',Arial;font-weight:800;font-size:16px;color:{TEXT};">Send Report via WhatsApp</span>
+            <span style="font-family:'Sora',Arial;font-weight:800;font-size:16px;color:{text_col};">
+                Share PDF Report via WhatsApp
+            </span>
         </div>
+        <p style="color:{muted_col};font-size:13px;margin:4px 0 0 32px;">
+            Opens your device share sheet — select WhatsApp to send the PDF file directly.
+            Works on mobile &amp; supported desktop browsers.
+        </p>
     </div>
-    ''', unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    suggestions = get_suggestions(patient_data)
-    msg_text = (
-        f"🩺 *GlucoTrack Health Report*\n\n"
-        f"👤 *Patient:* {patient_name}\n"
-        f"📊 *Result:* {result}\n"
-        f"🎯 *Confidence:* {confidence}%\n"
-        f"📅 *Date:* {pred_time}\n\n"
-        f"📋 *Key Metrics:*\n"
-        f"• Glucose: {patient_data.get('Glucose','N/A')} mg/dL\n"
-        f"• BMI: {patient_data.get('BMI','N/A')}\n"
-        f"• Blood Pressure: {patient_data.get('BloodPressure','N/A')} mmHg\n"
-        f"• Insulin: {patient_data.get('Insulin','N/A')} μU/mL\n"
-        f"• Age: {patient_data.get('Age','N/A')} years\n\n"
-        f"💡 *Recommendations:*\n"
+    st.write("")
+
+    # Build caption
+    caption = (
+        f"🩺 GlucoTrack Diabetes Risk Report\n"
+        f"👤 Patient: {patient_name}\n"
+        f"📊 Result: {result}\n"
+        f"🎯 Confidence: {confidence}%\n"
+        f"📅 Date: {pred_time}\n"
+        f"🩸 Glucose: {patient_data.get('Glucose','N/A')} mg/dL\n"
+        f"⚖️ BMI: {patient_data.get('BMI','N/A')}\n"
+        f"💓 BP: {patient_data.get('BloodPressure','N/A')} mmHg\n"
+        f"Powered by GlucoTrack AI Health Platform"
     )
-    for s in suggestions:
-        s_clean = s.replace('📋','').replace('🥗','').replace('🏃','').replace('⚖️','').replace('🥦','').replace('💊','').replace('🧘','').replace('🧂','').replace('🏥','').replace('💧','').strip()
-        msg_text += f"• {s_clean}\n"
-    msg_text += f"\n_Powered by GlucoTrack AI Health Platform_"
+    safe_caption = caption.replace("`", "'").replace("\\", "\\\\")
+    file_name    = f"GlucoTrack_{patient_name.replace(' ', '_')}_Report.pdf"
+    pdf_b64      = _b64.b64encode(pdf_bytes).decode("utf-8")
 
-    phone_input_key = f"wa_phone_{phone_key}"
-    phone = st.text_input('📞 Recipient phone (with country code)', placeholder='+919876543210', key=phone_input_key)
+    col_share, col_dl = st.columns([3, 2])
 
-    encoded = urllib.parse.quote(msg_text)
-    clean_phone = ''.join(c for c in (phone or '') if c.isdigit())
-    wa_url = f"https://wa.me/{clean_phone}?text={encoded}" if clean_phone else f"https://wa.me/?text={encoded}"
-
-    col_wa, col_save = st.columns([3, 2])
-    with col_wa:
-        st.markdown(f'''
-        <a href="{wa_url}" target="_blank" class="wa-btn-wrap" style="text-decoration:none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 16 16">
-                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-.66 1.63-.66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
+    with col_share:
+        # Web Share API button — shares the actual PDF file
+        components.html(f"""
+        <div style="margin:0;">
+          <button id="sharePdfBtn_{phone_key}" style="
+              width:100%;
+              background:linear-gradient(135deg,#16A34A 0%,#22C55E 100%);
+              color:white; border:none; padding:14px 20px;
+              border-radius:14px; cursor:pointer; font-weight:700;
+              font-size:15px; font-family:'DM Sans',Arial,sans-serif;
+              box-shadow:0 8px 20px rgba(34,197,94,0.30);
+              display:flex; align-items:center; justify-content:center; gap:8px;
+              transition:all 0.2s ease;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                 fill="white" viewBox="0 0 16 16">
+              <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93
+                       c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12
+                       c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744
+                       M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637
+                       .649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96
+                       5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2
+                       c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56
+                       -1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732
+                       -.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95
+                       -.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389
+                       .087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13
+                       .032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37
+                       -.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048
+                       -.506.237-.174.19-.66 1.63-.66 3.97 0 2.34 1.7 4.595 1.94 4.914
+                       .24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004
+                       1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197
+                       .404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
             </svg>
-            &nbsp; Send via WhatsApp
-        </a>
-        ''', unsafe_allow_html=True)
+            &nbsp;Share PDF on WhatsApp
+          </button>
+          <p id="shareStatus_{phone_key}" style="
+              font-family:Arial,sans-serif; font-size:12px;
+              color:#64748B; margin:8px 0 0; min-height:16px;"></p>
+        </div>
+        <script>
+        (function() {{
+          var btn    = document.getElementById('sharePdfBtn_{phone_key}');
+          var status = document.getElementById('shareStatus_{phone_key}');
+          btn.onmouseenter = function() {{ btn.style.transform='translateY(-2px)'; btn.style.boxShadow='0 12px 28px rgba(34,197,94,0.40)'; }};
+          btn.onmouseleave = function() {{ btn.style.transform='translateY(0)';    btn.style.boxShadow='0 8px 20px rgba(34,197,94,0.30)';  }};
+          btn.onclick = async function() {{
+            try {{
+              var b64 = "{pdf_b64}";
+              var binary = atob(b64);
+              var bytes  = new Uint8Array(binary.length);
+              for (var i = 0; i < binary.length; i++) {{
+                bytes[i] = binary.charCodeAt(i);
+              }}
+              var file = new File([bytes], "{file_name}", {{ type: "application/pdf" }});
+              if (navigator.canShare && navigator.canShare({{ files: [file] }})) {{
+                await navigator.share({{
+                  title: "GlucoTrack Diabetes Report",
+                  text:  `{safe_caption}`,
+                  files: [file]
+                }});
+                status.style.color = "#16A34A";
+                status.innerText = "✅ Share panel opened — select WhatsApp to send the PDF.";
+              }} else {{
+                status.style.color = "#F97316";
+                status.innerText = "⚠️ Your browser doesn\'t support file sharing. Please download the PDF and send it manually via WhatsApp.";
+              }}
+            }} catch(err) {{
+              if (err.name !== "AbortError") {{
+                status.style.color = "#EF4444";
+                status.innerText = "❌ Sharing cancelled or not supported. Download the PDF and attach it in WhatsApp.";
+              }}
+            }}
+          }};
+        }})();
+        </script>
+        """, height=110)
 
-    with col_save:
-        if st.button('💾 Save PDF locally', key=f'save_local_{phone_key}', use_container_width=True):
-            pdf_path = save_pdf_to_reports_folder(pdf_bytes, patient_name)
-            ok, msg_local = whatsapp_pdf_sender(phone, pdf_path, f"GlucoTrack Report for {patient_name}")
-            if ok:
-                st.success(f'✅ {msg_local}')
-            else:
-                st.info(f'📁 PDF saved at:\n`{pdf_path}`\n\n💡 On Streamlit Cloud, click the WhatsApp button above to send the text summary. To attach the PDF, run GlucoTrack locally.')
-    st.caption('💡 The WhatsApp button sends a formatted text summary. For PDF attachment, run GlucoTrack locally with pyautogui + pywhatkit installed.')
+    with col_dl:
+        st.download_button(
+            "📥 Download PDF",
+            data=pdf_bytes,
+            file_name=file_name,
+            mime="application/pdf",
+            use_container_width=True,
+            key=f"wa_dl_{phone_key}"
+        )
+
+    st.caption("ℹ️ Works best on mobile Chrome/Safari. On desktop, the file will be downloaded — attach it in WhatsApp Web manually.")
 
 
 def dashboard_page():
@@ -1450,21 +1504,16 @@ def dashboard_page():
     components.html(f'<div style="background:{BOX_SUGGESTION_BG};padding:26px 30px;border-radius:18px;border:1px solid {BORDER};font-family:DM Sans,Arial;"><h3 style="color:{BOX_SUGGESTION_TITLE};margin:0 0 14px;font-weight:800;font-family:Sora,Arial;">💡 Personalized Health Suggestions</h3><ul style="color:{BOX_SUGGESTION_TEXT};font-size:15px;line-height:1.9;font-weight:600;padding-left:18px;">{items}</ul></div>', height=220)
 
     st.write('')
-    st.subheader('📄 Download & Share Your Report')
-    col_dl, col_wa = st.columns(2)
-    with col_dl:
-        st.download_button('📥 Download PDF Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
-
-    with col_wa:
-        _render_whatsapp_share(
-            phone_key='patient_dash',
-            pdf_bytes=st.session_state.pdf_bytes,
-            patient_name=st.session_state.current_user_name,
-            result=result,
-            confidence=confidence,
-            pred_time=st.session_state.prediction_time,
-            patient_data=patient_data
-        )
+    st.subheader('📤 Send Report via WhatsApp')
+    _render_whatsapp_share(
+        phone_key='patient_dash',
+        pdf_bytes=st.session_state.pdf_bytes,
+        patient_name=st.session_state.current_user_name,
+        result=result,
+        confidence=confidence,
+        pred_time=st.session_state.prediction_time,
+        patient_data=patient_data
+    )
 
     st.write('')
     if st.button('🔄 New Prediction', type='secondary', use_container_width=True): reset_prediction_state(); st.session_state.page = 'prediction'; st.rerun()
@@ -1544,11 +1593,8 @@ def doctor_page():
             st.write('')
             st.subheader('📤 Export & Share')
             pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time)
-            col_pdf_dl, col_wa_share = st.columns(2)
-            with col_pdf_dl:
-                st.download_button(label=f'📥 Download PDF for {name}', data=pdf_data, file_name=f"glucotrack_{name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True, key=f"dl_btn_{selected_idx}")
-            with col_wa_share:
-                _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
+            st.subheader('📤 Send Report via WhatsApp')
+            _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
 
 
 def admin_page():
