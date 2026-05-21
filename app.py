@@ -121,7 +121,6 @@ for k, v in defaults.items():
 
 DARK = st.session_state.dark_mode
 
-# === PROFESSIONAL GRADIENT THEME ===
 if DARK:
     BG = '#070B14'
     BG2 = '#0D1525'
@@ -131,10 +130,9 @@ if DARK:
     MUTED = '#8BA4C8'
     BORDER = '#1E3358'
     INPUT = '#0F1E35'
-    # Primary gradient colors
-    GRAD1 = '#0EA5E9'   # cyan-blue
-    GRAD2 = '#6366F1'   # indigo
-    GRAD3 = '#14B8A6'   # teal
+    GRAD1 = '#0EA5E9'
+    GRAD2 = '#6366F1'
+    GRAD3 = '#14B8A6'
     BLUE = '#0EA5E9'
     BLUE_DARK = '#0284C7'
     TEAL = '#14B8A6'
@@ -180,7 +178,6 @@ else:
     BOX_SUGGESTION_TEXT = '#0F766E'
     HERO_OVERLAY = 'rgba(240,247,255,0.92)'
 
-# Gradient CSS variables
 GRAD_PRIMARY = f'linear-gradient(135deg, {GRAD1} 0%, {GRAD2} 100%)'
 GRAD_CARD = f'linear-gradient(135deg, {GRAD1}18 0%, {GRAD2}18 100%)' if not DARK else f'linear-gradient(135deg, {GRAD1}22 0%, {GRAD2}22 100%)'
 GRAD_HERO = f'linear-gradient(135deg, #0369A1 0%, #4F46E5 50%, #0D9488 100%)'
@@ -195,6 +192,24 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .block-container {{ padding-top: 1.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
+
+/* FIX 1: Hide irrelevant sidebar top text (keyboard shortcut hint) */
+section[data-testid="stSidebar"] [data-testid="stSidebarNavItems"],
+section[data-testdata-testid="stSidebar"] > div > div > div:first-child > div:first-child > div:first-child,
+section[data-testid="stSidebar"] .st-emotion-cache-1cypcdb,
+section[data-testid="stSidebar"] [data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"],
+button[data-testid="stSidebarNavCollapseButton"],
+[data-testid="stSidebarNav"],
+section[data-testid="stSidebar"] > div > div > div > div > div[data-testid="stVerticalBlock"] > div:first-child > div > p,
+.st-emotion-cache-pkbazv,
+section[data-testid="stSidebar"] [aria-label*="keyboard"],
+section[data-testid="stSidebar"] code {{
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}}
 
 /* Header cleanup */
 [data-testid="stDecoration"] {{ display: none !important; }}
@@ -233,7 +248,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
     box-shadow: 0 4px 24px rgba(14,165,233,0.06), 0 1px 4px rgba(0,0,0,0.04) !important;
 }}
 
-/* Primary buttons — gradient */
+/* Primary buttons */
 .stButton>button[kind="primary"], .stDownloadButton>button, .stFormSubmitButton>button {{
     background: {GRAD_PRIMARY} !important;
     color: white !important; border: none !important; border-radius: 14px !important;
@@ -293,7 +308,7 @@ div[data-testid="stRadio"] label {{
 div[data-testid="stRadio"] label:hover {{ background: {GRAD1}12 !important; }}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
 
-/* ====== HERO / LANDING PAGE ====== */
+/* HERO */
 .hero-section {{
     position: relative;
     min-height: 92vh;
@@ -628,7 +643,7 @@ def login_user(email, password):
     if email in doctors and doctors[email].get('password') == password:
         doctor = doctors[email]
         if not doctor.get('approved', False): return False, 'Doctor account is waiting for admin approval.'
-        st.session_state.logged_in = True; st.session_state.user_type = 'doctor'; st.session_state.current_user_name = doctor.get('name', 'Doctor'); st.session_state.current_user_email = email; st.session_state.page = 'doctor'; add_audit('Login', email, 'Doctor logged in'); return True, ''
+        st.session_state.logged_in = True; st.session_state.user_type = 'doctor'; st.session_state.current_user_name = doctor.get('name', 'Doctor'); st.session_state.current_user_email = email; st.session_state.page = 'prediction'; add_audit('Login', email, 'Doctor logged in'); return True, ''
     return False, 'Invalid email or password.'
 
 
@@ -808,10 +823,7 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
         pdf.setFont('Helvetica', 8); setc(muted); pdf.drawString(x, y + 14, label)
         pdf.setFont('Helvetica-Bold', 11); setc(slate); pdf.drawRightString(x + 205, y + 14, str(value))
 
-    # Background
     setc((1, 1, 1)); pdf.rect(0, 0, width, height, fill=True, stroke=False)
-
-    # Header — gradient-style dark navy
     setc(navy); pdf.rect(0, height - 128, width, 128, fill=True, stroke=False)
     setc(royal); pdf.roundRect(38, height - 90, 50, 50, 12, fill=True, stroke=False)
     setc((1,1,1)); pdf.setFont('Helvetica-Bold', 19); pdf.drawCentredString(63, height - 70, '🩺')
@@ -881,7 +893,6 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     for i, s in enumerate(get_suggestions(patient_data), start=1):
         setc(teal); pdf.circle(62, yy + 3, 6, fill=True, stroke=False)
         setc((1,1,1)); pdf.setFont('Helvetica-Bold', 7); pdf.drawCentredString(62, yy + 1, str(i))
-        # Strip emoji for PDF
         s_clean = ''.join(c for c in s if ord(c) < 65536 and not (0x1F000 <= ord(c) <= 0x1FFFF))
         setc((0.10, 0.18, 0.28)); pdf.setFont('Helvetica', 9.5); pdf.drawString(76, yy, s_clean.strip()); yy -= 20
 
@@ -919,6 +930,7 @@ def public_header():
     st.markdown(f'<div class="grad-divider" style="margin-bottom:0;"></div>', unsafe_allow_html=True)
 
 
+# FIX 2: Doctor sidebar now includes Predict Risk + Doctor Portal + Dashboard
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
     name = st.session_state.current_user_name; email = st.session_state.current_user_email
@@ -937,10 +949,20 @@ def dashboard_sidebar():
     if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
     if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
-    if st.session_state.user_type == 'patient': options = ['prediction', 'dashboard']; labels = ['🩺 Predict Risk', '📊 Health Dashboard']
-    elif st.session_state.user_type == 'doctor': options = ['doctor', 'dashboard']; labels = ['👨‍⚕️ Patient Data', '📊 Health Dashboard']
-    else: options = ['admin', 'prediction', 'dashboard']; labels = ['🛡️ Admin Panel', '🩺 Predict Risk', '📊 Dashboard']
-    if st.session_state.page not in options and st.session_state.page != 'profile': st.session_state.page = options[0]
+
+    # FIX 2: Doctors now get Predict Risk + Patient Data + Dashboard
+    if st.session_state.user_type == 'patient':
+        options = ['prediction', 'dashboard']
+        labels = ['🩺 Predict Risk', '📊 Health Dashboard']
+    elif st.session_state.user_type == 'doctor':
+        options = ['prediction', 'doctor', 'dashboard']
+        labels = ['🩺 Predict Risk', '👨‍⚕️ Patient Data', '📊 Health Dashboard']
+    else:
+        options = ['admin', 'prediction', 'dashboard']
+        labels = ['🛡️ Admin Panel', '🩺 Predict Risk', '📊 Dashboard']
+
+    if st.session_state.page not in options and st.session_state.page != 'profile':
+        st.session_state.page = options[0]
     if st.session_state.page != 'profile':
         idx = options.index(st.session_state.page) if st.session_state.page in options else 0
         selected_label = st.sidebar.radio('', labels, index=idx, label_visibility='collapsed')
@@ -957,7 +979,6 @@ def dashboard_sidebar():
 def landing_page():
     public_header()
 
-    # ===== HERO SECTION =====
     st.markdown(f'''
     <section class="hero-section">
         <div class="hero-bg"></div>
@@ -975,14 +996,11 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
-    # CTA Buttons
-    c1, c2, c3, c4 = st.columns([1.4, 1.1, 1.1, 1.4])
+    # FIX 3: Only ONE centered "Get Started" button — no Sign In button here
+    c1, c2, c3 = st.columns([1.8, 1.5, 1.8])
     with c2:
         if st.button('🚀 Get Started Free', type='primary', key='hero_start_btn', use_container_width=True):
             st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
-    with c3:
-        if st.button('🔐 Sign In', type='secondary', key='hero_signin_btn', use_container_width=True):
-            st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
 
     # Trust indicators
     st.markdown(f'''
@@ -1211,7 +1229,6 @@ def create_profile_page():
 def prediction_page():
     st.markdown('<div class="page-head"><div class="page-icon">🩺</div><div><div class="page-title">Diabetes Risk Prediction</div><div class="page-sub">Enter your clinical parameters for an AI-powered assessment</div></div></div>', unsafe_allow_html=True)
 
-    # Info card
     components.html(f'''
     <div style="background:linear-gradient(135deg,{GRAD1}18,{GRAD2}12);border:1px solid {GRAD1}44;border-radius:18px;padding:18px 24px;margin-bottom:18px;font-family:'DM Sans',Arial;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
@@ -1219,7 +1236,7 @@ def prediction_page():
             <span style="font-family:'Sora',Arial;font-weight:800;font-size:16px;color:{TEXT};">About This Assessment</span>
         </div>
         <p style="color:{MUTED};font-size:14px;margin:0;line-height:1.6;">
-            Fill in your latest clinical values below. Our ML model analyzes these 8 parameters to calculate your diabetes risk level. 
+            Fill in your latest clinical values below. Our ML model analyzes these 8 parameters to calculate your diabetes risk level.
             All values should come from a recent lab test or medical report for best accuracy.
         </p>
     </div>
@@ -1227,8 +1244,6 @@ def prediction_page():
 
     with st.container(border=True):
         st.markdown('<div class="card-heading"><div class="badge-num">1</div>Clinical Health Parameters</div>', unsafe_allow_html=True)
-
-        # Parameter reference guide
         c_left, c_right = st.columns(2)
         with c_left:
             st.markdown(f'<p style="color:{MUTED};font-size:13px;margin-bottom:12px;">🔵 Metabolic Indicators</p>', unsafe_allow_html=True)
@@ -1241,10 +1256,13 @@ def prediction_page():
             bp = st.number_input('💓 Blood Pressure (mmHg)', 30, 140, 70, help='Diastolic blood pressure. Normal: 60–80 mmHg')
             skin = st.number_input('📏 Skin Thickness (mm)', 0, 100, 20, help='Triceps skin fold thickness')
             bmi = st.number_input('⚖️ BMI', 10.0, 70.0, 25.0, help='Body Mass Index. Normal: 18.5–24.9, Overweight: 25–29.9, Obese: ≥30')
-            default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30)) if st.session_state.user_type == 'patient' else 30
+            # For doctor, use default age 35 since they may be entering for a patient
+            if st.session_state.user_type == 'patient':
+                default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30))
+            else:
+                default_age = 35
             age = st.number_input('🎂 Age (years)', 1, 100, default_age)
 
-    # Quick reference
     components.html(f'''
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-family:'DM Sans',Arial;">
         <div style="background:{CARD};border:1px solid {BORDER};border-radius:12px;padding:12px;text-align:center;">
@@ -1284,8 +1302,8 @@ def prediction_page():
         st.session_state.page = 'dashboard'; st.rerun()
 
 
+# FIX 4: WhatsApp share widget — now also used standalone for doctors
 def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidence, pred_time, patient_data, selected_idx=None):
-    """Reusable WhatsApp share widget"""
     st.markdown(f'''
     <div style="background:{'#031A0F' if DARK else '#F0FDF4'};border:1px solid {'#14532D44' if DARK else '#BBF7D0'};border-radius:18px;padding:22px;margin-top:8px;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
@@ -1336,7 +1354,6 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
     with col_save:
         if st.button('💾 Save PDF locally', key=f'save_local_{phone_key}', use_container_width=True):
             pdf_path = save_pdf_to_reports_folder(pdf_bytes, patient_name)
-            # Try local automation
             ok, msg_local = whatsapp_pdf_sender(phone, pdf_path, f"GlucoTrack Report for {patient_name}")
             if ok:
                 st.success(f'✅ {msg_local}')
@@ -1512,7 +1529,7 @@ def admin_page():
 
 
 def profile_page():
-    back_page = 'prediction' if st.session_state.user_type == 'patient' else ('doctor' if st.session_state.user_type == 'doctor' else 'admin')
+    back_page = 'prediction' if st.session_state.user_type in ('patient', 'doctor') else 'admin'
     if st.button('← Back', key='profile_back', type='secondary'): st.session_state.page = back_page; st.rerun()
     st.markdown('<div class="page-head"><div class="page-icon">👤</div><div><div class="page-title">My Profile</div><div class="page-sub">Update your personal details and photo</div></div></div>', unsafe_allow_html=True)
     email = st.session_state.current_user_email; utype = st.session_state.user_type
