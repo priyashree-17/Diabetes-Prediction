@@ -1,3 +1,4 @@
+# VERIFIED_FIXED_COLORHUNT_NO_GRADIENT_2026_05_21
 import os
 import json
 import pickle
@@ -271,21 +272,14 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .footer-logo{{font-weight:950;color:{TEXT}!important;}}
 @media(max-width:900px){{.hero-title{{font-size:55px;}}.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}.form-row{{grid-template-columns:1fr;}}}}
 
-/* Strong visibility fixes for dark mode */
-.stMarkdown, .stMarkdown *, .page-title, .page-sub, .card-heading, .section-title, .section-sub,
-.auth-title h1, .auth-title p, .param-value, .param-label, div[data-testid="stMetricValue"],
-div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {
-    color: {TEXT} !important;
-}
-.page-sub, .section-sub, .hero-sub, .step-text, .stat-label { color: {MUTED} !important; }
-.stDataFrame, .stDataFrame * { color: {TEXT} !important; }
-[data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * { color: {TEXT} !important; font-weight:700!important; }
-.logo-square{width:42px;height:42px;border-radius:12px;background:{BLUE};color:white!important;display:flex;align-items:center;justify-content:center;font-weight:900;}
-.whatsapp-card{background:#25D366;color:white!important;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:none;width:100%;}
-.whatsapp-card:hover{filter:brightness(.96);transform:translateY(-1px);}
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
+
+
+# Dark-mode visibility fixes are included inside the main CSS block.
+
+
 
 
 def initials(name):
@@ -653,8 +647,8 @@ def landing_page():
     
     st.markdown(f'''
     <section class="hero" style="padding-bottom: 20px;">
-        <div class="hero-badge">↯ AI-POWERED HEALTH PLATFORM</div>
-        <h1 class="hero-title">Know Your <span class="hero-blue">Diabetes Risk</span></h1>
+        <div class="hero-badge">🧠 AI-POWERED HEALTH PLATFORM</div>
+        <h1 class="hero-title">🩺 Know Your <span class="hero-blue">Diabetes Risk</span></h1>
         <p class="hero-sub">Predict diabetes risk in seconds using Machine Learning. Understand<br>your health. Take action early. Live better.</p>
     </section>
     ''', unsafe_allow_html=True)
