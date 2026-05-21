@@ -1041,33 +1041,25 @@ def landing_page():
             Powered by Machine Learning. Built for your health.
         </p>
         <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:20px;">
-            <button onclick="(function(){{
-                var btns = window.parent.document.querySelectorAll('button[kind=primary]');
-                for(var i=0;i<btns.length;i++){{
-                    if(btns[i].innerText.includes('Get Started')){{ btns[i].click(); break; }}
-                }}
-            }})()" style="
+            <a href="?hero_clicked=1" style="
                 display:inline-flex;align-items:center;justify-content:center;gap:10px;
                 background:{GRAD_PRIMARY};
-                color:white;border:none;border-radius:16px;
+                color:white !important;text-decoration:none;border-radius:16px;
                 padding:16px 52px;
-                font-family:\'DM Sans\',sans-serif;
+                font-family:'DM Sans',sans-serif;
                 font-weight:700;font-size:17px;cursor:pointer;
                 box-shadow:0 8px 28px rgba(14,165,233,0.38);
                 min-width:270px;transition:all 0.2s ease;
-            ">🚀 Get Started Free</button>
-            <div style="color:{MUTED};font-size:13px;font-family:\'DM Sans\',sans-serif;">
-                ✅ Free forever &nbsp;·&nbsp; 🔒 Private &amp; secure &nbsp;·&nbsp; ⚡ Results in seconds
-            </div>
+            ">🚀 Get Started Free</a>
         </div>
     </section>
     ''', unsafe_allow_html=True)
 
-    # Hidden real Streamlit button — triggered by the HTML button above
-    st.markdown('<div style="display:none">', unsafe_allow_html=True)
-    if st.button('🚀 Get Started Free', type='primary', key='hero_start_btn', use_container_width=True):
+    # Check if hero HTML button was clicked (sets query param)
+    params = st.query_params
+    if params.get('hero_clicked') == '1':
+        st.query_params.clear()
         st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # Stats
     st.markdown(f'''
@@ -1160,6 +1152,12 @@ def landing_page():
     with c2:
         if st.button('🚀 Create Free Account →', key='bottom_signup_btn', type='primary', use_container_width=True):
             st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
+
+    st.markdown(f'''
+    <div style="text-align:center;margin:16px 0 0;color:{MUTED};font-size:14px;font-family:'DM Sans',sans-serif;">
+        ✅ Free forever &nbsp;·&nbsp; 🔒 Private &amp; secure &nbsp;·&nbsp; ⚡ Results in seconds
+    </div>
+    ''', unsafe_allow_html=True)
 
     st.markdown(f'''
     <div class="footer">
