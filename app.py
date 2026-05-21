@@ -193,22 +193,32 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 
-/* FIX 1: Hide irrelevant sidebar top text (keyboard shortcut hint) */
+/* ===== SIDEBAR FIXES — hide ALL Streamlit nav / keyboard-shortcut elements ===== */
+/* The "keyboard_do…" text comes from the collapsible nav label Streamlit injects  */
 section[data-testid="stSidebar"] [data-testid="stSidebarNavItems"],
-section[data-testdata-testid="stSidebar"] > div > div > div:first-child > div:first-child > div:first-child,
-section[data-testid="stSidebar"] .st-emotion-cache-1cypcdb,
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"],
+section[data-testid="stSidebar"] [data-testid="stSidebarNavSeparator"],
 section[data-testid="stSidebar"] [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
 button[data-testid="stSidebarNavCollapseButton"],
-[data-testid="stSidebarNav"],
-section[data-testid="stSidebar"] > div > div > div > div > div[data-testid="stVerticalBlock"] > div:first-child > div > p,
-.st-emotion-cache-pkbazv,
+/* catch the raw text node wrapper that shows "keyboard_do…" */
+section[data-testid="stSidebar"] > div > div > div > div > div:first-child > div:first-child,
+section[data-testid="stSidebar"] .st-emotion-cache-1cypcdb,
+section[data-testid="stSidebar"] .st-emotion-cache-pkbazv,
 section[data-testid="stSidebar"] [aria-label*="keyboard"],
-section[data-testid="stSidebar"] code {{
+section[data-testid="stSidebar"] code,
+/* nuclear option: hide every <p> and plain text div that appears BEFORE our custom sb-header */
+section[data-testid="stSidebar"] > div > div > div > div > div[data-testid="stVerticalBlock"] > div:first-child > div > p,
+section[data-testid="stSidebar"] > div > div > div > div > div[data-testid="stVerticalBlock"] > div:first-child > div[data-testid="stMarkdownContainer"],
+section[data-testid="stSidebar"] > div:first-child > div > div > div > div > div:first-child {{
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
+    max-height: 0 !important;
     overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    pointer-events: none !important;
 }}
 
 /* Header cleanup */
@@ -376,10 +386,55 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     font-size: clamp(17px, 2.2vw, 22px);
     line-height: 1.6;
     max-width: 680px;
-    margin: 0 auto 44px;
+    margin: 0 auto 36px;
     color: {MUTED} !important;
     font-weight: 400;
     animation: fadeInUp 0.7s ease 0.2s both;
+}}
+
+/* ── Hero CTA card ── */
+.hero-cta-card {{
+    position: relative; z-index: 1;
+    background: {CARD};
+    border: 1px solid {BORDER};
+    border-radius: 28px;
+    padding: 36px 44px;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 12px 48px rgba(14,165,233,0.12), 0 2px 8px rgba(0,0,0,0.06);
+    animation: fadeInUp 0.8s ease 0.3s both;
+}}
+.hero-cta-title {{
+    font-family: 'Sora', sans-serif;
+    font-size: 20px; font-weight: 800;
+    color: {TEXT} !important;
+    margin: 0 0 6px;
+}}
+.hero-cta-sub {{
+    font-size: 14px; color: {MUTED} !important;
+    margin: 0 0 22px; line-height: 1.5;
+}}
+.hero-cta-btn {{
+    display: block; width: 100%;
+    background: {GRAD_PRIMARY};
+    color: white !important; border: none; border-radius: 14px;
+    font-weight: 700; font-size: 16px; padding: 16px 0;
+    cursor: pointer; text-align: center; text-decoration: none;
+    box-shadow: 0 8px 24px rgba(14,165,233,0.35);
+    transition: all 0.2s ease;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.2px;
+}}
+.hero-cta-btn:hover {{
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(14,165,233,0.45);
+    filter: brightness(1.06);
+}}
+.hero-trust {{
+    margin-top: 18px;
+    font-size: 13px; color: {MUTED} !important;
+    display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
 }}
 
 /* Stats bar */
@@ -600,6 +655,7 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 @media(max-width:900px) {{
     .feature-grid, .steps-grid, .stats-wrap {{ grid-template-columns: 1fr; }}
     .hero-title {{ font-size: 52px; letter-spacing: -2px; }}
+    .hero-cta-card {{ padding: 28px 22px; }}
 }}
 </style>
 '''
@@ -930,7 +986,6 @@ def public_header():
     st.markdown(f'<div class="grad-divider" style="margin-bottom:0;"></div>', unsafe_allow_html=True)
 
 
-# FIX 2: Doctor sidebar now includes Predict Risk + Doctor Portal + Dashboard
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
     name = st.session_state.current_user_name; email = st.session_state.current_user_email
@@ -945,12 +1000,19 @@ def dashboard_sidebar():
         avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:48px;height:48px;border-radius:14px;object-fit:cover;display:block;">'
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
-    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">🩺</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
+
+    # Inject a blank placeholder first so Streamlit's nav text renders BEFORE our HTML
+    # then we hide it with CSS and render our clean sidebar header
+    st.sidebar.markdown(
+        f'<div class="sb-header"><div class="sb-logo-box">🩺</div><div class="sb-brand">GlucoTrack</div></div>'
+        f'<div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>',
+        unsafe_allow_html=True
+    )
+
     if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
     if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
 
-    # FIX 2: Doctors now get Predict Risk + Patient Data + Dashboard
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']
         labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -979,6 +1041,7 @@ def dashboard_sidebar():
 def landing_page():
     public_header()
 
+    # ── Hero section: title + subtitle rendered as pure HTML ──────────────────
     st.markdown(f'''
     <section class="hero-section">
         <div class="hero-bg"></div>
@@ -996,18 +1059,29 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
-    # FIX 3: Only ONE centered "Get Started" button — no Sign In button here
-    c1, c2, c3 = st.columns([1.8, 1.5, 1.8])
-    with c2:
-        if st.button('🚀 Get Started Free', type='primary', key='hero_start_btn', use_container_width=True):
-            st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
-
-    # Trust indicators
-    st.markdown(f'''
-    <div style="text-align:center;margin:18px 0 0;color:{MUTED};font-size:14px;">
-        ✅ Free forever &nbsp;·&nbsp; 🔒 Private &amp; secure &nbsp;·&nbsp; ⚡ Results in seconds
-    </div>
-    ''', unsafe_allow_html=True)
+    # ── "Get Started" button lives inside a styled card below the hero text ──
+    _, col_card, _ = st.columns([1.8, 1.5, 1.8])
+    with col_card:
+        with st.container(border=True):
+            st.markdown(
+                f'<div style="text-align:center;padding:4px 0 12px;">'
+                f'<div style="font-family:\'Sora\',sans-serif;font-size:18px;font-weight:800;color:{TEXT};margin-bottom:6px;">🩺 Know Your Diabetes Risk</div>'
+                f'<div style="font-size:14px;color:{MUTED};margin-bottom:18px;">Free · Private · Results in seconds</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+            if st.button('🚀 Get Started Free', type='primary', key='hero_start_btn', use_container_width=True):
+                st.session_state.started = True
+                st.session_state.page = 'auth'
+                st.session_state.auth_mode = 'signup'
+                st.session_state.signup_step = 1
+                st.rerun()
+            st.markdown(
+                f'<div style="text-align:center;margin-top:14px;font-size:13px;color:{MUTED};">'
+                f'✅ Free forever &nbsp;·&nbsp; 🔒 Private &amp; secure &nbsp;·&nbsp; ⚡ Instant results'
+                f'</div>',
+                unsafe_allow_html=True
+            )
 
     # Stats
     st.markdown(f'''
@@ -1204,8 +1278,7 @@ def create_profile_page():
                     if uploaded_photo:
                         base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
                     users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True, 'profile_pic': base64_photo}
-                    save_json(USERS_FILE, users)
-                    add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
+                    save_json(USERS_FILE, users); add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
                     ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password)
                     if ok: st.rerun()
                     else: st.error(msg)
@@ -1220,8 +1293,7 @@ def create_profile_page():
                     if uploaded_photo:
                         base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
                     doctors[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no, 'approved': False, 'user_type': 'doctor', 'profile_created': True, 'profile_pic': base64_photo}
-                    save_json(DOCTORS_FILE, doctors)
-                    add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval')
+                    save_json(DOCTORS_FILE, doctors); add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval')
                     st.success('✅ Doctor profile created! Please wait for admin approval before signing in.')
                     st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
 
@@ -1256,7 +1328,6 @@ def prediction_page():
             bp = st.number_input('💓 Blood Pressure (mmHg)', 30, 140, 70, help='Diastolic blood pressure. Normal: 60–80 mmHg')
             skin = st.number_input('📏 Skin Thickness (mm)', 0, 100, 20, help='Triceps skin fold thickness')
             bmi = st.number_input('⚖️ BMI', 10.0, 70.0, 25.0, help='Body Mass Index. Normal: 18.5–24.9, Overweight: 25–29.9, Obese: ≥30')
-            # For doctor, use default age 35 since they may be entering for a patient
             if st.session_state.user_type == 'patient':
                 default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30))
             else:
@@ -1302,7 +1373,6 @@ def prediction_page():
         st.session_state.page = 'dashboard'; st.rerun()
 
 
-# FIX 4: WhatsApp share widget — now also used standalone for doctors
 def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidence, pred_time, patient_data, selected_idx=None):
     st.markdown(f'''
     <div style="background:{'#031A0F' if DARK else '#F0FDF4'};border:1px solid {'#14532D44' if DARK else '#BBF7D0'};border-radius:18px;padding:22px;margin-top:8px;">
