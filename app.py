@@ -736,7 +736,7 @@ def landing_page():
     </section>
     <section class="section" style="padding-bottom:20px;">
         <div class="bottom-cta" style="background:{ACCENT};">
-            <div style="font-size:42px;margin-bottom:18px;color:{PINK}!important;">💗</div>
+           
             <h2 style="font-size:38px;font-weight:950;margin:0 0 18px;color:white !important;">💗 Take Control of Your Health</h2>
             <p style="font-size:21px;line-height:1.5;margin-bottom:34px;color:white !important;">Join thousands who use GlucoTrack to monitor their diabetes risk. It's free, fast, and takes less than 2 minutes.</p>
         </div>
