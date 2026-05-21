@@ -175,33 +175,44 @@ div[data-testid="stRadio"] label:hover{{background:#EEF8FF!important;}}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:none!important;}}
 
 .hero{{padding:78px 20px 50px;text-align:center;max-width:1050px;margin:0 auto;}}
-.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid #8BD6FF;background:#EAF7FF;color:#006BAA!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
-.hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;}}
+.hero-badge{{display:inline-flex;align-items:center;gap:9px;border:1px solid {'#0284C7' if DARK else '#8BD6FF'};background:{'#0C4A6E' if DARK else '#EAF7FF'};color:{'#38BDF8' if DARK else '#006BAA'}!important;border-radius:999px;padding:10px 18px;letter-spacing:2px;font-weight:900;font-size:14px;}}
+.hero-title{{font-size:92px;line-height:.98;letter-spacing:-4px;font-weight:950;margin:42px 0 24px;color:{TEXT}!important;}}
 .hero-blue{{color:{BLUE}!important;display:block;}}
-.hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;}}
+.hero-sub{{font-size:27px;line-height:1.5;max-width:900px;margin:0 auto 48px;color:{MUTED}!important;}}
 
-.stats-wrap{{max-width:1120px;margin:42px auto 90px;border-radius:26px;border:1px solid {BORDER};display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,.03);}}
+.stats-wrap{{max-width:1120px;margin:42px auto 90px;border-radius:26px;border:1px solid {BORDER};display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,.03);background:{CARD}!important;}}
 .stat{{padding:48px 20px;text-align:center;border-right:1px solid {BORDER};}}
 .stat:last-child{{border-right:none;}}
 .stat-num{{font-size:46px;font-weight:950;color:{BLUE}!important;}}
-.stat-label{{font-size:18px;margin-top:6px;}}
+.stat-label{{font-size:18px;margin-top:6px;color:{MUTED}!important;}}
 .section{{padding:0 20px 90px;}}
-.section-title{{text-align:center;font-size:38px;font-weight:950;margin-bottom:16px;}}
-.section-sub{{text-align:center;font-size:22px;margin-bottom:60px;}}
+.section-title{{text-align:center;font-size:38px;font-weight:950;margin-bottom:16px;color:{TEXT}!important;}}
+.section-sub{{text-align:center;font-size:22px;margin-bottom:60px;color:{MUTED}!important;}}
 .feature-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1260px;margin:0 auto;}}
-.feature-card{{border-radius:28px;padding:40px;min-height:430px;}}
-.pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;}}
+.feature-card{{border-radius:28px;padding:40px;min-height:430px;border:1px solid {BORDER}!important;}}
+.feature-blue{{background:{'#1E293B' if DARK else '#E8F5FF'}!important;}}
+.feature-green{{background:{'#1E293B' if DARK else '#E8FFF1'}!important;}}
+.feature-red{{background:{'#1E293B' if DARK else '#FFECEC'}!important;}}
+.pill{{display:inline-flex;border-radius:999px;padding:8px 18px;font-size:14px;font-weight:900;letter-spacing:.5px;margin-bottom:36px;border:1px solid transparent;}}
+.pill-blue{{background:{'#0F172A' if DARK else '#E8F5FF'}!important;border-color:{BLUE}!important;color:{BLUE}!important;}}
+.pill-green{{background:{'#0F172A' if DARK else '#E8FFF1'}!important;border-color:{'#059669' if DARK else '#80EDB3'}!important;color:{'#34D399' if DARK else '#00885A'}!important;}}
+.pill-red{{background:{'#0F172A' if DARK else '#FFECEC'}!important;border-color:{'#DC2626' if DARK else '#FFB4C1'}!important;color:{'#F87171' if DARK else '#D9043D'}!important;}}
 .icon-box{{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:48px;}}
-.feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;}}
-.feature-text{{font-size:19px;line-height:1.45;}}
+.icon-blue{{background:{'#0F172A' if DARK else '#D4EDFF'}!important;}}
+.icon-green{{background:{'#0F172A' if DARK else '#CFF9E4'}!important;}}
+.icon-red{{background:{'#0F172A' if DARK else '#FFDDE2'}!important;}}
+.feature-title{{font-size:23px;font-weight:950;margin-bottom:20px;color:{TEXT}!important;}}
+.feature-text{{font-size:19px;line-height:1.45;color:{TEXT if DARK else '#475569'}!important;}}
 .steps-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1260px;margin:0 auto;}}
-.step-card{{border:1px solid {BORDER};border-radius:18px;padding:38px 24px;text-align:center;}}
+.step-card{{border:1px solid {BORDER};border-radius:18px;padding:38px 24px;text-align:center;background:{CARD}!important;}}
 .step-num{{color:{BLUE}!important;font-size:46px;font-weight:950;margin-bottom:14px;}}
-.step-title{{font-size:21px;font-weight:950;margin-bottom:14px;}}
-.step-text{{font-size:18px;line-height:1.55;}}
+.step-title{{font-size:21px;font-weight:950;margin-bottom:14px;color:{TEXT}!important;}}
+.step-text{{font-size:18px;line-height:1.55;color:{MUTED}!important;}}
 .bottom-cta{{max-width:840px;margin:0 auto 90px;text-align:center;border-radius:28px;padding:58px 70px;}}
 .auth-title{{text-align:center;padding:34px 0 20px;}}
-.auth-logo-row{{display:flex;justify-content:center;align-items:center;gap:12px;font-size:32px;font-weight:950;}}
+.auth-title h1{{font-size:32px;margin:28px 0 6px;color:{TEXT}!important;}}
+.auth-title p{{font-size:18px;color:{MUTED}!important;}}
+.auth-logo-row{{display:flex;justify-content:center;align-items:center;gap:12px;font-size:32px;font-weight:950;color:{TEXT}!important;}}
 .form-row{{display:grid;grid-template-columns:1fr 1fr;gap:18px;}}
 .auth-link{{text-align:center;font-size:17px;}}
 .auth-link b{{color:{BLUE}!important;}}
@@ -216,7 +227,8 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .param-card{{background:{CARD}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;}}
 .param-label{{color:{MUTED}!important;font-size:12px;font-weight:800;text-transform:uppercase;}}
 .param-value{{color:{TEXT}!important;font-size:23px;font-weight:950;}}
-.footer{{border-top:1px solid {BORDER};padding:28px 22px;display:flex;justify-content:space-between;}}
+.footer{{border-top:1px solid {BORDER};padding:28px 22px;display:flex;justify-content:space-between;color:{MUTED}!important;}}
+.footer-logo{{font-weight:950;color:{TEXT}!important;}}
 @media(max-width:900px){{.hero-title{{font-size:55px;}}.feature-grid,.steps-grid,.stats-wrap{{grid-template-columns:1fr;}}.form-row{{grid-template-columns:1fr;}}}}
 </style>
 '''
@@ -544,8 +556,8 @@ def landing_page():
     st.markdown(f'''
     <section class="hero" style="padding-bottom: 20px;">
         <div class="hero-badge">↯ AI-POWERED HEALTH PLATFORM</div>
-        <h1 class="hero-title" style="color:{TEXT} !important;">Know Your <span class="hero-blue">Diabetes Risk</span></h1>
-        <p class="hero-sub" style="color:{MUTED} !important;">Predict diabetes risk in seconds using Machine Learning. Understand<br>your health. Take action early. Live better.</p>
+        <h1 class="hero-title">Know Your <span class="hero-blue">Diabetes Risk</span></h1>
+        <p class="hero-sub">Predict diabetes risk in seconds using Machine Learning. Understand<br>your health. Take action early. Live better.</p>
     </section>
     ''', unsafe_allow_html=True)
     
@@ -560,67 +572,67 @@ def landing_page():
             st.rerun()
             
     st.markdown(f'''
-    <div class="stats-wrap" style="background:{CARD}; border-color:{BORDER};">
-        <div class="stat" style="border-right-color:{BORDER};">
+    <div class="stats-wrap">
+        <div class="stat">
             <div class="stat-num">95%+</div>
-            <div class="stat-label" style="color:{MUTED} !important;">Model Accuracy</div>
+            <div class="stat-label">Model Accuracy</div>
         </div>
-        <div class="stat" style="border-right-color:{BORDER};">
+        <div class="stat">
             <div class="stat-num">8</div>
-            <div class="stat-label" style="color:{MUTED} !important;">Health Parameters</div>
+            <div class="stat-label">Health Parameters</div>
         </div>
         <div class="stat">
             <div class="stat-num">100%</div>
-            <div class="stat-label" style="color:{MUTED} !important;">Free to Use</div>
+            <div class="stat-label">Free to Use</div>
         </div>
     </div>
     <section id="features" class="section">
-        <h2 class="section-title" style="color:{TEXT} !important;">What GlucoTrack Does</h2>
-        <p class="section-sub" style="color:{MUTED} !important;">Three powerful features to monitor, predict, and improve your health</p>
+        <h2 class="section-title">What GlucoTrack Does</h2>
+        <p class="section-sub">Three powerful features to monitor, predict, and improve your health</p>
         <div class="feature-grid">
-            <div class="feature-card feature-blue" style="background:{"#1E293B" if DARK else "#E8F5FF"};">
-                <div class="pill pill-blue" style="background:{"#0F172A" if DARK else "#E8F5FF"}; border-color:{BLUE}; color:{BLUE} !important;">MACHINE LEARNING</div>
-                <div class="icon-box icon-blue" style="background:{"#0F172A" if DARK else "#D4EDFF"};">🧠</div>
-                <div class="feature-title" style="color:{TEXT} !important;">ML-Based Risk Prediction</div>
-                <div class="feature-text" style="color:{TEXT if DARK else "#334A67"} !important;">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div>
+            <div class="feature-card feature-blue">
+                <div class="pill pill-blue">MACHINE LEARNING</div>
+                <div class="icon-box icon-blue">🧠</div>
+                <div class="feature-title">ML-Based Risk Prediction</div>
+                <div class="feature-text">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div>
             </div>
-            <div class="feature-card feature-green" style="background:{"#1E293B" if DARK else "#E8FFF1"};">
-                <div class="pill pill-green" style="background:{"#0F172A" if DARK else "#E8FFF1"}; border-color:#80EDB3; color:#00885A !important;">ANALYTICS</div>
-                <div class="icon-box icon-green" style="background:{"#0F172A" if DARK else "#CFF9E4"};">⌁</div>
-                <div class="feature-title" style="color:{TEXT} !important;">Patient Health Analytics</div>
-                <div class="feature-text" style="color:{TEXT if DARK else "#334A67"} !important;">Visualize your health data through interactive charts, glucose gauges, and BMI indicators inside a clean dashboard.</div>
+            <div class="feature-card feature-green">
+                <div class="pill pill-green">ANALYTICS</div>
+                <div class="icon-box icon-green">⌁</div>
+                <div class="feature-title">Patient Health Analytics</div>
+                <div class="feature-text">Visualize your health data through interactive charts, glucose gauges, and BMI indicators inside a clean dashboard.</div>
             </div>
-            <div class="feature-card feature-red" style="background:{"#1E293B" if DARK else "#FFECEC"};">
-                <div class="pill pill-red" style="background:{"#0F172A" if DARK else "#FFECEC"}; border-color:#FFB4C1; color:#D9043D !important;">PERSONALIZED</div>
-                <div class="icon-box icon-red" style="background:{"#0F172A" if DARK else "#FFDDE2"};">♡</div>
-                <div class="feature-title" style="color:{TEXT} !important;">Health Suggestions</div>
-                <div class="feature-text" style="color:{TEXT if DARK else "#334A67"} !important;">Get targeted, personalized recommendations based on your specific health values to help you take meaningful action.</div>
+            <div class="feature-card feature-red">
+                <div class="pill pill-red">PERSONALIZED</div>
+                <div class="icon-box icon-red">♡</div>
+                <div class="feature-title">Health Suggestions</div>
+                <div class="feature-text">Get targeted, personalized recommendations based on your specific health values to help you take meaningful action.</div>
             </div>
         </div>
     </section>
     <section id="how-it-works" class="section">
-        <h2 class="section-title" style="color:{TEXT} !important;">How It Works</h2>
-        <p class="section-sub" style="color:{MUTED} !important;">Get your diabetes risk assessment in 4 simple steps</p>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-sub">Get your diabetes risk assessment in 4 simple steps</p>
         <div class="steps-grid">
-            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+            <div class="step-card">
                 <div class="step-num">01</div>
-                <div class="step-title" style="color:{TEXT} !important;">Create Account</div>
-                <div class="step-text" style="color:{MUTED} !important;">Sign up with your name and email address</div>
+                <div class="step-title">Create Account</div>
+                <div class="step-text">Sign up with your name and email address</div>
             </div>
-            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+            <div class="step-card">
                 <div class="step-num">02</div>
-                <div class="step-title" style="color:{TEXT} !important;">Enter Health Data</div>
-                <div class="step-text" style="color:{MUTED} !important;">Fill in your clinical health values</div>
+                <div class="step-title">Enter Health Data</div>
+                <div class="step-text">Fill in your clinical health values</div>
             </div>
-            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+            <div class="step-card">
                 <div class="step-num">03</div>
-                <div class="step-title" style="color:{TEXT} !important;">Get Prediction</div>
-                <div class="step-text" style="color:{MUTED} !important;">ML model calculates your diabetes risk</div>
+                <div class="step-title">Get Prediction</div>
+                <div class="step-text">ML model calculates your diabetes risk</div>
             </div>
-            <div class="step-card" style="background:{CARD}; border-color:{BORDER};">
+            <div class="step-card">
                 <div class="step-num">04</div>
-                <div class="step-title" style="color:{TEXT} !important;">View Dashboard</div>
-                <div class="step-text" style="color:{MUTED} !important;">See analytics, share or download your PDF report</div>
+                <div class="step-title">View Dashboard</div>
+                <div class="step-text">See analytics, share or download your PDF report</div>
             </div>
         </div>
     </section>
@@ -642,10 +654,10 @@ def landing_page():
             st.session_state.signup_step = 1
             st.rerun()
             
-    st.markdown(f'''
-    <div class="footer" style="border-top-color:{BORDER};">
-        <div style="font-weight:950;color:{TEXT};">⌁ GlucoTrack</div>
-        <div style="color:{MUTED} !important;">For educational purposes only. Always consult a medical professional.</div>
+    st.markdown('''
+    <div class="footer">
+        <div class="footer-logo">⌁ GlucoTrack</div>
+        <div>For educational purposes only. Always consult a medical professional.</div>
     </div>
     ''', unsafe_allow_html=True)
 
@@ -660,7 +672,7 @@ def auth_page():
         st.rerun()
         
     if st.session_state.auth_mode == 'signin':
-        st.markdown(f'<div class="auth-title"><div class="auth-logo-row" style="color:{TEXT} !important;"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;color:{TEXT} !important;">Welcome back</h1><p style="font-size:18px;color:{MUTED} !important;">Sign in to continue to your dashboard</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1>Welcome back</h1><p>Sign in to continue to your dashboard</p></div>', unsafe_allow_html=True)
         
         c1, col_card, c3 = st.columns([1, 1.8, 1])
         with col_card:
@@ -688,7 +700,7 @@ def auth_page():
                 st.markdown(f'<p style="text-align:center;color:{MUTED};margin-top:24px;">🔒 Your data is private and never shared.</p>', unsafe_allow_html=True)
     else:
         if st.session_state.signup_step == 1:
-            st.markdown(f'<div class="auth-title"><div class="auth-logo-row" style="color:{TEXT} !important;"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;color:{TEXT} !important;">Create your account</h1><p style="font-size:18px;color:{MUTED} !important;">Step 1 of 2 — Personal Details</p><div style="height:7px;background:#16A6E8;border-radius:8px;max-width:560px;margin:34px auto 0;width:50%;"></div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1>Create your account</h1><p>Step 1 of 2 — Personal Details</p><div style="height:7px;background:{BLUE};border-radius:8px;max-width:560px;margin:34px auto 0;width:50%;"></div></div>', unsafe_allow_html=True)
             
             c1, col_card, c3 = st.columns([1, 1.8, 1])
             with col_card:
@@ -711,7 +723,7 @@ def auth_page():
                         st.session_state.auth_mode = 'signin'
                         st.rerun()
         else:
-            st.markdown(f'<div class="auth-title"><div class="auth-logo-row" style="color:{TEXT} !important;"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1 style="font-size:32px;margin:28px 0 6px;color:{TEXT} !important;">Create your account</h1><p style="font-size:18px;color:{MUTED} !important;">Step 2 of 2 — Set Password</p><div style="height:7px;background:#16A6E8;border-radius:8px;max-width:560px;margin:34px auto 0;width:100%;"></div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">⌁</div><div>GlucoTrack</div></div><h1>Create your account</h1><p>Step 2 of 2 — Set Password</p><div style="height:7px;background:{BLUE};border-radius:8px;max-width:560px;margin:34px auto 0;width:100%;"></div></div>', unsafe_allow_html=True)
             
             c1, col_card, c3 = st.columns([1, 1.8, 1])
             with col_card:
@@ -1085,7 +1097,7 @@ def doctor_page():
                 <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
                     <div style="background-color:#25D366;color:white;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.32-.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-66 1.63-66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
+                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-66 1.63-66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
                         </svg>
                         Send Report via WhatsApp
                     </div>
