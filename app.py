@@ -114,8 +114,14 @@ for k, v in defaults.items():
 DARK = st.session_state.dark_mode
 if DARK:
     BG = '#0F172A'; CARD = '#1E293B'; TEXT = '#F8FAFC'; MUTED = '#94A3B8'; BORDER = '#334155'; INPUT = '#172033'; BLUE = '#38BDF8'; BLUE_DARK = '#0284C7'; SIDEBAR = '#0F172A'; PLOT_TEMPLATE = 'plotly_dark'
+    RESULT_HIGH_BG = '#450A0A'; RESULT_HIGH_BORDER = '#7F1D1D'; RESULT_HIGH_TEXT = '#FCA5A5'
+    RESULT_LOW_BG = '#022C22'; RESULT_LOW_BORDER = '#064E3B'; RESULT_LOW_TEXT = '#A7F3D0'
+    BOX_SUGGESTION_BG = '#1E293B'; BOX_SUGGESTION_TITLE = '#F8FAFC'; BOX_SUGGESTION_TEXT = '#38BDF8'
 else:
     BG = '#F6F9FC'; CARD = '#FFFFFF'; TEXT = '#0F172A'; MUTED = '#91A0B8'; BORDER = '#E6EDF5'; INPUT = '#F8FAFD'; BLUE = '#16A6E8'; BLUE_DARK = '#0284C7'; SIDEBAR = '#FFFFFF'; PLOT_TEMPLATE = 'plotly_white'
+    RESULT_HIGH_BG = '#FFF1F2'; RESULT_HIGH_BORDER = '#FECDD3'; RESULT_HIGH_TEXT = '#BE123C'
+    RESULT_LOW_BG = '#F0FDF4'; RESULT_LOW_BORDER = '#BBF7D0'; RESULT_LOW_TEXT = '#166534'
+    BOX_SUGGESTION_BG = '#E8F5FF'; BOX_SUGGESTION_TITLE = '#0F172A'; BOX_SUGGESTION_TEXT = '#006BAA'
 
 css = f'''
 <style>
@@ -202,11 +208,11 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child{{display:
 .page-head{{display:flex;align-items:center;gap:16px;padding:26px 34px 18px;}}
 .page-icon{{width:50px;height:50px;background:#DFF3FF;color:{BLUE}!important;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;}}
 .page-title{{font-size:31px;font-weight:950;}}
-.page-sub{{font-size:18px;margin-top:4px;}}
+.page-sub{{font-size:18px;margin-top:4px;color:{MUTED}!important;}}
 .card-heading{{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:950;margin-bottom:22px;}}
-.badge-num{{width:30px;height:30px;background:#DFF3FF;color:{BLUE}!important;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:950;}}
-.result-high{{background:#FFF1F2;border:1px solid #FECDD3;color:#BE123C!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
-.result-low{{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
+.badge-num{{width:30px;height:30px;background:#DFF3FF;color:{BLUE}!important;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:950;}}
+.result-high{{background:{RESULT_HIGH_BG};border:1px solid {RESULT_HIGH_BORDER};color:{RESULT_HIGH_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
+.result-low{{background:{RESULT_LOW_BG};border:1px solid {RESULT_LOW_BORDER};color:{RESULT_LOW_TEXT}!important;padding:28px;border-radius:20px;text-align:center;font-weight:950;font-size:25px;}}
 .param-card{{background:{CARD}!important;border:1px solid {BORDER}!important;border-radius:15px;padding:16px;text-align:center;}}
 .param-label{{color:{MUTED}!important;font-size:12px;font-weight:800;text-transform:uppercase;}}
 .param-value{{color:{TEXT}!important;font-size:23px;font-weight:950;}}
@@ -449,7 +455,7 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
 
 
 def public_header():
-    col_logo, col_features, col_how, col_theme, col_signin = st.columns([2.5, 2.5, 1.8, 1.2, 1.2])
+    col_logo, col_nav, col_spacer, col_theme, col_signin = st.columns([2.5, 4.0, 2.0, 1.2, 1.2])
     with col_logo:
         st.markdown(f'''
         <div style="display:flex;align-items:center;gap:12px;font-size:24px;font-weight:900;color:{TEXT};margin-top:8px;">
@@ -457,15 +463,10 @@ def public_header():
             <div>GlucoTrack</div>
         </div>
         ''', unsafe_allow_html=True)
-    with col_features:
+    with col_nav:
         st.markdown(f'''
-        <div style="margin-top:14px; text-align:center;">
+        <div style="display:flex;gap:32px;margin-top:16px;">
             <a href="#features" class="nav-link" target="_self">What GlucoTrack Does</a>
-        </div>
-        ''', unsafe_allow_html=True)
-    with col_how:
-        st.markdown(f'''
-        <div style="margin-top:14px; text-align:center;">
             <a href="#how-it-works" class="nav-link" target="_self">How It Works</a>
         </div>
         ''', unsafe_allow_html=True)
@@ -527,6 +528,18 @@ def dashboard_sidebar():
 
 def landing_page():
     public_header()
+    components.html(
+        """
+        <script>
+            if (!window.parent.location.hash) {
+                const mainContainer = window.parent.document.querySelector('.main') || window.parent.document.querySelector('section.main');
+                if (mainContainer) { mainContainer.scrollTop = 0; }
+            }
+        </script>
+        """,
+        height=0,
+        width=0
+    )
     
     st.markdown(f'''
     <section class="hero" style="padding-bottom: 20px;">
@@ -851,7 +864,7 @@ def dashboard_page():
     st.subheader('📈 Patient Health Analytics')
     metrics = ['Glucose', 'BMI', 'Insulin', 'BloodPressure', 'Age']; values = [patient_data[m] for m in metrics]; fig = go.Figure(); fig.add_trace(go.Bar(x=metrics, y=values, marker_color=[BLUE, '#22C55E', '#F97316', '#8B5CF6', '#EF4444'], text=values, textposition='outside')); fig.update_layout(template=PLOT_TEMPLATE, height=390, title='Health Parameter Overview'); st.plotly_chart(fig, use_container_width=True)
     
-    suggestions = get_suggestions(patient_data); items = ''.join([f'<li>{s}</li>' for s in suggestions]); components.html(f'<div style="background:#E8F5FF;padding:28px 34px;border-radius:20px;font-family:Inter,Arial;"><h2 style="color:#0F172A;margin:0 0 16px;">💡 Health Suggestions</h2><ul style="color:#006BAA;font-size:16px;line-height:1.8;font-weight:600;">{items}</ul></div>', height=230)
+    suggestions = get_suggestions(patient_data); items = ''.join([f'<li>{s}</li>' for s in suggestions]); components.html(f'<div style="background:{BOX_SUGGESTION_BG};padding:28px 34px;border-radius:20px;border:1px solid {BORDER};font-family:Inter,Arial;"><h2 style="color:{BOX_SUGGESTION_TITLE};margin:0 0 16px;font-weight:900;">💡 Health Suggestions</h2><ul style="color:{BOX_SUGGESTION_TEXT};font-size:16px;line-height:1.8;font-weight:600;">{items}</ul></div>', height=230)
     
     col_dl, col_wa = st.columns(2)
     with col_dl:
@@ -885,6 +898,7 @@ def dashboard_page():
                 Share Report via WhatsApp
             </div>
         </a>
+        <div style="font-size:12px;color:{MUTED};margin-top:8px;font-weight:500;text-align:center;">💡 <i>Tip: Download the PDF report first, then click here to send the clinical text summary and attach the downloaded PDF.</i></div>
         ''', unsafe_allow_html=True)
         
     st.write('')
@@ -1011,9 +1025,9 @@ def doctor_page():
                 suggestions = get_suggestions(patient_data)
                 s_html = ''.join([f'<li style="margin-bottom:8px;">{s}</li>' for s in suggestions])
                 components.html(f'''
-                <div style="background:#E8F5FF; padding: 20px; border-radius: 16px; font-family: Inter, Arial; height: 100%;">
-                    <h4 style="color:#0F172A; margin: 0 0 12px;">Recommendations</h4>
-                    <ul style="color:#006BAA; font-size:15px; line-height:1.6; font-weight:600; padding-left:20px; margin:0;">
+                <div style="background:{BOX_SUGGESTION_BG}; padding: 20px; border-radius: 16px; border: 1px solid {BORDER}; font-family: Inter, Arial; height: 100%;">
+                    <h4 style="color:{BOX_SUGGESTION_TITLE}; margin: 0 0 12px; font-weight:900;">Recommendations</h4>
+                    <ul style="color:{BOX_SUGGESTION_TEXT}; font-size:15px; line-height:1.6; font-weight:600; padding-left:20px; margin:0;">
                         {s_html}
                     </ul>
                 </div>
@@ -1071,7 +1085,7 @@ def doctor_page():
                 <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
                     <div style="background-color:#25D366;color:white;text-align:center;padding:14px;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 12px 24px rgba(37,211,102,.20);min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-66 1.63-66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
+                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.32-.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-66 1.63-66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
                         </svg>
                         Send Report via WhatsApp
                     </div>
