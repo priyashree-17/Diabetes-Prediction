@@ -193,14 +193,26 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 
-/* Hide ALL Streamlit sidebar collapse chrome + keyboard shortcut label */
+/* FIX 1: Hide keyboard_do collapse-button text and all sidebar nav chrome */
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarNavCollapseButton"],
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"],
 [data-testid="collapsedControl"],
 button[kind="header"],
-section[data-testid="stSidebar"] ~ div[data-testid="collapsedControl"] {{
+section[data-testid="stSidebar"] ~ div[data-testid="collapsedControl"],
+/* The actual keyboard_do element — Streamlit renders it as a <span> or <p> 
+   at the very top of the sidebar div before user content */
+section[data-testid="stSidebar"] > div:first-child > div:first-child > div:first-child > div:first-child:not([data-testid]) > div:first-child,
+section[data-testid="stSidebar"] > div > div > div > div > div:first-child > div:first-child > div > p,
+section[data-testid="stSidebar"] > div > div > div > div > div:first-child > div:first-child > div > span,
+/* Catch-all: any element in sidebar that contains only the keyboard shortcut text */
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p:empty,
+.st-emotion-cache-pkbazv,
+.st-emotion-cache-1cypcdb,
+/* Hide Streamlit's top-bar collapse toggle rendered inside the sidebar */
+section[data-testid="stSidebar"] svg[data-testid="keyboard_double_arrow_left"],
+section[data-testid="stSidebar"] svg[data-testid="keyboard_double_arrow_right"] {{
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
@@ -289,17 +301,6 @@ button * {{ color: white !important; }}
 section[data-testid="stSidebar"] {{ background: {SIDEBAR} !important; border-right: 1px solid {BORDER}; }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
 section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
-section[data-testid="stSidebar"] {{
-    padding-top: 0 !important;
-}}
-
-section[data-testid="stSidebar"] > div {{
-    padding-top: 0 !important;
-}}
-
-section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{
-    gap: 0.75rem !important;
-}}
 .sb-header {{ height: 80px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid {BORDER}; }}
 .sb-logo-box {{
     width: 42px; height: 42px;
@@ -926,38 +927,9 @@ def public_header():
     st.markdown(f'<div class="grad-divider" style="margin-bottom:0;"></div>', unsafe_allow_html=True)
 
 
-# ─── KEYBOARD SHORTCUT LABEL REMOVER ────────────────────────────────────────
-# ─── KEYBOARD SHORTCUT LABEL REMOVER ────────────────────────────────────────
-_KBD_REMOVER_JS = """
-<script>
-(function () {
-    function cleanKeyboardText() {
-        const doc = window.parent.document;
-
-        doc.querySelectorAll('*').forEach(el => {
-            const txt = (el.innerText || '').trim();
-
-            if (txt.startsWith('keyboard_')) {
-                el.style.setProperty('display', 'none', 'important');
-                el.style.setProperty('visibility', 'hidden', 'important');
-                el.style.setProperty('height', '0px', 'important');
-                el.style.setProperty('overflow', 'hidden', 'important');
-                el.style.setProperty('opacity', '0', 'important');
-            }
-        });
-    }
-
-    cleanKeyboardText();
-    setInterval(cleanKeyboardText, 300);
-})();
-</script>
-"""
+# FIX 2: Doctor sidebar now includes Predict Risk + Doctor Portal + Dashboard
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
-
-    # ── Inject the keyboard-shortcut-label remover first ──────────────────
-    components.html(_KBD_REMOVER_JS, height=0)
-
     name = st.session_state.current_user_name; email = st.session_state.current_user_email
     role = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
     init = initials(name)
@@ -975,6 +947,7 @@ def dashboard_sidebar():
     if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
 
+    # FIX 2: Doctors now get Predict Risk + Patient Data + Dashboard
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']
         labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -1028,6 +1001,7 @@ def landing_page():
     </script>
     """, height=0)
 
+    # Hero section with Get Started button INSIDE the hero card
     st.markdown(f'''
     <section class="hero-section">
         <div class="hero-bg"></div>
@@ -1057,11 +1031,13 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
+    # Check if hero HTML button was clicked (sets query param)
     params = st.query_params
     if params.get('hero_clicked') == '1':
         st.query_params.clear()
         st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
 
+    # Stats
     st.markdown(f'''
     <div class="stats-wrap" style="margin-top:52px;">
         <div class="stat">
@@ -1079,6 +1055,7 @@ def landing_page():
     </div>
     ''', unsafe_allow_html=True)
 
+    # Features Section
     st.markdown(f'''
     <section id="features" class="section" style="padding-top:20px;">
         <h2 class="section-title">What GlucoTrack Does</h2>
@@ -1106,6 +1083,7 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
+    # How It Works
     st.markdown(f'''
     <section id="how-it-works" class="section">
         <h2 class="section-title">How It Works</h2>
@@ -1135,6 +1113,7 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
+    # Bottom CTA
     st.markdown(f'''
     <section class="section" style="padding-bottom:24px;">
         <div class="bottom-cta">
@@ -1311,6 +1290,7 @@ def prediction_page():
             bp = st.number_input('💓 Blood Pressure (mmHg)', 30, 140, 70, help='Diastolic blood pressure. Normal: 60–80 mmHg')
             skin = st.number_input('📏 Skin Thickness (mm)', 0, 100, 20, help='Triceps skin fold thickness')
             bmi = st.number_input('⚖️ BMI', 10.0, 70.0, 25.0, help='Body Mass Index. Normal: 18.5–24.9, Overweight: 25–29.9, Obese: ≥30')
+            # For doctor, use default age 35 since they may be entering for a patient
             if st.session_state.user_type == 'patient':
                 default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30))
             else:
@@ -1356,7 +1336,9 @@ def prediction_page():
         st.session_state.page = 'dashboard'; st.rerun()
 
 
+# FIX 4: WhatsApp share widget — now also used standalone for doctors
 def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidence, pred_time, patient_data, selected_idx=None):
+    """Share PDF via browser native Web Share API — no API keys required."""
     import base64 as _b64
 
     DARK_LOCAL = st.session_state.dark_mode
@@ -1365,6 +1347,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
     text_col   = '#F0F6FF' if DARK_LOCAL else '#0A1628'
     muted_col  = '#8BA4C8' if DARK_LOCAL else '#4A6589'
 
+    # Header card
     st.markdown(f"""
     <div style="background:{bg_col};border:1.5px solid {border_col};border-radius:18px;
                 padding:20px 24px;margin-top:8px;">
@@ -1383,6 +1366,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
 
     st.write("")
 
+    # Build caption
     caption = (
         f"🩺 GlucoTrack Diabetes Risk Report\n"
         f"👤 Patient: {patient_name}\n"
@@ -1401,6 +1385,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
     col_share, col_dl = st.columns([3, 2])
 
     with col_share:
+        # Web Share API button — shares the actual PDF file
         components.html(f"""
         <div style="margin:0;">
           <button id="sharePdfBtn_{phone_key}" style="
