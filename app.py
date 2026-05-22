@@ -289,6 +289,17 @@ button * {{ color: white !important; }}
 section[data-testid="stSidebar"] {{ background: {SIDEBAR} !important; border-right: 1px solid {BORDER}; }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
 section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
+section[data-testid="stSidebar"] {{
+    padding-top: 0 !important;
+}}
+
+section[data-testid="stSidebar"] > div {{
+    padding-top: 0 !important;
+}}
+
+section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{
+    gap: 0.75rem !important;
+}}
 .sb-header {{ height: 80px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid {BORDER}; }}
 .sb-logo-box {{
     width: 42px; height: 42px;
@@ -916,41 +927,36 @@ def public_header():
 
 
 # ─── KEYBOARD SHORTCUT LABEL REMOVER ────────────────────────────────────────
+# ─── KEYBOARD SHORTCUT LABEL REMOVER ────────────────────────────────────────
 _KBD_REMOVER_JS = """
 <script>
-(function removeKbdLabel() {
-    var sb = window.parent.document.querySelector('[data-testid="stSidebar"]');
-    if (!sb) { setTimeout(removeKbdLabel, 150); return; }
-    function sweep() {
-        var walker = window.parent.document.createTreeWalker(
-            sb, NodeFilter.SHOW_TEXT, null, false
-        );
-        var node;
-        while ((node = walker.nextNode())) {
-            if (/^keyboard_/.test(node.textContent.trim())) {
-                var el = node.parentElement;
-                while (el && el !== sb) {
-                    el.style.cssText =
-                        'display:none!important;height:0!important;' +
-                        'min-height:0!important;overflow:hidden!important;' +
-                        'margin:0!important;padding:0!important;' +
-                        'border:none!important;opacity:0!important;';
-                    el = el.parentElement;
-                }
+(function () {
+    function cleanKeyboardText() {
+        const doc = window.parent.document;
+
+        doc.querySelectorAll('*').forEach(el => {
+            const txt = (el.innerText || '').trim();
+
+            if (txt.startsWith('keyboard_')) {
+                el.style.setProperty('display', 'none', 'important');
+                el.style.setProperty('visibility', 'hidden', 'important');
+                el.style.setProperty('height', '0px', 'important');
+                el.style.setProperty('overflow', 'hidden', 'important');
+                el.style.setProperty('opacity', '0', 'important');
             }
-        }
+        });
     }
-    sweep();
-    new MutationObserver(sweep).observe(sb, { childList: true, subtree: true });
+
+    cleanKeyboardText();
+    setInterval(cleanKeyboardText, 300);
 })();
 </script>
 """
-
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
 
     # ── Inject the keyboard-shortcut-label remover first ──────────────────
-    st.sidebar.markdown(_KBD_REMOVER_JS, unsafe_allow_html=True)
+    components.html(_KBD_REMOVER_JS, height=0)
 
     name = st.session_state.current_user_name; email = st.session_state.current_user_email
     role = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
