@@ -57,7 +57,7 @@ def add_audit(action, email='System', details=''):
 
 DEFAULT_USERS = {
     'user@gmail.com': {
-        'password': 'Pass1234',
+        'password': 'user@123',
         'name': 'Demo User',
         'phone': 'Not Provided',
         'age': 30,
@@ -193,43 +193,23 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 
-/* FIX 1: Hide keyboard_do collapse-button text and all sidebar nav chrome */
+/* ── Hide keyboard_double_arrow collapse button ── */
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarNavCollapseButton"],
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"],
 [data-testid="collapsedControl"],
-button[kind="header"],
-section[data-testid="stSidebar"] ~ div[data-testid="collapsedControl"],
-/* The actual keyboard_do element — Streamlit renders it as a <span> or <p> 
-   at the very top of the sidebar div before user content */
-section[data-testid="stSidebar"] > div:first-child > div:first-child > div:first-child > div:first-child:not([data-testid]) > div:first-child,
-section[data-testid="stSidebar"] > div > div > div > div > div:first-child > div:first-child > div > p,
-section[data-testid="stSidebar"] > div > div > div > div > div:first-child > div:first-child > div > span,
-/* Catch-all: any element in sidebar that contains only the keyboard shortcut text */
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p:empty,
 .st-emotion-cache-pkbazv,
 .st-emotion-cache-1cypcdb,
-/* Hide Streamlit's top-bar collapse toggle rendered inside the sidebar */
-section[data-testid="stSidebar"] svg[data-testid="keyboard_double_arrow_left"],
-section[data-testid="stSidebar"] svg[data-testid="keyboard_double_arrow_right"] {{
+.st-emotion-cache-dvne4q,
+.st-emotion-cache-1gwvy71 {{
     display: none !important;
-    visibility: hidden !important;
     height: 0 !important;
-    max-height: 0 !important;
     overflow: hidden !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
 }}
-/* Remove any top padding/margin that the hidden element leaves behind */
 section[data-testid="stSidebar"] > div > div {{
     padding-top: 0 !important;
     margin-top: 0 !important;
-}}
-section[data-testid="stSidebar"] > div > div > div > div > div:first-child {{
-    gap: 0 !important;
 }}
 
 /* Header cleanup */
@@ -626,6 +606,52 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 '''
 st.markdown(css, unsafe_allow_html=True)
 
+# Inject JS directly into page via st.markdown to hide keyboard_double_arrow sidebar button
+st.markdown("""
+<script>
+(function() {
+    var HIDE = 'display:none!important;height:0!important;width:0!important;overflow:hidden!important;padding:0!important;margin:0!important;opacity:0!important;position:absolute!important;pointer-events:none!important;';
+    function hideKbd() {
+        // Target 1: the sidebar collapse button by its SVG icon test id
+        ['keyboard_double_arrow_left', 'keyboard_double_arrow_right'].forEach(function(tid) {
+            document.querySelectorAll('svg[data-testid="' + tid + '"]').forEach(function(svg) {
+                var el = svg;
+                for (var i = 0; i < 5; i++) {
+                    if (!el) break;
+                    el.style.cssText = HIDE;
+                    if (el.tagName === 'BUTTON' || el.tagName === 'DIV') break;
+                    el = el.parentElement;
+                }
+            });
+        });
+        // Target 2: any text node inside sidebar starting with "keyboard_"
+        var sb = document.querySelector('[data-testid="stSidebar"]');
+        if (!sb) return;
+        var tw = document.createTreeWalker(sb, NodeFilter.SHOW_TEXT);
+        var n;
+        while (n = tw.nextNode()) {
+            if (/^keyboard_/.test(n.textContent.trim())) {
+                var el = n.parentElement;
+                for (var i = 0; i < 5 && el && el !== sb; i++) {
+                    el.style.cssText = HIDE;
+                    el = el.parentElement;
+                }
+            }
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            hideKbd();
+            new MutationObserver(hideKbd).observe(document.body, {childList:true, subtree:true});
+        });
+    } else {
+        hideKbd();
+        new MutationObserver(hideKbd).observe(document.body, {childList:true, subtree:true});
+    }
+})();
+</script>
+""", unsafe_allow_html=True)
+
 
 def initials(name):
     parts = str(name or 'User').strip().split()
@@ -823,7 +849,34 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     setc((1, 1, 1)); pdf.rect(0, 0, width, height, fill=True, stroke=False)
     setc(navy); pdf.rect(0, height - 128, width, 128, fill=True, stroke=False)
     setc(royal); pdf.roundRect(38, height - 90, 50, 50, 12, fill=True, stroke=False)
-    setc((1,1,1)); pdf.setFont('Helvetica-Bold', 19); pdf.drawCentredString(63, height - 70, '🩺')
+    # Draw stethoscope icon using vector shapes (ReportLab cannot render emoji)
+    cx, cy = 63, height - 65  # center of icon box
+    setc((1, 1, 1))
+    stroke((1, 1, 1))
+    pdf.setLineWidth(2.2)
+    # Chest piece — filled circle
+    pdf.circle(cx, cy - 7, 7, fill=True, stroke=False)
+    # Chest piece inner circle
+    setc(royal)
+    pdf.circle(cx, cy - 7, 3.5, fill=True, stroke=False)
+    setc((1, 1, 1))
+    # Tube — arc going up-left then curving right to earpiece fork
+    from reportlab.graphics.shapes import Path
+    from reportlab.lib.colors import Color, white
+    pdf.setStrokeColorRGB(1, 1, 1)
+    pdf.setLineWidth(2.4)
+    pdf.setLineCap(1)
+    # Left tube arm
+    pdf.bezier(cx - 7, cy - 1,   cx - 14, cy + 4,   cx - 14, cy + 12,  cx - 9, cy + 16)
+    # Right tube arm
+    pdf.bezier(cx + 7, cy - 1,   cx + 14, cy + 4,   cx + 14, cy + 12,  cx + 9, cy + 16)
+    # Top connector bar
+    pdf.line(cx - 9, cy + 16, cx + 9, cy + 16)
+    # Left earpiece dot
+    pdf.setFillColorRGB(1, 1, 1)
+    pdf.circle(cx - 9, cy + 18, 2.2, fill=True, stroke=False)
+    # Right earpiece dot
+    pdf.circle(cx + 9, cy + 18, 2.2, fill=True, stroke=False)
     pdf.setFont('Helvetica-Bold', 23); pdf.drawString(108, height - 52, 'GlucoTrack Clinical Report')
     pdf.setFont('Helvetica', 10); setc((0.6, 0.75, 0.92))
     pdf.drawString(108, height - 72, 'Diabetes Risk Assessment  |  Health Analytics  |  Action Plan')
@@ -930,6 +983,32 @@ def public_header():
 # FIX 2: Doctor sidebar now includes Predict Risk + Doctor Portal + Dashboard
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
+    # Re-run keyboard hide on every sidebar render (Streamlit re-renders on interaction)
+    st.markdown("""
+    <script>
+    (function() {
+        var H='display:none!important;height:0!important;width:0!important;overflow:hidden!important;padding:0!important;margin:0!important;opacity:0!important;position:absolute!important;';
+        function hide() {
+            ['keyboard_double_arrow_left','keyboard_double_arrow_right'].forEach(function(t){
+                document.querySelectorAll('svg[data-testid="'+t+'"]').forEach(function(s){
+                    for(var e=s,i=0;e&&i<6;e=e.parentElement,i++){e.style.cssText=H;if(e.tagName==='BUTTON')break;}
+                });
+            });
+            var sb=document.querySelector('[data-testid="stSidebar"]');
+            if(!sb)return;
+            var tw=document.createTreeWalker(sb,NodeFilter.SHOW_TEXT);
+            var n;
+            while(n=tw.nextNode()){
+                if(/^keyboard_/.test(n.textContent.trim())){
+                    for(var e=n.parentElement,i=0;e&&e!==sb&&i<5;e=e.parentElement,i++)e.style.cssText=H;
+                }
+            }
+        }
+        hide();
+        new MutationObserver(hide).observe(document.body,{childList:true,subtree:true});
+    })();
+    </script>
+    """, unsafe_allow_html=True)
     name = st.session_state.current_user_name; email = st.session_state.current_user_email
     role = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
     init = initials(name)
@@ -975,31 +1054,6 @@ def dashboard_sidebar():
 
 def landing_page():
     public_header()
-
-    # MutationObserver: hide keyboard_do text in sidebar
-    components.html("""
-    <script>
-    (function() {
-        function hideKbd() {
-            var sb = window.parent.document.querySelector('[data-testid="stSidebar"]');
-            if (!sb) return;
-            var tw = window.parent.document.createTreeWalker(sb, NodeFilter.SHOW_TEXT);
-            var n;
-            while (n = tw.nextNode()) {
-                if (n.textContent && n.textContent.trim().startsWith('keyboard_')) {
-                    var el = n.parentElement;
-                    if (el) { el.style.cssText = 'display:none!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;'; }
-                    if (el && el.parentElement && el.parentElement !== sb) {
-                        el.parentElement.style.cssText = 'display:none!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;';
-                    }
-                }
-            }
-        }
-        hideKbd();
-        new MutationObserver(hideKbd).observe(window.parent.document.body, {childList:true, subtree:true});
-    })();
-    </script>
-    """, height=0)
 
     # Hero section with Get Started button INSIDE the hero card
     st.markdown(f'''
@@ -1154,16 +1208,36 @@ def auth_page():
         c1, col_card, c3 = st.columns([1, 1.8, 1])
         with col_card:
             with st.container(border=True):
+                # Demo credentials info box — always visible
+                st.markdown(f'''
+                <div style="background:{'#0F1E35' if DARK else '#EFF8FF'};border:1px solid {'#1E3358' if DARK else '#BAE0FD'};
+                            border-radius:14px;padding:14px 18px;margin-bottom:16px;font-family:DM Sans,Arial;">
+                    <div style="font-weight:700;font-size:13px;color:{'#60A5FA' if DARK else '#0369A1'};margin-bottom:8px;">
+                        🔑 Demo Credentials
+                    </div>
+                    <div style="font-size:13px;color:{'#8BA4C8' if DARK else '#4A6589'};line-height:1.8;">
+                        🧑 <b>Patient:</b> user@gmail.com &nbsp;/&nbsp; user@123<br>
+                        🛡️ <b>Admin:</b> admin@glucotrack.com &nbsp;/&nbsp; admin@123<br>
+                        👨‍⚕️ <b>Doctor:</b> doctor@glucotrack.com &nbsp;/&nbsp; Doc@1234
+                    </div>
+                </div>
+                ''', unsafe_allow_html=True)
+
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
-                if is_admin:
-                    st.info('🔑 **Demo Credentials:**\n\n🛡️ *Admin*: `admin@glucotrack.com` / `admin@123`\n\n👨‍⚕️ *Doctor*: `doctor@glucotrack.com` / `Doc@1234` *(must be approved first)*')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
                     ok, msg = login_user(email, password)
                     if ok: st.rerun()
-                    else: st.error(f'❌ {msg}')
+                    else:
+                        st.error(f'❌ {msg}')
+                        st.markdown(f'''
+                        <div style="font-size:12px;color:{'#8BA4C8' if DARK else '#64748B'};margin-top:4px;padding:0 4px;">
+                            💡 If you registered with a custom password, use that. 
+                            Or delete <code>users.json</code> to reset to demo credentials.
+                        </div>
+                        ''', unsafe_allow_html=True)
                 st.markdown(f'<div style="text-align:center;margin:18px 0;color:{MUTED};">— or —</div>', unsafe_allow_html=True)
                 if st.button('✨ Create a free account →', type='secondary', use_container_width=True, key='to_signup'):
                     st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
@@ -1500,8 +1574,32 @@ def dashboard_page():
     st.plotly_chart(fig, use_container_width=True)
 
     suggestions = get_suggestions(patient_data)
-    items = ''.join([f'<li style="margin-bottom:10px;">{s}</li>' for s in suggestions])
-    components.html(f'<div style="background:{BOX_SUGGESTION_BG};padding:26px 30px;border-radius:18px;border:1px solid {BORDER};font-family:DM Sans,Arial;"><h3 style="color:{BOX_SUGGESTION_TITLE};margin:0 0 14px;font-weight:800;font-family:Sora,Arial;">💡 Personalized Health Suggestions</h3><ul style="color:{BOX_SUGGESTION_TEXT};font-size:15px;line-height:1.9;font-weight:600;padding-left:18px;">{items}</ul></div>', height=220)
+    suggestion_rows = ''.join([
+        f'''<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;
+                    border-bottom:1px solid {BORDER if not DARK else "#1E3358"};">
+            <div style="min-width:32px;height:32px;border-radius:50%;
+                        background:linear-gradient(135deg,{GRAD1},{GRAD2});
+                        color:white;display:flex;align-items:center;justify-content:center;
+                        font-weight:800;font-size:13px;flex-shrink:0;">{i}</div>
+            <div style="font-size:15px;line-height:1.65;color:{BOX_SUGGESTION_TEXT};
+                        font-weight:600;padding-top:4px;">{s}</div>
+        </div>'''
+        for i, s in enumerate(suggestions, 1)
+    ])
+    st.markdown(f'''
+    <div style="background:{BOX_SUGGESTION_BG};padding:24px 28px;border-radius:20px;
+                border:1px solid {BORDER};margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <span style="font-size:22px;">💡</span>
+            <h3 style="font-family:Sora,sans-serif;font-size:18px;font-weight:800;
+                       margin:0;color:{BOX_SUGGESTION_TITLE};">Personalized Health Suggestions</h3>
+        </div>
+        <p style="color:{MUTED};font-size:13px;margin:0 0 12px 32px;">
+            Based on your clinical values
+        </p>
+        {suggestion_rows}
+    </div>
+    ''', unsafe_allow_html=True)
 
     st.write('')
     st.subheader('📤 Send Report via WhatsApp')
@@ -1587,8 +1685,26 @@ def doctor_page():
             with c_right:
                 st.subheader('💡 Clinical Suggestions')
                 suggestions = get_suggestions(patient_data)
-                s_html = ''.join([f'<li style="margin-bottom:8px;">{s}</li>' for s in suggestions])
-                components.html(f'<div style="background:{BOX_SUGGESTION_BG};padding:18px;border-radius:14px;border:1px solid {BORDER};font-family:DM Sans,Arial;height:100%;"><h4 style="color:{BOX_SUGGESTION_TITLE};margin:0 0 12px;font-weight:800;font-family:Sora,Arial;">Recommendations</h4><ul style="color:{BOX_SUGGESTION_TEXT};font-size:14px;line-height:1.7;padding-left:18px;margin:0;">{s_html}</ul></div>', height=320)
+                doc_rows = ''.join([
+                    f'''<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;
+                                border-bottom:1px solid {BORDER};">
+                        <div style="min-width:26px;height:26px;border-radius:50%;
+                                    background:linear-gradient(135deg,{GRAD1},{GRAD2});
+                                    color:white;display:flex;align-items:center;justify-content:center;
+                                    font-weight:800;font-size:12px;flex-shrink:0;">{idx2}</div>
+                        <div style="font-size:14px;line-height:1.6;color:{BOX_SUGGESTION_TEXT};
+                                    font-weight:600;padding-top:2px;">{sug}</div>
+                    </div>'''
+                    for idx2, sug in enumerate(suggestions, 1)
+                ])
+                st.markdown(f'''
+                <div style="background:{BOX_SUGGESTION_BG};padding:18px 20px;border-radius:16px;
+                            border:1px solid {BORDER};margin-top:4px;">
+                    <h4 style="font-family:Sora,sans-serif;font-size:16px;font-weight:800;
+                               margin:0 0 12px;color:{BOX_SUGGESTION_TITLE};">💡 Recommendations</h4>
+                    {doc_rows}
+                </div>
+                ''', unsafe_allow_html=True)
 
             st.write('')
             st.subheader('📤 Export & Share')
