@@ -203,12 +203,9 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 
-/* ── Hide keyboard_double_arrow collapse button ── */
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarNavCollapseButton"],
+/* ── Hide keyboard_double text only — keep the collapse arrow button visible ── */
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"],
-[data-testid="collapsedControl"],
 .st-emotion-cache-pkbazv,
 .st-emotion-cache-1cypcdb,
 .st-emotion-cache-dvne4q,
@@ -616,47 +613,35 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 '''
 st.markdown(css, unsafe_allow_html=True)
 
-# Inject JS directly into page via st.markdown to hide keyboard_double_arrow sidebar button
+# Inject JS — hide only the keyboard_ text node, NOT the collapse arrow button
 st.markdown("""
 <script>
 (function() {
-    var HIDE = 'display:none!important;height:0!important;width:0!important;overflow:hidden!important;padding:0!important;margin:0!important;opacity:0!important;position:absolute!important;pointer-events:none!important;';
-    function hideKbd() {
-        // Target 1: the sidebar collapse button by its SVG icon test id
-        ['keyboard_double_arrow_left', 'keyboard_double_arrow_right'].forEach(function(tid) {
-            document.querySelectorAll('svg[data-testid="' + tid + '"]').forEach(function(svg) {
-                var el = svg;
-                for (var i = 0; i < 5; i++) {
-                    if (!el) break;
-                    el.style.cssText = HIDE;
-                    if (el.tagName === 'BUTTON' || el.tagName === 'DIV') break;
-                    el = el.parentElement;
-                }
-            });
-        });
-        // Target 2: any text node inside sidebar starting with "keyboard_"
+    var HIDE = 'display:none!important;height:0!important;overflow:hidden!important;padding:0!important;margin:0!important;';
+    function hideKbdText() {
+        // Only hide text nodes that literally say "keyboard_double..." — NOT the button itself
         var sb = document.querySelector('[data-testid="stSidebar"]');
         if (!sb) return;
         var tw = document.createTreeWalker(sb, NodeFilter.SHOW_TEXT);
         var n;
         while (n = tw.nextNode()) {
             if (/^keyboard_/.test(n.textContent.trim())) {
+                // Only hide the immediate text container — not parent buttons
                 var el = n.parentElement;
-                for (var i = 0; i < 5 && el && el !== sb; i++) {
+                if (el && el.tagName !== 'BUTTON' && el !== sb) {
                     el.style.cssText = HIDE;
-                    el = el.parentElement;
                 }
             }
         }
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            hideKbd();
-            new MutationObserver(hideKbd).observe(document.body, {childList:true, subtree:true});
+            hideKbdText();
+            new MutationObserver(hideKbdText).observe(document.body, {childList:true, subtree:true});
         });
     } else {
-        hideKbd();
-        new MutationObserver(hideKbd).observe(document.body, {childList:true, subtree:true});
+        hideKbdText();
+        new MutationObserver(hideKbdText).observe(document.body, {childList:true, subtree:true});
     }
 })();
 </script>
@@ -993,29 +978,25 @@ def public_header():
 # FIX 2: Doctor sidebar now includes Predict Risk + Doctor Portal + Dashboard
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
-    # Re-run keyboard hide on every sidebar render (Streamlit re-renders on interaction)
+    # Hide only the keyboard_ text label — keep the collapse arrow button intact
     st.markdown("""
     <script>
     (function() {
-        var H='display:none!important;height:0!important;width:0!important;overflow:hidden!important;padding:0!important;margin:0!important;opacity:0!important;position:absolute!important;';
-        function hide() {
-            ['keyboard_double_arrow_left','keyboard_double_arrow_right'].forEach(function(t){
-                document.querySelectorAll('svg[data-testid="'+t+'"]').forEach(function(s){
-                    for(var e=s,i=0;e&&i<6;e=e.parentElement,i++){e.style.cssText=H;if(e.tagName==='BUTTON')break;}
-                });
-            });
+        var H='display:none!important;height:0!important;overflow:hidden!important;padding:0!important;margin:0!important;';
+        function hideText() {
             var sb=document.querySelector('[data-testid="stSidebar"]');
             if(!sb)return;
             var tw=document.createTreeWalker(sb,NodeFilter.SHOW_TEXT);
             var n;
             while(n=tw.nextNode()){
                 if(/^keyboard_/.test(n.textContent.trim())){
-                    for(var e=n.parentElement,i=0;e&&e!==sb&&i<5;e=e.parentElement,i++)e.style.cssText=H;
+                    var el=n.parentElement;
+                    if(el && el.tagName!=='BUTTON' && el!==sb) el.style.cssText=H;
                 }
             }
         }
-        hide();
-        new MutationObserver(hide).observe(document.body,{childList:true,subtree:true});
+        hideText();
+        new MutationObserver(hideText).observe(document.body,{childList:true,subtree:true});
     })();
     </script>
     """, unsafe_allow_html=True)
