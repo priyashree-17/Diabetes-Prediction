@@ -10,6 +10,7 @@ import time
 import webbrowser
 from pathlib import Path
 
+
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
@@ -20,7 +21,7 @@ from reportlab.lib.utils import ImageReader
 import matplotlib.pyplot as plt
 
 
-st.set_page_config(page_title='GlucoTrack', page_icon='🩺', layout='wide', initial_sidebar_state='collapsed')
+st.set_page_config(page_title='GlucoTrack', page_icon='🩺', layout='wide', initial_sidebar_state='expanded')
 
 USERS_FILE = 'users.json'
 DOCTORS_FILE = 'doctors.json'
@@ -56,7 +57,7 @@ def add_audit(action, email='System', details=''):
 
 DEFAULT_USERS = {
     'user@gmail.com': {
-        'password': 'Pass1234',
+        'password': 'user@123',
         'name': 'Demo User',
         'phone': 'Not Provided',
         'age': 30,
@@ -88,6 +89,16 @@ users = load_json(USERS_FILE, DEFAULT_USERS)
 doctors = load_json(DOCTORS_FILE, DEFAULT_DOCTORS)
 admins = load_json(ADMINS_FILE, DEFAULT_ADMINS)
 reports = load_json(REPORTS_FILE, [])
+
+# ── Auto-migrate demo account password if it's still the old default ──
+_migrated = False
+if 'user@gmail.com' in users and users['user@gmail.com'].get('password') == 'Pass1234':
+    users['user@gmail.com']['password'] = 'user@123'
+    _migrated = True
+if 'doctor@glucotrack.com' in doctors and doctors['doctor@glucotrack.com'].get('password') == 'Doc@1234':
+    pass  # Doc@1234 is still the correct doctor password — keep it
+if _migrated:
+    save_json(USERS_FILE, users)
 
 
 defaults = {
@@ -149,37 +160,37 @@ if DARK:
     BOX_SUGGESTION_TEXT = '#5EEAD4'
     HERO_OVERLAY = 'rgba(7,11,20,0.85)'
 else:
-    BG = '#EAF3FA'
-    BG2 = '#DDECF7'
+    BG = '#F0F7FF'
+    BG2 = '#E8F2FF'
     CARD = '#FFFFFF'
-    CARD2 = '#F7FBFF'
-    TEXT = '#10213E'
-    MUTED = '#667085'
-    BORDER = '#D7E5EF'
+    CARD2 = '#F8FBFF'
+    TEXT = '#0A1628'
+    MUTED = '#4A6589'
+    BORDER = '#C8DCF0'
     INPUT = '#FFFFFF'
-    GRAD1 = '#1FA2E1'
-    GRAD2 = '#6A5AE0'
-    GRAD3 = '#E2479D'
-    BLUE = '#1FA2E1'
-    BLUE_DARK = '#177DB0'
-    TEAL = '#3CB371'
-    INDIGO = '#6A5AE0'
-    SIDEBAR = '#5BB8DD'
+    GRAD1 = '#0EA5E9'
+    GRAD2 = '#6366F1'
+    GRAD3 = '#0D9488'
+    BLUE = '#0369A1'
+    BLUE_DARK = '#075985'
+    TEAL = '#0D9488'
+    INDIGO = '#4F46E5'
+    SIDEBAR = '#FFFFFF'
     PLOT_TEMPLATE = 'plotly_white'
-    RESULT_HIGH_BG = '#FFF1F3'
-    RESULT_HIGH_BORDER = '#F472B6'
-    RESULT_HIGH_TEXT = '#BE185D'
-    RESULT_LOW_BG = '#F0FDF4'
-    RESULT_LOW_BORDER = '#86EFAC'
-    RESULT_LOW_TEXT = '#15803D'
-    BOX_SUGGESTION_BG = '#F0FDF4'
-    BOX_SUGGESTION_TITLE = '#10213E'
-    BOX_SUGGESTION_TEXT = '#15803D'
-    HERO_OVERLAY = 'rgba(234,243,250,0.92)'
+    RESULT_HIGH_BG = '#FFF1F2'
+    RESULT_HIGH_BORDER = '#FB7185'
+    RESULT_HIGH_TEXT = '#BE123C'
+    RESULT_LOW_BG = '#F0FDFA'
+    RESULT_LOW_BORDER = '#5EEAD4'
+    RESULT_LOW_TEXT = '#0F766E'
+    BOX_SUGGESTION_BG = '#ECFDF5'
+    BOX_SUGGESTION_TITLE = '#0A1628'
+    BOX_SUGGESTION_TEXT = '#0F766E'
+    HERO_OVERLAY = 'rgba(240,247,255,0.92)'
 
 GRAD_PRIMARY = f'linear-gradient(135deg, {GRAD1} 0%, {GRAD2} 100%)'
 GRAD_CARD = f'linear-gradient(135deg, {GRAD1}18 0%, {GRAD2}18 100%)' if not DARK else f'linear-gradient(135deg, {GRAD1}22 0%, {GRAD2}22 100%)'
-GRAD_HERO = 'linear-gradient(135deg, #1FA2E1 0%, #6A5AE0 50%, #E2479D 100%)'
+GRAD_HERO = f'linear-gradient(135deg, #0369A1 0%, #4F46E5 50%, #0D9488 100%)'
 
 css = f'''
 <style>
@@ -192,11 +203,32 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 
-/* ===== SIDEBAR FIXES — Clean Streamlit default Sidebar header components while retaining drawer functionality ===== */
-section[data-testid="stSidebar"] [data-testid="stSidebarNavItems"],
-section[data-testid="stSidebar"] [data-testid="stSidebarNav"],
-section[data-testid="stSidebar"] [data-testid="stSidebarNavSeparator"] {{
+/* ── Hide keyboard_double_arrow text label — keep collapse button functional ── */
+[data-testid="stSidebarNavItems"],
+[data-testid="stSidebarNav"] {{
     display: none !important;
+}}
+/* Hide the text span/p inside the collapse button — but NOT the button or SVG itself */
+[data-testid="stSidebarCollapsedControl"] span,
+[data-testid="stSidebarCollapsedControl"] p,
+[data-testid="collapsedControl"] span,
+[data-testid="collapsedControl"] p,
+/* Streamlit renders collapse label as a <span> with material icon font text */
+button[data-testid="baseButton-headerNoPadding"] > span:not(:has(svg)),
+button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
+    display: none !important;
+    width: 0 !important;
+    overflow: hidden !important;
+}}
+/* The label text sits in a div above the sidebar — hide just the text wrapper */
+section[data-testid="stSidebar"] > div:first-child > div:first-child > div:first-child {{
+    font-size: 0 !important;
+    color: transparent !important;
+    overflow: hidden !important;
+}}
+section[data-testid="stSidebar"] > div > div {{
+    padding-top: 0 !important;
+    margin-top: 0 !important;
 }}
 
 /* Header cleanup */
@@ -265,12 +297,9 @@ button * {{ color: white !important; }}
 .stButton>button[kind="secondary"] * {{ color: {TEXT} !important; }}
 
 /* Sidebar */
-section[data-testid="stSidebar"] {{
-    background: linear-gradient(180deg, #6FC3E8 0%, #2AA9D1 100%) !important;
-    border-right: none !important;
-}}
+section[data-testid="stSidebar"] {{ background: {SIDEBAR} !important; border-right: 1px solid {BORDER}; }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
-section[data-testid="stSidebar"] * {{ color: white !important; }}
+section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
 .sb-header {{ height: 80px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid {BORDER}; }}
 .sb-logo-box {{
     width: 42px; height: 42px;
@@ -280,7 +309,7 @@ section[data-testid="stSidebar"] * {{ color: white !important; }}
     font-weight: 900; font-size: 20px;
     box-shadow: 0 4px 12px rgba(14,165,233,0.35);
 }}
-.sb-brand {{ font-size: 20px; font-weight: 800; color: white !important; font-family: 'Sora', sans-serif !important; }}
+.sb-brand {{ font-size: 20px; font-weight: 800; color: {TEXT} !important; font-family: 'Sora', sans-serif !important; }}
 .sb-profile {{ display: flex; align-items: center; gap: 14px; padding: 20px 18px; border-bottom: 1px solid {BORDER}; }}
 .sb-avatar {{
     width: 48px; height: 48px; border-radius: 14px;
@@ -288,27 +317,21 @@ section[data-testid="stSidebar"] * {{ color: white !important; }}
     color: white !important; display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 17px; font-family: 'Sora', sans-serif !important;
 }}
-.sb-name {{ font-size: 15px; font-weight: 700; color: white !important; margin-bottom: 3px; font-family: 'Sora', sans-serif !important; }}
-.sb-role {{ font-size: 13px; color: rgba(255,255,255,0.85) !important; font-weight: 500; }}
+.sb-name {{ font-size: 15px; font-weight: 700; color: {TEXT} !important; margin-bottom: 3px; font-family: 'Sora', sans-serif !important; }}
+.sb-role {{ font-size: 13px; color: {MUTED} !important; font-weight: 500; }}
 div[data-testid="stRadio"] {{ padding: 18px 7px 0 !important; }}
 div[data-testid="stRadio"] label {{
-    background: rgba(255,255,255,0.18) !important;
-    backdrop-filter: blur(8px);
-    border-radius: 22px !important;
-    padding: 18px 20px !important;
-    margin: 12px 0 !important;
-    color: white !important;
-    font-size: 18px !important;
-    font-weight: 600 !important;
+    border-radius: 12px !important; padding: 13px 14px !important; margin: 3px 0 !important;
+    font-size: 15px !important; font-weight: 600 !important; background: transparent !important;
     transition: all 0.15s ease !important;
 }}
-div[data-testid="stRadio"] label:hover {{ background: rgba(255,255,255,0.30) !important; transform: translateY(-1px); }}
+div[data-testid="stRadio"] label:hover {{ background: {GRAD1}12 !important; }}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
 
 /* HERO */
 .hero-section {{
     position: relative;
-    min-height: 78vh;
+    min-height: 92vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -320,8 +343,8 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 .hero-bg {{
     position: absolute; inset: 0; z-index: 0;
     background: {GRAD_HERO};
-    opacity: 1;
-    border-radius: 32px;
+    opacity: {'0.12' if not DARK else '0.18'};
+    border-radius: 0 0 60px 60px;
 }}
 .hero-glow {{
     position: absolute; width: 700px; height: 700px;
@@ -357,15 +380,15 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     font-weight: 900;
     line-height: 0.95;
     letter-spacing: -3px;
-    color: white !important;
-    text-shadow: 0 4px 22px rgba(0,0,0,0.22);
+    color: {TEXT} !important;
     margin: 0 0 24px;
     animation: fadeInUp 0.7s ease 0.1s both;
 }}
 .hero-gradient-text {{
-    color: white !important;
-    -webkit-text-fill-color: white !important;
-    text-shadow: 0 4px 22px rgba(0,0,0,0.22);
+    background: {GRAD_PRIMARY};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     display: block;
 }}
 .hero-sub {{
@@ -373,56 +396,10 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     font-size: clamp(17px, 2.2vw, 22px);
     line-height: 1.6;
     max-width: 680px;
-    margin: 0 auto 36px;
-    color: rgba(255,255,255,0.92) !important;
-    font-weight: 500;
-    text-shadow: 0 2px 14px rgba(0,0,0,0.20);
+    margin: 0 auto 44px;
+    color: {MUTED} !important;
+    font-weight: 400;
     animation: fadeInUp 0.7s ease 0.2s both;
-}}
-
-/* ── Hero CTA card ── */
-.hero-cta-card {{
-    position: relative; z-index: 1;
-    background: {CARD};
-    border: 1px solid {BORDER};
-    border-radius: 28px;
-    padding: 36px 44px;
-    max-width: 480px;
-    width: 100%;
-    margin: 0 auto;
-    box-shadow: 0 12px 48px rgba(14,165,233,0.12), 0 2px 8px rgba(0,0,0,0.06);
-    animation: fadeInUp 0.8s ease 0.3s both;
-}}
-.hero-cta-title {{
-    font-family: 'Sora', sans-serif;
-    font-size: 20px; font-weight: 800;
-    color: {TEXT} !important;
-    margin: 0 0 6px;
-}}
-.hero-cta-sub {{
-    font-size: 14px; color: {MUTED} !important;
-    margin: 0 0 22px; line-height: 1.5;
-}}
-.hero-cta-btn {{
-    display: block; width: 100%;
-    background: {GRAD_PRIMARY};
-    color: white !important; border: none; border-radius: 14px;
-    font-weight: 700; font-size: 16px; padding: 16px 0;
-    cursor: pointer; text-align: center; text-decoration: none;
-    box-shadow: 0 8px 24px rgba(14,165,233,0.35);
-    transition: all 0.2s ease;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.2px;
-}}
-.hero-cta-btn:hover {{
-    transform: translateY(-2px);
-    box-shadow: 0 14px 36px rgba(14,165,233,0.45);
-    filter: brightness(1.06);
-}}
-.hero-trust {{
-    margin-top: 18px;
-    font-size: 13px; color: {MUTED} !important;
-    display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
 }}
 
 /* Stats bar */
@@ -466,11 +443,11 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     opacity: 0.06; pointer-events: none;
     border-radius: inherit;
 }}
-.feature-blue {{ background: {'linear-gradient(135deg, #0F1E35 0%, #102A4C 100%)' if DARK else '#CFEAFB'} !important; border-color: {'#2563EB' if DARK else BORDER} !important; }}
+.feature-blue {{ background: {'#0E1A2E' if DARK else '#EFF8FF'} !important; }}
 .feature-blue::before {{ background: linear-gradient(135deg, {GRAD1}, transparent); }}
-.feature-green {{ background: {'linear-gradient(135deg, #0E2A1F 0%, #0F3A2A 100%)' if DARK else '#CFEFD9'} !important; border-color: {'#22C55E' if DARK else BORDER} !important; }}
+.feature-green {{ background: {'#081A18' if DARK else '#F0FDFA'} !important; }}
 .feature-green::before {{ background: linear-gradient(135deg, {TEAL}, transparent); }}
-.feature-purple {{ background: {'linear-gradient(135deg, #2A2208 0%, #3D3210 100%)' if DARK else '#F7E79A'} !important; border-color: {'#EAB308' if DARK else BORDER} !important; }}
+.feature-purple {{ background: {'#120E2E' if DARK else '#F5F3FF'} !important; }}
 .feature-purple::before {{ background: linear-gradient(135deg, {INDIGO}, transparent); }}
 .pill {{
     display: inline-flex; border-radius: 999px; padding: 6px 16px;
@@ -478,19 +455,19 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     margin-bottom: 28px; border: none;
     text-transform: uppercase; font-family: 'DM Sans', sans-serif;
 }}
-.pill-blue {{ background: {'rgba(59,130,246,0.22)' if DARK else f'{GRAD1}22'} !important; color: {'#93C5FD' if DARK else GRAD1} !important; }}
-.pill-green {{ background: {'rgba(34,197,94,0.22)' if DARK else f'{TEAL}22'} !important; color: {'#86EFAC' if DARK else TEAL} !important; }}
-.pill-purple {{ background: {'rgba(250,204,21,0.22)' if DARK else f'{INDIGO}22'} !important; color: {'#FDE68A' if DARK else INDIGO} !important; }}
+.pill-blue {{ background: {GRAD1}22 !important; color: {GRAD1} !important; }}
+.pill-green {{ background: {TEAL}22 !important; color: {TEAL} !important; }}
+.pill-purple {{ background: {INDIGO}22 !important; color: {INDIGO} !important; }}
 .icon-box {{
     width: 56px; height: 56px; border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
     font-size: 26px; margin-bottom: 20px;
 }}
-.icon-blue {{ background: {'rgba(59,130,246,0.18)' if DARK else f'{GRAD1}18'} !important; }}
-.icon-green {{ background: {'rgba(34,197,94,0.18)' if DARK else f'{TEAL}18'} !important; }}
-.icon-purple {{ background: {'rgba(250,204,21,0.18)' if DARK else f'{INDIGO}18'} !important; }}
-.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: {'#F8FAFC' if DARK else '#10213E'} !important; }}
-.feature-text {{ font-size: 16px; line-height: 1.6; color: {'#CBD5E1' if DARK else '#475467'} !important; }}
+.icon-blue {{ background: {GRAD1}18 !important; }}
+.icon-green {{ background: {TEAL}18 !important; }}
+.icon-purple {{ background: {INDIGO}18 !important; }}
+.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: {TEXT} !important; }}
+.feature-text {{ font-size: 16px; line-height: 1.6; color: {MUTED} !important; }}
 
 /* Steps */
 .steps-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }}
@@ -643,11 +620,40 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 @media(max-width:900px) {{
     .feature-grid, .steps-grid, .stats-wrap {{ grid-template-columns: 1fr; }}
     .hero-title {{ font-size: 52px; letter-spacing: -2px; }}
-    .hero-cta-card {{ padding: 28px 22px; }}
 }}
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
+
+# components.html actually executes JS (st.markdown strips <script> tags)
+components.html("""
+<script>
+(function() {
+    var doc = window.parent.document;
+    function hideKbdText() {
+        var tw = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+        var nodes = []; var n;
+        while (n = tw.nextNode()) {
+            if (/keyboard_double/.test(n.textContent)) nodes.push(n);
+        }
+        nodes.forEach(function(node) {
+            var el = node.parentElement;
+            while (el && el !== doc.body) {
+                el.style.setProperty('font-size','0','important');
+                el.style.setProperty('color','transparent','important');
+                el.style.setProperty('line-height','0','important');
+                if (el.tagName === 'BUTTON') break;
+                el = el.parentElement;
+            }
+        });
+    }
+    hideKbdText();
+    new MutationObserver(function(m) {
+        m.forEach(function(r) { if (r.addedNodes.length) hideKbdText(); });
+    }).observe(doc.body, {childList:true, subtree:true});
+})();
+</script>
+""", height=0)
 
 
 def initials(name):
@@ -811,30 +817,6 @@ def create_risk_gauge_image(confidence, is_high):
     return img
 
 
-def whatsapp_pdf_sender(phone, pdf_path, caption):
-    try:
-        import pywhatkit
-        import pyautogui
-        import pyperclip
-    except Exception:
-        return False, 'Install required libraries: pip install pywhatkit pyautogui pyperclip'
-    clean_phone = str(phone).replace(' ', '').replace('-', '')
-    if not clean_phone.startswith('+'):
-        return False, 'Enter phone number with country code, for example +919876543210.'
-    try:
-        pywhatkit.sendwhatmsg_instantly(clean_phone, caption, wait_time=18, tab_close=False, close_time=3)
-        time.sleep(8)
-        pyautogui.hotkey('ctrl', 'shift', 'u')
-        time.sleep(1)
-        pyperclip.copy(pdf_path)
-        pyautogui.hotkey('ctrl', 'v')
-        pyautogui.press('enter')
-        time.sleep(2)
-        pyautogui.press('enter')
-        return True, 'WhatsApp opened. If the PDF is not attached automatically, click the attach icon and select the generated PDF shown below.'
-    except Exception as e:
-        return False, f'Could not automate WhatsApp PDF attach: {e}'
-
 
 def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     buffer = BytesIO()
@@ -870,7 +852,34 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     setc((1, 1, 1)); pdf.rect(0, 0, width, height, fill=True, stroke=False)
     setc(navy); pdf.rect(0, height - 128, width, 128, fill=True, stroke=False)
     setc(royal); pdf.roundRect(38, height - 90, 50, 50, 12, fill=True, stroke=False)
-    setc((1,1,1)); pdf.setFont('Helvetica-Bold', 19); pdf.drawCentredString(63, height - 70, '🩺')
+    # Draw stethoscope icon using vector shapes (ReportLab cannot render emoji)
+    cx, cy = 63, height - 65  # center of icon box
+    setc((1, 1, 1))
+    stroke((1, 1, 1))
+    pdf.setLineWidth(2.2)
+    # Chest piece — filled circle
+    pdf.circle(cx, cy - 7, 7, fill=True, stroke=False)
+    # Chest piece inner circle
+    setc(royal)
+    pdf.circle(cx, cy - 7, 3.5, fill=True, stroke=False)
+    setc((1, 1, 1))
+    # Tube — arc going up-left then curving right to earpiece fork
+    from reportlab.graphics.shapes import Path
+    from reportlab.lib.colors import Color, white
+    pdf.setStrokeColorRGB(1, 1, 1)
+    pdf.setLineWidth(2.4)
+    pdf.setLineCap(1)
+    # Left tube arm
+    pdf.bezier(cx - 7, cy - 1,   cx - 14, cy + 4,   cx - 14, cy + 12,  cx - 9, cy + 16)
+    # Right tube arm
+    pdf.bezier(cx + 7, cy - 1,   cx + 14, cy + 4,   cx + 14, cy + 12,  cx + 9, cy + 16)
+    # Top connector bar
+    pdf.line(cx - 9, cy + 16, cx + 9, cy + 16)
+    # Left earpiece dot
+    pdf.setFillColorRGB(1, 1, 1)
+    pdf.circle(cx - 9, cy + 18, 2.2, fill=True, stroke=False)
+    # Right earpiece dot
+    pdf.circle(cx + 9, cy + 18, 2.2, fill=True, stroke=False)
     pdf.setFont('Helvetica-Bold', 23); pdf.drawString(108, height - 52, 'GlucoTrack Clinical Report')
     pdf.setFont('Helvetica', 10); setc((0.6, 0.75, 0.92))
     pdf.drawString(108, height - 72, 'Diabetes Risk Assessment  |  Health Analytics  |  Action Plan')
@@ -974,8 +983,38 @@ def public_header():
     st.markdown(f'<div class="grad-divider" style="margin-bottom:0;"></div>', unsafe_allow_html=True)
 
 
+# FIX 2: Doctor sidebar now includes Predict Risk + Doctor Portal + Dashboard
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
+    # components.html executes JS on every sidebar render
+    components.html("""
+    <script>
+    (function() {
+        var doc = window.parent.document;
+        function hideKbdText() {
+            var tw = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+            var nodes = []; var n;
+            while (n = tw.nextNode()) {
+                if (/keyboard_double/.test(n.textContent)) nodes.push(n);
+            }
+            nodes.forEach(function(node) {
+                var el = node.parentElement;
+                while (el && el !== doc.body) {
+                    el.style.setProperty('font-size','0','important');
+                    el.style.setProperty('color','transparent','important');
+                    el.style.setProperty('line-height','0','important');
+                    if (el.tagName === 'BUTTON') break;
+                    el = el.parentElement;
+                }
+            });
+        }
+        hideKbdText();
+        new MutationObserver(function(m) {
+            m.forEach(function(r) { if (r.addedNodes.length) hideKbdText(); });
+        }).observe(doc.body, {childList:true, subtree:true});
+    })();
+    </script>
+    """, height=0)
     name = st.session_state.current_user_name; email = st.session_state.current_user_email
     role = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
     init = initials(name)
@@ -988,19 +1027,12 @@ def dashboard_sidebar():
         avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:48px;height:48px;border-radius:14px;object-fit:cover;display:block;">'
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
-
-    # Inject a blank placeholder first so Streamlit's nav text renders BEFORE our HTML
-    # then we hide it with CSS and render our clean sidebar header
-    st.sidebar.markdown(
-        f'<div class="sb-header"><div class="sb-logo-box">🩺</div><div class="sb-brand">GlucoTrack</div></div>'
-        f'<div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>',
-        unsafe_allow_html=True
-    )
-
+    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">🩺</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
     if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
     if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
 
+    # FIX 2: Doctors now get Predict Risk + Patient Data + Dashboard
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']
         labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -1029,7 +1061,7 @@ def dashboard_sidebar():
 def landing_page():
     public_header()
 
-    # ── Hero section with visible text and CTA inside the gradient card ──
+    # Hero section with Get Started button INSIDE the hero card
     st.markdown(f'''
     <section class="hero-section">
         <div class="hero-bg"></div>
@@ -1044,32 +1076,26 @@ def landing_page():
             Get a science-backed diabetes risk assessment in under 2 minutes.<br>
             Powered by Machine Learning. Built for your health.
         </p>
-        <div style="position:relative;z-index:2;width:min(520px,92%);margin:26px auto 0;">
+        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:20px;">
             <a href="?hero_clicked=1" style="
-                display:flex;align-items:center;justify-content:center;gap:10px;
-                width:100%;background:white;color:#3B5FDB !important;
-                text-decoration:none;border-radius:18px;padding:18px 26px;
-                font-family:'DM Sans',sans-serif;font-weight:900;font-size:21px;
-                box-shadow:0 16px 42px rgba(0,0,0,0.22);">
-                🚀 Get Started Free
-            </a>
-            <div style="margin-top:20px;display:flex;justify-content:center;gap:26px;flex-wrap:wrap;
-                font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:white;text-shadow:0 2px 10px rgba(0,0,0,0.25);">
-                <span>✅ Free forever</span>
-                <span>🔒 Private &amp; secure</span>
-                <span>⚡ Instant results</span>
-            </div>
+                display:inline-flex;align-items:center;justify-content:center;gap:10px;
+                background:{GRAD_PRIMARY};
+                color:white !important;text-decoration:none;border-radius:16px;
+                padding:16px 52px;
+                font-family:'DM Sans',sans-serif;
+                font-weight:700;font-size:17px;cursor:pointer;
+                box-shadow:0 8px 28px rgba(14,165,233,0.38);
+                min-width:270px;transition:all 0.2s ease;
+            ">🚀 Get Started Free</a>
         </div>
     </section>
     ''', unsafe_allow_html=True)
 
-    if st.query_params.get('hero_clicked') == '1':
+    # Check if hero HTML button was clicked (sets query param)
+    params = st.query_params
+    if params.get('hero_clicked') == '1':
         st.query_params.clear()
-        st.session_state.started = True
-        st.session_state.page = 'auth'
-        st.session_state.auth_mode = 'signup'
-        st.session_state.signup_step = 1
-        st.rerun()
+        st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
 
     # Stats
     st.markdown(f'''
@@ -1164,6 +1190,12 @@ def landing_page():
             st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
 
     st.markdown(f'''
+    <div style="text-align:center;margin:16px 0 0;color:{MUTED};font-size:14px;font-family:'DM Sans',sans-serif;">
+        ✅ Free forever &nbsp;·&nbsp; 🔒 Private &amp; secure &nbsp;·&nbsp; ⚡ Results in seconds
+    </div>
+    ''', unsafe_allow_html=True)
+
+    st.markdown(f'''
     <div class="footer">
         <div class="footer-logo">🩺 GlucoTrack</div>
         <div>For educational purposes only. Always consult a medical professional.</div>
@@ -1185,13 +1217,25 @@ def auth_page():
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
-                if is_admin:
-                    st.info('🔑 **Demo Credentials:**\n\n🛡️ *Admin*: `admin@glucotrack.com` / `admin@123`\n\n👨‍⚕️ *Doctor*: `doctor@glucotrack.com` / `Doc@1234` *(must be approved first)*')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
                     ok, msg = login_user(email, password)
                     if ok: st.rerun()
-                    else: st.error(f'❌ {msg}')
+                    else:
+                        st.error(f'❌ {msg}')
+                        col_hint, col_reset = st.columns([3, 1])
+                        with col_hint:
+                            st.markdown(f'''
+                            <div style="font-size:12px;color:{'#8BA4C8' if DARK else '#64748B'};margin-top:4px;padding:0 4px;">
+                                💡 Use your registered password, or click Reset to restore demo credentials.
+                            </div>
+                            ''', unsafe_allow_html=True)
+                        with col_reset:
+                            if st.button('🔄 Reset Demo', key='reset_demo_btn', use_container_width=True):
+                                users['user@gmail.com'] = DEFAULT_USERS['user@gmail.com'].copy()
+                                save_json(USERS_FILE, users)
+                                st.success('✅ Demo account reset! Use user@gmail.com / user@123')
+                                st.rerun()
                 st.markdown(f'<div style="text-align:center;margin:18px 0;color:{MUTED};">— or —</div>', unsafe_allow_html=True)
                 if st.button('✨ Create a free account →', type='secondary', use_container_width=True, key='to_signup'):
                     st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
@@ -1266,7 +1310,8 @@ def create_profile_page():
                     if uploaded_photo:
                         base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
                     users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True, 'profile_pic': base64_photo}
-                    save_json(USERS_FILE, users); add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
+                    save_json(USERS_FILE, users)
+                    add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
                     ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password)
                     if ok: st.rerun()
                     else: st.error(msg)
@@ -1281,7 +1326,8 @@ def create_profile_page():
                     if uploaded_photo:
                         base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
                     doctors[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no, 'approved': False, 'user_type': 'doctor', 'profile_created': True, 'profile_pic': base64_photo}
-                    save_json(DOCTORS_FILE, doctors); add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval')
+                    save_json(DOCTORS_FILE, doctors)
+                    add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval')
                     st.success('✅ Doctor profile created! Please wait for admin approval before signing in.')
                     st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
 
@@ -1316,6 +1362,7 @@ def prediction_page():
             bp = st.number_input('💓 Blood Pressure (mmHg)', 30, 140, 70, help='Diastolic blood pressure. Normal: 60–80 mmHg')
             skin = st.number_input('📏 Skin Thickness (mm)', 0, 100, 20, help='Triceps skin fold thickness')
             bmi = st.number_input('⚖️ BMI', 10.0, 70.0, 25.0, help='Body Mass Index. Normal: 18.5–24.9, Overweight: 25–29.9, Obese: ≥30')
+            # For doctor, use default age 35 since they may be entering for a patient
             if st.session_state.user_type == 'patient':
                 default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30))
             else:
@@ -1361,63 +1408,142 @@ def prediction_page():
         st.session_state.page = 'dashboard'; st.rerun()
 
 
+# FIX 4: WhatsApp share widget — now also used standalone for doctors
 def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidence, pred_time, patient_data, selected_idx=None):
-    st.markdown(f'''
-    <div style="background:{'#031A0F' if DARK else '#F0FDF4'};border:1px solid {'#14532D44' if DARK else '#BBF7D0'};border-radius:18px;padding:22px;margin-top:8px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    """Share PDF via browser native Web Share API — no API keys required."""
+    import base64 as _b64
+
+    DARK_LOCAL = st.session_state.dark_mode
+    bg_col     = '#031A0F' if DARK_LOCAL else '#F0FDF4'
+    border_col = '#166534' if DARK_LOCAL else '#BBF7D0'
+    text_col   = '#F0F6FF' if DARK_LOCAL else '#0A1628'
+    muted_col  = '#8BA4C8' if DARK_LOCAL else '#4A6589'
+
+    # Header card
+    st.markdown(f"""
+    <div style="background:{bg_col};border:1.5px solid {border_col};border-radius:18px;
+                padding:20px 24px;margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
             <span style="font-size:22px;">📱</span>
-            <span style="font-family:'Sora',Arial;font-weight:800;font-size:16px;color:{TEXT};">Send Report via WhatsApp</span>
+            <span style="font-family:'Sora',Arial;font-weight:800;font-size:16px;color:{text_col};">
+                Share PDF Report via WhatsApp
+            </span>
         </div>
+        <p style="color:{muted_col};font-size:13px;margin:4px 0 0 32px;">
+            Opens your device share sheet — select WhatsApp to send the PDF file directly.
+            Works on mobile &amp; supported desktop browsers.
+        </p>
     </div>
-    ''', unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    suggestions = get_suggestions(patient_data)
-    msg_text = (
-        f"🩺 *GlucoTrack Health Report*\n\n"
-        f"👤 *Patient:* {patient_name}\n"
-        f"📊 *Result:* {result}\n"
-        f"🎯 *Confidence:* {confidence}%\n"
-        f"📅 *Date:* {pred_time}\n\n"
-        f"📋 *Key Metrics:*\n"
-        f"• Glucose: {patient_data.get('Glucose','N/A')} mg/dL\n"
-        f"• BMI: {patient_data.get('BMI','N/A')}\n"
-        f"• Blood Pressure: {patient_data.get('BloodPressure','N/A')} mmHg\n"
-        f"• Insulin: {patient_data.get('Insulin','N/A')} μU/mL\n"
-        f"• Age: {patient_data.get('Age','N/A')} years\n\n"
-        f"💡 *Recommendations:*\n"
+    st.write("")
+
+    # Build caption
+    caption = (
+        f"🩺 GlucoTrack Diabetes Risk Report\n"
+        f"👤 Patient: {patient_name}\n"
+        f"📊 Result: {result}\n"
+        f"🎯 Confidence: {confidence}%\n"
+        f"📅 Date: {pred_time}\n"
+        f"🩸 Glucose: {patient_data.get('Glucose','N/A')} mg/dL\n"
+        f"⚖️ BMI: {patient_data.get('BMI','N/A')}\n"
+        f"💓 BP: {patient_data.get('BloodPressure','N/A')} mmHg\n"
+        f"Powered by GlucoTrack AI Health Platform"
     )
-    for s in suggestions:
-        s_clean = s.replace('📋','').replace('🥗','').replace('🏃','').replace('⚖️','').replace('🥦','').replace('💊','').replace('🧘','').replace('🧂','').replace('🏥','').replace('💧','').strip()
-        msg_text += f"• {s_clean}\n"
-    msg_text += f"\n_Powered by GlucoTrack AI Health Platform_"
+    safe_caption = caption.replace("`", "'").replace("\\", "\\\\")
+    file_name    = f"GlucoTrack_{patient_name.replace(' ', '_')}_Report.pdf"
+    pdf_b64      = _b64.b64encode(pdf_bytes).decode("utf-8")
 
-    phone_input_key = f"wa_phone_{phone_key}"
-    phone = st.text_input('📞 Recipient phone (with country code)', placeholder='+919876543210', key=phone_input_key)
+    col_share, col_dl = st.columns([3, 2])
 
-    encoded = urllib.parse.quote(msg_text)
-    clean_phone = ''.join(c for c in (phone or '') if c.isdigit())
-    wa_url = f"https://wa.me/{clean_phone}?text={encoded}" if clean_phone else f"https://wa.me/?text={encoded}"
-
-    col_wa, col_save = st.columns([3, 2])
-    with col_wa:
-        st.markdown(f'''
-        <a href="{wa_url}" target="_blank" class="wa-btn-wrap" style="text-decoration:none;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 16 16">
-                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637.649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96 5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56-1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732-.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95-.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389.087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13.032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37-.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048-.506.237-.174.19-.66 1.63-.66 3.97 0 2.34 1.7 4.595 1.94 4.914.24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004 1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197.404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
+    with col_share:
+        # Web Share API button — shares the actual PDF file
+        components.html(f"""
+        <div style="margin:0;">
+          <button id="sharePdfBtn_{phone_key}" style="
+              width:100%;
+              background:linear-gradient(135deg,#16A34A 0%,#22C55E 100%);
+              color:white; border:none; padding:14px 20px;
+              border-radius:14px; cursor:pointer; font-weight:700;
+              font-size:15px; font-family:'DM Sans',Arial,sans-serif;
+              box-shadow:0 8px 20px rgba(34,197,94,0.30);
+              display:flex; align-items:center; justify-content:center; gap:8px;
+              transition:all 0.2s ease;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                 fill="white" viewBox="0 0 16 16">
+              <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.93
+                       c0 1.39.365 2.743 1.06 3.962L0 16l4.13-1.082A7.86 7.86 0 0 0 7.99 12
+                       c4.365 0 7.934-3.558 7.939-7.93a7.86 7.86 0 0 0-2.328-5.744
+                       M7.993 11.89c-1.392 0-2.702-.38-3.829-1.08l-.275-.164-2.429.637
+                       .649-2.368-.18-.287a5.95 5.95 0 0 1-.98-3.216c.004-3.279 2.685-5.96
+                       5.966-5.96 1.587.001 3.079.616 4.2 1.738a5.96 5.96 0 0 1 1.729 4.2
+                       c-.004 3.28-2.685 5.96-5.966 5.96M11.53 8.87c-.191-.096-1.136-.56
+                       -1.31-.624-.173-.064-.3-.096-.426.096-.127.192-.49.61-.6.732
+                       -.11.123-.219.138-.41.042-.191-.096-.807-.297-1.537-.95
+                       -.568-.506-.95-1.133-1.062-1.324-.112-.19-.012-.294.084-.389
+                       .087-.085.191-.223.287-.335.095-.112.127-.19.19-.32.064-.13
+                       .032-.243-.016-.339-.048-.096-.426-1.026-.583-1.407-.152-.37
+                       -.308-.32-.426-.326-.11-.006-.237-.008-.363-.008-.127 0-.332.048
+                       -.506.237-.174.19-.66 1.63-.66 3.97 0 2.34 1.7 4.595 1.94 4.914
+                       .24.318 3.352 5.12 8.12 7.18 1.133.49 2.02.784 2.709 1.004
+                       1.134.36 2.167.309 2.984.187.912-.136 2.793-.113 3.197-1.197
+                       .404-1.084.404-2.013.283-2.203-.12-.19-.32-.304-.51-.399"/>
             </svg>
-            &nbsp; Send via WhatsApp
-        </a>
-        ''', unsafe_allow_html=True)
+            &nbsp;Share PDF on WhatsApp
+          </button>
+          <p id="shareStatus_{phone_key}" style="
+              font-family:Arial,sans-serif; font-size:12px;
+              color:#64748B; margin:8px 0 0; min-height:16px;"></p>
+        </div>
+        <script>
+        (function() {{
+          var btn    = document.getElementById('sharePdfBtn_{phone_key}');
+          var status = document.getElementById('shareStatus_{phone_key}');
+          btn.onmouseenter = function() {{ btn.style.transform='translateY(-2px)'; btn.style.boxShadow='0 12px 28px rgba(34,197,94,0.40)'; }};
+          btn.onmouseleave = function() {{ btn.style.transform='translateY(0)';    btn.style.boxShadow='0 8px 20px rgba(34,197,94,0.30)';  }};
+          btn.onclick = async function() {{
+            try {{
+              var b64 = "{pdf_b64}";
+              var binary = atob(b64);
+              var bytes  = new Uint8Array(binary.length);
+              for (var i = 0; i < binary.length; i++) {{
+                bytes[i] = binary.charCodeAt(i);
+              }}
+              var file = new File([bytes], "{file_name}", {{ type: "application/pdf" }});
+              if (navigator.canShare && navigator.canShare({{ files: [file] }})) {{
+                await navigator.share({{
+                  title: "GlucoTrack Diabetes Report",
+                  text:  `{safe_caption}`,
+                  files: [file]
+                }});
+                status.style.color = "#16A34A";
+                status.innerText = "✅ Share panel opened — select WhatsApp to send the PDF.";
+              }} else {{
+                status.style.color = "#F97316";
+                status.innerText = "⚠️ Your browser doesn\'t support file sharing. Please download the PDF and send it manually via WhatsApp.";
+              }}
+            }} catch(err) {{
+              if (err.name !== "AbortError") {{
+                status.style.color = "#EF4444";
+                status.innerText = "❌ Sharing cancelled or not supported. Download the PDF and attach it in WhatsApp.";
+              }}
+            }}
+          }};
+        }})();
+        </script>
+        """, height=110)
 
-    with col_save:
-        if st.button('💾 Save PDF locally', key=f'save_local_{phone_key}', use_container_width=True):
-            pdf_path = save_pdf_to_reports_folder(pdf_bytes, patient_name)
-            ok, msg_local = whatsapp_pdf_sender(phone, pdf_path, f"GlucoTrack Report for {patient_name}")
-            if ok:
-                st.success(f'✅ {msg_local}')
-            else:
-                st.info(f'📁 PDF saved at:\n`{pdf_path}`\n\n💡 On Streamlit Cloud, click the WhatsApp button above to send the text summary. To attach the PDF, run GlucoTrack locally.')
-    st.caption('💡 The WhatsApp button sends a formatted text summary. For PDF attachment, run GlucoTrack locally with pyautogui + pywhatkit installed.')
+    with col_dl:
+        st.download_button(
+            "📥 Download PDF",
+            data=pdf_bytes,
+            file_name=file_name,
+            mime="application/pdf",
+            use_container_width=True,
+            key=f"wa_dl_{phone_key}"
+        )
+
+    st.caption("ℹ️ Works best on mobile Chrome/Safari. On desktop, the file will be downloaded — attach it in WhatsApp Web manually.")
 
 
 def dashboard_page():
@@ -1446,25 +1572,44 @@ def dashboard_page():
     st.plotly_chart(fig, use_container_width=True)
 
     suggestions = get_suggestions(patient_data)
-    items = ''.join([f'<li style="margin-bottom:10px;">{s}</li>' for s in suggestions])
-    components.html(f'<div style="background:{BOX_SUGGESTION_BG};padding:26px 30px;border-radius:18px;border:1px solid {BORDER};font-family:DM Sans,Arial;"><h3 style="color:{BOX_SUGGESTION_TITLE};margin:0 0 14px;font-weight:800;font-family:Sora,Arial;">💡 Personalized Health Suggestions</h3><ul style="color:{BOX_SUGGESTION_TEXT};font-size:15px;line-height:1.9;font-weight:600;padding-left:18px;">{items}</ul></div>', height=220)
+    suggestion_rows = ''.join([
+        f'''<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;
+                    border-bottom:1px solid {BORDER if not DARK else "#1E3358"};">
+            <div style="min-width:32px;height:32px;border-radius:50%;
+                        background:linear-gradient(135deg,{GRAD1},{GRAD2});
+                        color:white;display:flex;align-items:center;justify-content:center;
+                        font-weight:800;font-size:13px;flex-shrink:0;">{i}</div>
+            <div style="font-size:15px;line-height:1.65;color:{BOX_SUGGESTION_TEXT};
+                        font-weight:600;padding-top:4px;">{s}</div>
+        </div>'''
+        for i, s in enumerate(suggestions, 1)
+    ])
+    st.markdown(f'''
+    <div style="background:{BOX_SUGGESTION_BG};padding:24px 28px;border-radius:20px;
+                border:1px solid {BORDER};margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <span style="font-size:22px;">💡</span>
+            <h3 style="font-family:Sora,sans-serif;font-size:18px;font-weight:800;
+                       margin:0;color:{BOX_SUGGESTION_TITLE};">Personalized Health Suggestions</h3>
+        </div>
+        <p style="color:{MUTED};font-size:13px;margin:0 0 12px 32px;">
+            Based on your clinical values
+        </p>
+        {suggestion_rows}
+    </div>
+    ''', unsafe_allow_html=True)
 
     st.write('')
-    st.subheader('📄 Download & Share Your Report')
-    col_dl, col_wa = st.columns(2)
-    with col_dl:
-        st.download_button('📥 Download PDF Report', data=st.session_state.pdf_bytes, file_name=f"glucotrack_{st.session_state.current_user_name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True)
-
-    with col_wa:
-        _render_whatsapp_share(
-            phone_key='patient_dash',
-            pdf_bytes=st.session_state.pdf_bytes,
-            patient_name=st.session_state.current_user_name,
-            result=result,
-            confidence=confidence,
-            pred_time=st.session_state.prediction_time,
-            patient_data=patient_data
-        )
+    st.subheader('📤 Send Report via WhatsApp')
+    _render_whatsapp_share(
+        phone_key='patient_dash',
+        pdf_bytes=st.session_state.pdf_bytes,
+        patient_name=st.session_state.current_user_name,
+        result=result,
+        confidence=confidence,
+        pred_time=st.session_state.prediction_time,
+        patient_data=patient_data
+    )
 
     st.write('')
     if st.button('🔄 New Prediction', type='secondary', use_container_width=True): reset_prediction_state(); st.session_state.page = 'prediction'; st.rerun()
@@ -1538,17 +1683,32 @@ def doctor_page():
             with c_right:
                 st.subheader('💡 Clinical Suggestions')
                 suggestions = get_suggestions(patient_data)
-                s_html = ''.join([f'<li style="margin-bottom:8px;">{s}</li>' for s in suggestions])
-                components.html(f'<div style="background:{BOX_SUGGESTION_BG};padding:18px;border-radius:14px;border:1px solid {BORDER};font-family:DM Sans,Arial;height:100%;"><h4 style="color:{BOX_SUGGESTION_TITLE};margin:0 0 12px;font-weight:800;font-family:Sora,Arial;">Recommendations</h4><ul style="color:{BOX_SUGGESTION_TEXT};font-size:14px;line-height:1.7;padding-left:18px;margin:0;">{s_html}</ul></div>', height=320)
+                doc_rows = ''.join([
+                    f'''<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;
+                                border-bottom:1px solid {BORDER};">
+                        <div style="min-width:26px;height:26px;border-radius:50%;
+                                    background:linear-gradient(135deg,{GRAD1},{GRAD2});
+                                    color:white;display:flex;align-items:center;justify-content:center;
+                                    font-weight:800;font-size:12px;flex-shrink:0;">{idx2}</div>
+                        <div style="font-size:14px;line-height:1.6;color:{BOX_SUGGESTION_TEXT};
+                                    font-weight:600;padding-top:2px;">{sug}</div>
+                    </div>'''
+                    for idx2, sug in enumerate(suggestions, 1)
+                ])
+                st.markdown(f'''
+                <div style="background:{BOX_SUGGESTION_BG};padding:18px 20px;border-radius:16px;
+                            border:1px solid {BORDER};margin-top:4px;">
+                    <h4 style="font-family:Sora,sans-serif;font-size:16px;font-weight:800;
+                               margin:0 0 12px;color:{BOX_SUGGESTION_TITLE};">💡 Recommendations</h4>
+                    {doc_rows}
+                </div>
+                ''', unsafe_allow_html=True)
 
             st.write('')
             st.subheader('📤 Export & Share')
             pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time)
-            col_pdf_dl, col_wa_share = st.columns(2)
-            with col_pdf_dl:
-                st.download_button(label=f'📥 Download PDF for {name}', data=pdf_data, file_name=f"glucotrack_{name.replace(' ', '_')}_report.pdf", mime='application/pdf', use_container_width=True, key=f"dl_btn_{selected_idx}")
-            with col_wa_share:
-                _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
+            st.subheader('📤 Send Report via WhatsApp')
+            _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
 
 
 def admin_page():
