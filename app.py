@@ -192,52 +192,50 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .block-container {{ padding-top: 1.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
+/* Don't let DM Sans override Material Icons spans — they must keep their icon font */
+span.material-icons, span[class*="material-icon"] {{ font-family: 'Material Icons' !important; }}
 
-/* ── Sidebar collapse/expand toggle — keep visible, fix icon rendering ── */
-/* The button itself: style it to match our theme */
+/* ── Sidebar collapse toggle ── */
+/* The floating arrow button (rendered OUTSIDE sidebar) — keep it working */
 [data-testid="collapsedControl"] {{
     display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: {CARD} !important;
-    border: 1px solid {BORDER} !important;
-    border-radius: 50% !important;
-    width: 32px !important; height: 32px !important;
-    box-shadow: 0 2px 8px rgba(14,165,233,0.15) !important;
-    cursor: pointer !important;
-    color: {TEXT} !important;
-}}
-[data-testid="collapsedControl"]:hover {{
-    background: {GRAD1}18 !important;
-    border-color: {GRAD1} !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }}
 
-/* Load Material Icons font so the keyboard_double_arrow icon renders as an icon, not text */
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
-/* Any span/element inside the toggle button that contains the icon name text */
-[data-testid="collapsedControl"] span,
-[data-testid="collapsedControl"] p,
-[data-testid="collapsedControl"] * {{
-    font-family: 'Material Icons' !important;
-    font-size: 18px !important;
-    color: {TEXT} !important;
-    line-height: 1 !important;
-    font-style: normal !important;
-    font-weight: normal !important;
-    letter-spacing: normal !important;
-    text-transform: none !important;
-    display: inline-block !important;
-    white-space: nowrap !important;
-    word-wrap: normal !important;
-    direction: ltr !important;
-    -webkit-font-smoothing: antialiased !important;
+/* The "keyboard_double_arrow_left/right" text is a Material Icon label
+   injected INSIDE the sidebar as an accessibility span.
+   Our global  p, label, span {{ font-family: DM Sans }}  rule breaks it,
+   making the icon name render as raw text.
+   Fix: override font back to Material Icons for that specific element,
+   AND clamp its height to 0 so it takes no space. */
+section[data-testid="stSidebar"] span.material-icons,
+section[data-testid="stSidebar"] span[class*="material"],
+section[data-testid="stSidebar"] > div > div > div > div > div:first-child span,
+section[data-testid="stSidebar"] > div > div > div > div > div:first-child p {{
+    font-family: 'Material Icons', 'Material Icons Outlined' !important;
+    font-size: 0px !important;
+    line-height: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    display: block !important;
+    visibility: hidden !important;
 }}
 
-/* Hide nav items / pages list (we use our own radio nav) */
+/* Hide Streamlit's auto-generated pages nav (we use our own radio nav) */
 [data-testid="stSidebarNav"],
-[data-testid="stSidebarNavItems"] {{
+[data-testid="stSidebarNavItems"],
+[data-testid="stSidebarNavCollapseButton"] {{
     display: none !important;
+}}
+
+/* Remove the gap the hidden nav leaves at the top of sidebar */
+section[data-testid="stSidebar"] > div > div > div > div > div:first-child {{
+    height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }}
 
 /* Header cleanup */
