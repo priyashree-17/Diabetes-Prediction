@@ -192,51 +192,15 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .block-container {{ padding-top: 1.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
-/* Don't let DM Sans override Material Icons spans — they must keep their icon font */
-span.material-icons, span[class*="material-icon"] {{ font-family: 'Material Icons' !important; }}
 
-/* ── Sidebar collapse toggle ── */
-/* The floating arrow button (rendered OUTSIDE sidebar) — keep it working */
-[data-testid="collapsedControl"] {{
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}}
-
-/* The "keyboard_double_arrow_left/right" text is a Material Icon label
-   injected INSIDE the sidebar as an accessibility span.
-   Our global  p, label, span {{ font-family: DM Sans }}  rule breaks it,
-   making the icon name render as raw text.
-   Fix: override font back to Material Icons for that specific element,
-   AND clamp its height to 0 so it takes no space. */
-section[data-testid="stSidebar"] span.material-icons,
-section[data-testid="stSidebar"] span[class*="material"],
-section[data-testid="stSidebar"] > div > div > div > div > div:first-child span,
-section[data-testid="stSidebar"] > div > div > div > div > div:first-child p {{
-    font-family: 'Material Icons', 'Material Icons Outlined' !important;
-    font-size: 0px !important;
-    line-height: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    display: block !important;
-    visibility: hidden !important;
-}}
-
-/* Hide Streamlit's auto-generated pages nav (we use our own radio nav) */
+/* ── Hide native Streamlit sidebar & collapse button entirely ── */
+/* We use our own custom HTML drawer instead */
+section[data-testid="stSidebar"],
+[data-testid="collapsedControl"],
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
-[data-testid="stSidebarNavCollapseButton"] {{
-    display: none !important;
-}}
-
-/* Remove the gap the hidden nav leaves at the top of sidebar */
-section[data-testid="stSidebar"] > div > div > div > div > div:first-child {{
-    height: 0 !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}}
+[data-testid="stSidebarNavCollapseButton"] {{ display: none !important; }}
+.block-container {{ margin-left: 0 !important; }}
 
 /* Header cleanup */
 [data-testid="stDecoration"] {{ display: none !important; }}
@@ -302,38 +266,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
 }}
 button * {{ color: white !important; }}
 .stButton>button[kind="secondary"] * {{ color: {TEXT} !important; }}
-
-/* Sidebar */
-section[data-testid="stSidebar"] {{ background: {SIDEBAR} !important; border-right: 1px solid {BORDER}; }}
-section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
-section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
-.sb-header {{ height: 80px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid {BORDER}; }}
-.sb-logo-box {{
-    width: 42px; height: 42px;
-    background: {GRAD_PRIMARY};
-    color: white !important; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 20px;
-    box-shadow: 0 4px 12px rgba(14,165,233,0.35);
-}}
-.sb-brand {{ font-size: 20px; font-weight: 800; color: {TEXT} !important; font-family: 'Sora', sans-serif !important; }}
-.sb-profile {{ display: flex; align-items: center; gap: 14px; padding: 20px 18px; border-bottom: 1px solid {BORDER}; }}
-.sb-avatar {{
-    width: 48px; height: 48px; border-radius: 14px;
-    background: {GRAD_PRIMARY};
-    color: white !important; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 17px; font-family: 'Sora', sans-serif !important;
-}}
-.sb-name {{ font-size: 15px; font-weight: 700; color: {TEXT} !important; margin-bottom: 3px; font-family: 'Sora', sans-serif !important; }}
-.sb-role {{ font-size: 13px; color: {MUTED} !important; font-weight: 500; }}
-div[data-testid="stRadio"] {{ padding: 18px 7px 0 !important; }}
-div[data-testid="stRadio"] label {{
-    border-radius: 12px !important; padding: 13px 14px !important; margin: 3px 0 !important;
-    font-size: 15px !important; font-weight: 600 !important; background: transparent !important;
-    transition: all 0.15s ease !important;
-}}
-div[data-testid="stRadio"] label:hover {{ background: {GRAD1}12 !important; }}
-div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
 
 /* HERO */
 .hero-section {{
@@ -934,49 +866,191 @@ def public_header():
 
 
 def dashboard_sidebar():
-    if not st.session_state.started or not st.session_state.logged_in: return
-    name = st.session_state.current_user_name; email = st.session_state.current_user_email
-    role = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
-    init = initials(name)
+    """Custom drawer sidebar — no Streamlit native sidebar, no keyboard_double_arrow bug."""
+    if not st.session_state.started or not st.session_state.logged_in:
+        return
+
+    # Handle nav/action query params sent from the drawer buttons
+    params = st.query_params
+    if params.get('nav'):
+        dest = params.get('nav')
+        st.query_params.clear()
+        if dest == 'signout':
+            add_audit('Logout', st.session_state.current_user_email, 'User logged out')
+            for key in ['logged_in', 'user_type', 'current_user_name', 'current_user_email',
+                        'prediction_done', 'patient_data', 'prediction_result', 'confidence',
+                        'prediction_time', 'pdf_bytes']:
+                st.session_state[key] = defaults[key]
+            st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
+        elif dest == 'toggle_theme':
+            st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
+        elif dest in ('prediction', 'dashboard', 'doctor', 'admin', 'profile'):
+            st.session_state.page = dest; st.rerun()
+
+    name  = st.session_state.current_user_name
+    email = st.session_state.current_user_email
+    role  = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
+    init  = initials(name)
+
     profile_pic = None
     if st.session_state.user_type == 'patient' and email in users:
         profile_pic = users[email].get('profile_pic')
     elif st.session_state.user_type == 'doctor' and email in doctors:
         profile_pic = doctors[email].get('profile_pic')
-    if profile_pic:
-        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:48px;height:48px;border-radius:14px;object-fit:cover;display:block;">'
-    else:
-        avatar_html = f'<div class="sb-avatar">{init}</div>'
-    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">🩺</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
-    if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
-    if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
-        st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
 
+    avatar_html = (
+        f'<img src="data:image/png;base64,{profile_pic}" '
+        f'style="width:48px;height:48px;border-radius:14px;object-fit:cover;">'
+        if profile_pic else
+        f'<div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,{GRAD1},{GRAD2});'
+        f'display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:white;">{init}</div>'
+    )
+
+    # Build nav items for this role
     if st.session_state.user_type == 'patient':
-        options = ['prediction', 'dashboard']
-        labels = ['🩺 Predict Risk', '📊 Health Dashboard']
+        nav_items = [('prediction','🩺','Predict Risk'), ('dashboard','📊','Health Dashboard')]
     elif st.session_state.user_type == 'doctor':
-        options = ['prediction', 'doctor', 'dashboard']
-        labels = ['🩺 Predict Risk', '👨‍⚕️ Patient Data', '📊 Health Dashboard']
+        nav_items = [('prediction','🩺','Predict Risk'), ('doctor','👨‍⚕️','Patient Data'), ('dashboard','📊','Health Dashboard')]
     else:
-        options = ['admin', 'prediction', 'dashboard']
-        labels = ['🛡️ Admin Panel', '🩺 Predict Risk', '📊 Dashboard']
+        nav_items = [('admin','🛡️','Admin Panel'), ('prediction','🩺','Predict Risk'), ('dashboard','📊','Dashboard')]
 
-    if st.session_state.page not in options and st.session_state.page != 'profile':
-        st.session_state.page = options[0]
-    if st.session_state.page != 'profile':
-        idx = options.index(st.session_state.page) if st.session_state.page in options else 0
-        selected_label = st.sidebar.radio('', labels, index=idx, label_visibility='collapsed')
-        selected_page = options[labels.index(selected_label)]
-        if selected_page != st.session_state.page: st.session_state.page = selected_page; st.rerun()
-    st.sidebar.markdown('<div style="height:180px;"></div>', unsafe_allow_html=True)
-    if st.sidebar.button('↪ Sign Out', use_container_width=True):
-        add_audit('Logout', st.session_state.current_user_email, 'User logged out')
-        for key in ['logged_in', 'user_type', 'current_user_name', 'current_user_email', 'prediction_done', 'patient_data', 'prediction_result', 'confidence', 'prediction_time', 'pdf_bytes']:
-            st.session_state[key] = defaults[key]
-        st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
+    current = st.session_state.page
+    theme_icon  = '☀️' if DARK else '🌙'
+    theme_label = 'Light Mode' if DARK else 'Dark Mode'
 
-    # ── Inject the collapse-arrow killer on every authenticated page render ──
+    nav_html = ''
+    for page_id, icon, label in nav_items:
+        active = 'background:linear-gradient(135deg,{g1}18,{g2}12);border-left:3px solid {g1};'.format(g1=GRAD1,g2=GRAD2) if current == page_id else 'border-left:3px solid transparent;'
+        nav_html += f'''
+        <a href="?nav={page_id}" style="display:flex;align-items:center;gap:12px;padding:13px 18px;
+           border-radius:12px;text-decoration:none;margin:3px 8px;cursor:pointer;
+           font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:{TEXT};
+           {active} transition:all 0.15s ease;"
+           onmouseover="this.style.background='rgba(14,165,233,0.08)'"
+           onmouseout="this.style.background='{'linear-gradient(135deg,'+GRAD1+'18,'+GRAD2+'12)' if current==page_id else 'transparent'}'">
+          <span style="font-size:18px;">{icon}</span>{label}
+        </a>'''
+
+    drawer_html = f'''
+    <style>
+      #gt-overlay {{
+        display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45);
+        z-index:9998; backdrop-filter:blur(2px); transition:opacity 0.25s ease;
+      }}
+      #gt-drawer {{
+        position:fixed; top:0; left:0; height:100vh; width:280px;
+        background:{SIDEBAR if not DARK else "#0B1120"};
+        border-right:1px solid {BORDER};
+        box-shadow:4px 0 32px rgba(0,0,0,0.18);
+        z-index:9999; display:flex; flex-direction:column;
+        transform:translateX(-100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        font-family:'DM Sans',sans-serif;
+      }}
+      #gt-drawer.open {{ transform:translateX(0); }}
+      #gt-overlay.open {{ display:block; }}
+      #gt-toggle {{
+        position:fixed; top:14px; left:14px; z-index:9997;
+        width:40px; height:40px; border-radius:12px;
+        background:{CARD}; border:1px solid {BORDER};
+        box-shadow:0 2px 12px rgba(14,165,233,0.15);
+        cursor:pointer; display:flex; align-items:center; justify-content:center;
+        transition:all 0.2s ease;
+      }}
+      #gt-toggle:hover {{ background:linear-gradient(135deg,{GRAD1},{GRAD2}); border-color:transparent; }}
+      #gt-toggle:hover svg path {{ stroke:white; }}
+      .gt-drawer-header {{
+        height:72px; display:flex; align-items:center; gap:12px;
+        padding:0 18px; border-bottom:1px solid {BORDER}; flex-shrink:0;
+      }}
+      .gt-logo-box {{
+        width:38px;height:38px;border-radius:10px;
+        background:linear-gradient(135deg,{GRAD1},{GRAD2});
+        display:flex;align-items:center;justify-content:center;
+        font-size:18px;box-shadow:0 4px 12px rgba(14,165,233,0.35);flex-shrink:0;
+      }}
+      .gt-brand {{
+        font-family:'Sora',sans-serif;font-size:19px;font-weight:800;color:{TEXT};
+      }}
+      .gt-profile {{
+        display:flex;align-items:center;gap:12px;padding:16px 18px;
+        border-bottom:1px solid {BORDER}; flex-shrink:0;
+      }}
+      .gt-nav {{ flex:1; overflow-y:auto; padding:10px 0; }}
+      .gt-footer {{ padding:12px 8px; border-top:1px solid {BORDER}; flex-shrink:0; }}
+      .gt-btn {{
+        display:flex;align-items:center;gap:10px;padding:11px 18px;
+        border-radius:12px;margin:3px 8px;cursor:pointer;
+        font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+        color:{TEXT};text-decoration:none;border:none;background:transparent;
+        width:calc(100% - 16px);text-align:left;transition:all 0.15s ease;
+      }}
+      .gt-btn:hover {{ background:rgba(14,165,233,0.08); }}
+      .gt-close {{
+        position:absolute;top:16px;right:14px;background:none;border:none;
+        cursor:pointer;color:{MUTED};font-size:20px;line-height:1;padding:4px;
+      }}
+    </style>
+
+    <!-- Hamburger toggle button -->
+    <div id="gt-toggle" onclick="gtOpenDrawer()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="{TEXT}" stroke-width="2.2"
+              stroke-linecap="round" id="gt-toggle-lines"/>
+      </svg>
+    </div>
+
+    <!-- Dark overlay -->
+    <div id="gt-overlay" onclick="gtCloseDrawer()"></div>
+
+    <!-- The drawer -->
+    <div id="gt-drawer">
+      <button class="gt-close" onclick="gtCloseDrawer()">✕</button>
+
+      <!-- Header -->
+      <div class="gt-drawer-header">
+        <div class="gt-logo-box">🩺</div>
+        <div class="gt-brand">GlucoTrack</div>
+      </div>
+
+      <!-- Profile -->
+      <div class="gt-profile">
+        {avatar_html}
+        <div>
+          <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:{TEXT};">{name or 'Loading...'}</div>
+          <div style="font-size:12px;color:{MUTED};margin-top:2px;">{role}</div>
+        </div>
+      </div>
+
+      <!-- Nav links -->
+      <div class="gt-nav">
+        {nav_html}
+      </div>
+
+      <!-- Footer actions -->
+      <div class="gt-footer">
+        <a href="?nav=profile" class="gt-btn">✏️ Edit Profile</a>
+        <a href="?nav=toggle_theme" class="gt-btn">{theme_icon} {theme_label}</a>
+        <a href="?nav=signout" class="gt-btn" style="color:#F43F5E;">↪ Sign Out</a>
+      </div>
+    </div>
+
+    <script>
+    function gtOpenDrawer() {{
+      document.getElementById('gt-drawer').classList.add('open');
+      document.getElementById('gt-overlay').classList.add('open');
+    }}
+    function gtCloseDrawer() {{
+      document.getElementById('gt-drawer').classList.remove('open');
+      document.getElementById('gt-overlay').classList.remove('open');
+    }}
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {{
+      if (e.key === 'Escape') gtCloseDrawer();
+    }});
+    </script>
+    '''
+
+    components.html(drawer_html, height=0)
 
 
 def landing_page():
