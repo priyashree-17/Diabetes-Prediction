@@ -57,7 +57,7 @@ def add_audit(action, email='System', details=''):
 
 DEFAULT_USERS = {
     'user@gmail.com': {
-        'password': 'Pass1234',
+        'password': 'user@123',
         'name': 'Demo User',
         'phone': 'Not Provided',
         'age': 30,
@@ -200,7 +200,7 @@ section[data-testid="stSidebar"],
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNavCollapseButton"] {{ display: none !important; }}
-.block-container {{ margin-left: 0 !important; }}
+.block-container {{ margin-left: 0 !important; padding-top: 4rem !important; }}
 
 /* Header cleanup */
 [data-testid="stDecoration"] {{ display: none !important; }}
@@ -935,122 +935,143 @@ def dashboard_sidebar():
     <style>
       #gt-overlay {{
         display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45);
-        z-index:9998; backdrop-filter:blur(2px); transition:opacity 0.25s ease;
+        z-index:9998; backdrop-filter:blur(2px);
       }}
+      #gt-overlay.open {{ display:block; }}
       #gt-drawer {{
         position:fixed; top:0; left:0; height:100vh; width:280px;
-        background:{SIDEBAR if not DARK else "#0B1120"};
+        background:{'#0B1120' if DARK else '#FFFFFF'};
         border-right:1px solid {BORDER};
-        box-shadow:4px 0 32px rgba(0,0,0,0.18);
+        box-shadow:6px 0 40px rgba(0,0,0,0.18);
         z-index:9999; display:flex; flex-direction:column;
-        transform:translateX(-100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        transform:translateX(-100%);
+        transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
         font-family:'DM Sans',sans-serif;
       }}
       #gt-drawer.open {{ transform:translateX(0); }}
-      #gt-overlay.open {{ display:block; }}
-      #gt-toggle {{
-        position:fixed; top:14px; left:14px; z-index:9997;
-        width:40px; height:40px; border-radius:12px;
-        background:{CARD}; border:1px solid {BORDER};
-        box-shadow:0 2px 12px rgba(14,165,233,0.15);
+      #gt-hamburger {{
+        position:fixed; top:14px; left:14px; z-index:10000;
+        width:42px; height:42px; border-radius:12px;
+        background:{'#111827' if DARK else '#FFFFFF'};
+        border:1.5px solid {BORDER};
+        box-shadow:0 2px 12px rgba(14,165,233,0.18);
         cursor:pointer; display:flex; align-items:center; justify-content:center;
         transition:all 0.2s ease;
       }}
-      #gt-toggle:hover {{ background:linear-gradient(135deg,{GRAD1},{GRAD2}); border-color:transparent; }}
-      #gt-toggle:hover svg path {{ stroke:white; }}
-      .gt-drawer-header {{
+      #gt-hamburger:hover {{
+        background:linear-gradient(135deg,{GRAD1},{GRAD2});
+        border-color:transparent;
+        box-shadow:0 4px 20px rgba(14,165,233,0.35);
+      }}
+      #gt-hamburger:hover .hb-line {{ stroke:white; }}
+      .gt-close-btn {{
+        position:absolute; top:14px; right:14px;
+        background:none; border:none; cursor:pointer;
+        color:{MUTED}; font-size:22px; line-height:1; padding:4px 8px;
+        border-radius:8px; transition:all 0.15s ease;
+      }}
+      .gt-close-btn:hover {{ background:rgba(14,165,233,0.1); color:{TEXT}; }}
+      .gt-head {{
         height:72px; display:flex; align-items:center; gap:12px;
         padding:0 18px; border-bottom:1px solid {BORDER}; flex-shrink:0;
       }}
-      .gt-logo-box {{
-        width:38px;height:38px;border-radius:10px;
+      .gt-logo {{
+        width:38px; height:38px; border-radius:10px;
         background:linear-gradient(135deg,{GRAD1},{GRAD2});
-        display:flex;align-items:center;justify-content:center;
-        font-size:18px;box-shadow:0 4px 12px rgba(14,165,233,0.35);flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:18px; box-shadow:0 4px 12px rgba(14,165,233,0.35);
+        flex-shrink:0;
       }}
       .gt-brand {{
-        font-family:'Sora',sans-serif;font-size:19px;font-weight:800;color:{TEXT};
+        font-family:'Sora',sans-serif; font-size:19px;
+        font-weight:800; color:{TEXT};
       }}
       .gt-profile {{
-        display:flex;align-items:center;gap:12px;padding:16px 18px;
-        border-bottom:1px solid {BORDER}; flex-shrink:0;
+        display:flex; align-items:center; gap:12px;
+        padding:16px 18px; border-bottom:1px solid {BORDER}; flex-shrink:0;
       }}
       .gt-nav {{ flex:1; overflow-y:auto; padding:10px 0; }}
-      .gt-footer {{ padding:12px 8px; border-top:1px solid {BORDER}; flex-shrink:0; }}
-      .gt-btn {{
-        display:flex;align-items:center;gap:10px;padding:11px 18px;
-        border-radius:12px;margin:3px 8px;cursor:pointer;
-        font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
-        color:{TEXT};text-decoration:none;border:none;background:transparent;
-        width:calc(100% - 16px);text-align:left;transition:all 0.15s ease;
+      .gt-nav a {{
+        display:flex; align-items:center; gap:12px;
+        padding:13px 18px; border-radius:12px; margin:3px 8px;
+        text-decoration:none; font-size:15px; font-weight:600; color:{TEXT};
+        border-left:3px solid transparent;
+        transition:all 0.15s ease;
       }}
-      .gt-btn:hover {{ background:rgba(14,165,233,0.08); }}
-      .gt-close {{
-        position:absolute;top:16px;right:14px;background:none;border:none;
-        cursor:pointer;color:{MUTED};font-size:20px;line-height:1;padding:4px;
+      .gt-nav a:hover {{ background:rgba(14,165,233,0.09); }}
+      .gt-nav a.active {{
+        background:linear-gradient(135deg,{GRAD1}20,{GRAD2}12);
+        border-left:3px solid {GRAD1};
       }}
+      .gt-footer {{
+        padding:12px 8px; border-top:1px solid {BORDER}; flex-shrink:0;
+      }}
+      .gt-footer a {{
+        display:flex; align-items:center; gap:10px;
+        padding:11px 18px; border-radius:12px; margin:3px 0;
+        text-decoration:none; font-size:14px; font-weight:600; color:{TEXT};
+        transition:all 0.15s ease;
+      }}
+      .gt-footer a:hover {{ background:rgba(14,165,233,0.09); }}
+      .gt-signout {{ color:#F43F5E !important; }}
     </style>
 
-    <!-- Hamburger toggle button -->
-    <div id="gt-toggle" onclick="gtOpenDrawer()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M3 6h18M3 12h18M3 18h18" stroke="{TEXT}" stroke-width="2.2"
-              stroke-linecap="round" id="gt-toggle-lines"/>
+    <!-- Hamburger button — always visible -->
+    <button id="gt-hamburger" onclick="gtOpen()" title="Open menu">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+        <path class="hb-line" d="M3 6h18" stroke="{TEXT}" stroke-width="2.2" stroke-linecap="round"/>
+        <path class="hb-line" d="M3 12h18" stroke="{TEXT}" stroke-width="2.2" stroke-linecap="round"/>
+        <path class="hb-line" d="M3 18h18" stroke="{TEXT}" stroke-width="2.2" stroke-linecap="round"/>
       </svg>
-    </div>
+    </button>
 
-    <!-- Dark overlay -->
-    <div id="gt-overlay" onclick="gtCloseDrawer()"></div>
+    <!-- Backdrop -->
+    <div id="gt-overlay" onclick="gtClose()"></div>
 
-    <!-- The drawer -->
+    <!-- Drawer panel -->
     <div id="gt-drawer">
-      <button class="gt-close" onclick="gtCloseDrawer()">✕</button>
+      <button class="gt-close-btn" onclick="gtClose()">✕</button>
 
-      <!-- Header -->
-      <div class="gt-drawer-header">
-        <div class="gt-logo-box">🩺</div>
+      <div class="gt-head">
+        <div class="gt-logo">🩺</div>
         <div class="gt-brand">GlucoTrack</div>
       </div>
 
-      <!-- Profile -->
       <div class="gt-profile">
         {avatar_html}
         <div>
-          <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:{TEXT};">{name or 'Loading...'}</div>
+          <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:{TEXT};">{name or 'User'}</div>
           <div style="font-size:12px;color:{MUTED};margin-top:2px;">{role}</div>
         </div>
       </div>
 
-      <!-- Nav links -->
       <div class="gt-nav">
         {nav_html}
       </div>
 
-      <!-- Footer actions -->
       <div class="gt-footer">
-        <a href="?nav=profile" class="gt-btn">✏️ Edit Profile</a>
-        <a href="?nav=toggle_theme" class="gt-btn">{theme_icon} {theme_label}</a>
-        <a href="?nav=signout" class="gt-btn" style="color:#F43F5E;">↪ Sign Out</a>
+        <a href="?nav=profile">✏️ Edit Profile</a>
+        <a href="?nav=toggle_theme">{theme_icon} {theme_label}</a>
+        <a href="?nav=signout" class="gt-signout">↪ Sign Out</a>
       </div>
     </div>
 
     <script>
-    function gtOpenDrawer() {{
-      document.getElementById('gt-drawer').classList.add('open');
-      document.getElementById('gt-overlay').classList.add('open');
-    }}
-    function gtCloseDrawer() {{
-      document.getElementById('gt-drawer').classList.remove('open');
-      document.getElementById('gt-overlay').classList.remove('open');
-    }}
-    // Close on Escape key
-    document.addEventListener('keydown', function(e) {{
-      if (e.key === 'Escape') gtCloseDrawer();
-    }});
+      function gtOpen() {{
+        document.getElementById('gt-drawer').classList.add('open');
+        document.getElementById('gt-overlay').classList.add('open');
+      }}
+      function gtClose() {{
+        document.getElementById('gt-drawer').classList.remove('open');
+        document.getElementById('gt-overlay').classList.remove('open');
+      }}
+      document.addEventListener('keydown', function(e) {{
+        if (e.key === 'Escape') gtClose();
+      }});
     </script>
     '''
 
-    components.html(drawer_html, height=0)
+    st.markdown(drawer_html, unsafe_allow_html=True)
 
 
 def landing_page():
