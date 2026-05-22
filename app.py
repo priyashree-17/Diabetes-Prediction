@@ -271,17 +271,17 @@ section[data-testid="stSidebar"] {{
 }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
 section[data-testid="stSidebar"] * {{ color: white !important; }}
-.sb-header {{ height: 80px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid rgba(255,255,255,0.28); }}
+.sb-header {{ height: 80px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid {BORDER}; }}
 .sb-logo-box {{
     width: 42px; height: 42px;
-    background: rgba(255,255,255,0.18);
+    background: {GRAD_PRIMARY};
     color: white !important; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 20px;
     box-shadow: 0 4px 12px rgba(14,165,233,0.35);
 }}
 .sb-brand {{ font-size: 20px; font-weight: 800; color: white !important; font-family: 'Sora', sans-serif !important; }}
-.sb-profile {{ display: flex; align-items: center; gap: 14px; padding: 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.28); }}
+.sb-profile {{ display: flex; align-items: center; gap: 14px; padding: 20px 18px; border-bottom: 1px solid {BORDER}; }}
 .sb-avatar {{
     width: 48px; height: 48px; border-radius: 14px;
     background: {GRAD_PRIMARY};
@@ -289,7 +289,7 @@ section[data-testid="stSidebar"] * {{ color: white !important; }}
     font-weight: 800; font-size: 17px; font-family: 'Sora', sans-serif !important;
 }}
 .sb-name {{ font-size: 15px; font-weight: 700; color: white !important; margin-bottom: 3px; font-family: 'Sora', sans-serif !important; }}
-.sb-role {{ font-size: 13px; color: rgba(255,255,255,0.86) !important; font-weight: 500; }}
+.sb-role {{ font-size: 13px; color: rgba(255,255,255,0.85) !important; font-weight: 500; }}
 div[data-testid="stRadio"] {{ padding: 18px 7px 0 !important; }}
 div[data-testid="stRadio"] label {{
     background: rgba(255,255,255,0.18) !important;
@@ -302,30 +302,26 @@ div[data-testid="stRadio"] label {{
     font-weight: 600 !important;
     transition: all 0.15s ease !important;
 }}
-div[data-testid="stRadio"] label:hover {{ background: rgba(255,255,255,0.28) !important; transform: translateY(-1px); }}
+div[data-testid="stRadio"] label:hover {{ background: rgba(255,255,255,0.30) !important; transform: translateY(-1px); }}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
 
 /* HERO */
 .hero-section {{
     position: relative;
-    min-height: 560px;
+    min-height: 78vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 80px 20px 60px;
+    padding: 60px 20px 40px;
     overflow: hidden;
-    max-width: 92%;
-    margin: 42px auto 30px;
-    border-radius: 34px;
-    box-shadow: 0 28px 70px rgba(31,162,225,0.16);
 }}
 .hero-bg {{
     position: absolute; inset: 0; z-index: 0;
     background: {GRAD_HERO};
     opacity: 1;
-    border-radius: 34px;
+    border-radius: 32px;
 }}
 .hero-glow {{
     position: absolute; width: 700px; height: 700px;
@@ -362,14 +358,14 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     line-height: 0.95;
     letter-spacing: -3px;
     color: white !important;
+    text-shadow: 0 4px 22px rgba(0,0,0,0.22);
     margin: 0 0 24px;
     animation: fadeInUp 0.7s ease 0.1s both;
 }}
 .hero-gradient-text {{
-    background: {GRAD_PRIMARY};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+    text-shadow: 0 4px 22px rgba(0,0,0,0.22);
     display: block;
 }}
 .hero-sub {{
@@ -380,13 +376,8 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     margin: 0 auto 36px;
     color: rgba(255,255,255,0.92) !important;
     font-weight: 500;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.20);
     animation: fadeInUp 0.7s ease 0.2s both;
-}}
-
-/* Hide the real Streamlit hero_start_btn that appears below the hero section */
-div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"] + div[data-testid="stHorizontalBlock"],
-div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) {{
-    display: none !important;
 }}
 
 /* ── Hero CTA card ── */
@@ -475,31 +466,31 @@ div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"]:has(bu
     opacity: 0.06; pointer-events: none;
     border-radius: inherit;
 }}
-.feature-blue {{ background: #CFEAFB !important; }}
-.feature-blue::before {{ background: linear-gradient(135deg, rgba(31,162,225,0.20), transparent); }}
-.feature-green {{ background: #CFEFD9 !important; }}
-.feature-green::before {{ background: linear-gradient(135deg, rgba(60,179,113,0.18), transparent); }}
-.feature-purple {{ background: #F7E79A !important; }}
-.feature-purple::before {{ background: linear-gradient(135deg, rgba(226,71,157,0.12), transparent); }}
+.feature-blue {{ background: {'linear-gradient(135deg, #0F1E35 0%, #102A4C 100%)' if DARK else '#CFEAFB'} !important; border-color: {'#2563EB' if DARK else BORDER} !important; }}
+.feature-blue::before {{ background: linear-gradient(135deg, {GRAD1}, transparent); }}
+.feature-green {{ background: {'linear-gradient(135deg, #0E2A1F 0%, #0F3A2A 100%)' if DARK else '#CFEFD9'} !important; border-color: {'#22C55E' if DARK else BORDER} !important; }}
+.feature-green::before {{ background: linear-gradient(135deg, {TEAL}, transparent); }}
+.feature-purple {{ background: {'linear-gradient(135deg, #2A2208 0%, #3D3210 100%)' if DARK else '#F7E79A'} !important; border-color: {'#EAB308' if DARK else BORDER} !important; }}
+.feature-purple::before {{ background: linear-gradient(135deg, {INDIGO}, transparent); }}
 .pill {{
     display: inline-flex; border-radius: 999px; padding: 6px 16px;
     font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
     margin-bottom: 28px; border: none;
     text-transform: uppercase; font-family: 'DM Sans', sans-serif;
 }}
-.pill-blue {{ background: {GRAD1}22 !important; color: {GRAD1} !important; }}
-.pill-green {{ background: {TEAL}22 !important; color: {TEAL} !important; }}
-.pill-purple {{ background: {INDIGO}22 !important; color: {INDIGO} !important; }}
+.pill-blue {{ background: {'rgba(59,130,246,0.22)' if DARK else f'{GRAD1}22'} !important; color: {'#93C5FD' if DARK else GRAD1} !important; }}
+.pill-green {{ background: {'rgba(34,197,94,0.22)' if DARK else f'{TEAL}22'} !important; color: {'#86EFAC' if DARK else TEAL} !important; }}
+.pill-purple {{ background: {'rgba(250,204,21,0.22)' if DARK else f'{INDIGO}22'} !important; color: {'#FDE68A' if DARK else INDIGO} !important; }}
 .icon-box {{
     width: 56px; height: 56px; border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
     font-size: 26px; margin-bottom: 20px;
 }}
-.icon-blue {{ background: {GRAD1}18 !important; }}
-.icon-green {{ background: {TEAL}18 !important; }}
-.icon-purple {{ background: {INDIGO}18 !important; }}
-.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: {TEXT} !important; }}
-.feature-text {{ font-size: 16px; line-height: 1.6; color: {MUTED} !important; }}
+.icon-blue {{ background: {'rgba(59,130,246,0.18)' if DARK else f'{GRAD1}18'} !important; }}
+.icon-green {{ background: {'rgba(34,197,94,0.18)' if DARK else f'{TEAL}18'} !important; }}
+.icon-purple {{ background: {'rgba(250,204,21,0.18)' if DARK else f'{INDIGO}18'} !important; }}
+.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: {'#F8FAFC' if DARK else '#10213E'} !important; }}
+.feature-text {{ font-size: 16px; line-height: 1.6; color: {'#CBD5E1' if DARK else '#475467'} !important; }}
 
 /* Steps */
 .steps-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }}
@@ -1038,7 +1029,7 @@ def dashboard_sidebar():
 def landing_page():
     public_header()
 
-    # ── Hero: badge + title + subtitle as HTML, CTA card as components.html ──
+    # ── Hero section with visible text and CTA inside the gradient card ──
     st.markdown(f'''
     <section class="hero-section">
         <div class="hero-bg"></div>
@@ -1053,92 +1044,32 @@ def landing_page():
             Get a science-backed diabetes risk assessment in under 2 minutes.<br>
             Powered by Machine Learning. Built for your health.
         </p>
-    </section>
-    ''', unsafe_allow_html=True)
-
-    # CTA card rendered via components so the button click can trigger Streamlit
-    components.html(f'''
-    <style>
-        body {{ margin:0; padding:0; background:transparent; font-family:'DM Sans',Arial,sans-serif; }}
-        .cta-wrap {{
-            display:flex; justify-content:center;
-            margin-top:-60px; position:relative; z-index:10;
-        }}
-        .cta-card {{
-            background:{CARD};
-            border:1px solid {BORDER};
-            border-radius:28px;
-            padding:32px 44px 28px;
-            width:420px;
-            box-shadow:0 12px 48px rgba(14,165,233,0.13),0 2px 8px rgba(0,0,0,0.07);
-            text-align:center;
-        }}
-        .cta-title {{
-            font-family:'Sora',Arial,sans-serif;
-            font-size:19px; font-weight:800;
-            color:{TEXT}; margin:0 0 6px;
-        }}
-        .cta-sub {{
-            font-size:14px; color:{MUTED};
-            margin:0 0 20px; line-height:1.5;
-        }}
-        .cta-btn {{
-            display:block; width:100%;
-            background:linear-gradient(135deg,{GRAD1} 0%,{GRAD2} 100%);
-            color:white; border:none; border-radius:14px;
-            font-weight:700; font-size:16px; padding:16px 0;
-            cursor:pointer; text-align:center;
-            box-shadow:0 8px 24px rgba(14,165,233,0.35);
-            transition:all 0.2s ease;
-            font-family:'DM Sans',Arial,sans-serif;
-            letter-spacing:0.2px;
-        }}
-        .cta-btn:hover {{
-            transform:translateY(-2px);
-            box-shadow:0 14px 36px rgba(14,165,233,0.45);
-            filter:brightness(1.06);
-        }}
-        .cta-trust {{
-            margin-top:16px;
-            font-size:13px; color:{MUTED};
-            display:flex; justify-content:center; gap:16px; flex-wrap:wrap;
-        }}
-    </style>
-    <div class="cta-wrap">
-        <div class="cta-card">
-            <div class="cta-title">🩺 Know Your Diabetes Risk</div>
-            <div class="cta-sub">Free · Private · Results in seconds</div>
-            <button class="cta-btn" onclick="triggerStart()">🚀 Get Started Free</button>
-            <div class="cta-trust">
+        <div style="position:relative;z-index:2;width:min(520px,92%);margin:26px auto 0;">
+            <a href="?hero_clicked=1" style="
+                display:flex;align-items:center;justify-content:center;gap:10px;
+                width:100%;background:white;color:#3B5FDB !important;
+                text-decoration:none;border-radius:18px;padding:18px 26px;
+                font-family:'DM Sans',sans-serif;font-weight:900;font-size:21px;
+                box-shadow:0 16px 42px rgba(0,0,0,0.22);">
+                🚀 Get Started Free
+            </a>
+            <div style="margin-top:20px;display:flex;justify-content:center;gap:26px;flex-wrap:wrap;
+                font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:white;text-shadow:0 2px 10px rgba(0,0,0,0.25);">
                 <span>✅ Free forever</span>
                 <span>🔒 Private &amp; secure</span>
                 <span>⚡ Instant results</span>
             </div>
         </div>
-    </div>
-    <script>
-        function triggerStart() {{
-            // Walk up to the Streamlit parent and click the hidden real button
-            var btns = window.parent.document.querySelectorAll('button');
-            for (var i = 0; i < btns.length; i++) {{
-                if (btns[i].innerText && btns[i].innerText.trim().startsWith('🚀 Get Started Free')) {{
-                    btns[i].click();
-                    return;
-                }}
-            }}
-        }}
-    </script>
-    ''', height=210)
+    </section>
+    ''', unsafe_allow_html=True)
 
-    # Real Streamlit button — visually hidden but functional (clicked by JS above)
-    st.markdown('<div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">', unsafe_allow_html=True)
-    if st.button('🚀 Get Started Free', type='primary', key='hero_start_btn'):
+    if st.query_params.get('hero_clicked') == '1':
+        st.query_params.clear()
         st.session_state.started = True
         st.session_state.page = 'auth'
         st.session_state.auth_mode = 'signup'
         st.session_state.signup_step = 1
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # Stats
     st.markdown(f'''
@@ -1708,4 +1639,3 @@ elif st.session_state.page == 'admin': admin_page()
 elif st.session_state.page == 'profile': profile_page()
 else:
     st.session_state.page = 'auth'; st.rerun()
-
