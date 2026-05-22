@@ -90,6 +90,16 @@ doctors = load_json(DOCTORS_FILE, DEFAULT_DOCTORS)
 admins = load_json(ADMINS_FILE, DEFAULT_ADMINS)
 reports = load_json(REPORTS_FILE, [])
 
+# ── Auto-migrate demo account password if it's still the old default ──
+_migrated = False
+if 'user@gmail.com' in users and users['user@gmail.com'].get('password') == 'Pass1234':
+    users['user@gmail.com']['password'] = 'user@123'
+    _migrated = True
+if 'doctor@glucotrack.com' in doctors and doctors['doctor@glucotrack.com'].get('password') == 'Doc@1234':
+    pass  # Doc@1234 is still the correct doctor password — keep it
+if _migrated:
+    save_json(USERS_FILE, users)
+
 
 defaults = {
     'started': False,
@@ -1208,21 +1218,6 @@ def auth_page():
         c1, col_card, c3 = st.columns([1, 1.8, 1])
         with col_card:
             with st.container(border=True):
-                # Demo credentials info box — always visible
-                st.markdown(f'''
-                <div style="background:{'#0F1E35' if DARK else '#EFF8FF'};border:1px solid {'#1E3358' if DARK else '#BAE0FD'};
-                            border-radius:14px;padding:14px 18px;margin-bottom:16px;font-family:DM Sans,Arial;">
-                    <div style="font-weight:700;font-size:13px;color:{'#60A5FA' if DARK else '#0369A1'};margin-bottom:8px;">
-                        🔑 Demo Credentials
-                    </div>
-                    <div style="font-size:13px;color:{'#8BA4C8' if DARK else '#4A6589'};line-height:1.8;">
-                        🧑 <b>Patient:</b> user@gmail.com &nbsp;/&nbsp; user@123<br>
-                        🛡️ <b>Admin:</b> admin@glucotrack.com &nbsp;/&nbsp; admin@123<br>
-                        👨‍⚕️ <b>Doctor:</b> doctor@glucotrack.com &nbsp;/&nbsp; Doc@1234
-                    </div>
-                </div>
-                ''', unsafe_allow_html=True)
-
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
@@ -1232,12 +1227,19 @@ def auth_page():
                     if ok: st.rerun()
                     else:
                         st.error(f'❌ {msg}')
-                        st.markdown(f'''
-                        <div style="font-size:12px;color:{'#8BA4C8' if DARK else '#64748B'};margin-top:4px;padding:0 4px;">
-                            💡 If you registered with a custom password, use that. 
-                            Or delete <code>users.json</code> to reset to demo credentials.
-                        </div>
-                        ''', unsafe_allow_html=True)
+                        col_hint, col_reset = st.columns([3, 1])
+                        with col_hint:
+                            st.markdown(f'''
+                            <div style="font-size:12px;color:{'#8BA4C8' if DARK else '#64748B'};margin-top:4px;padding:0 4px;">
+                                💡 Use your registered password, or click Reset to restore demo credentials.
+                            </div>
+                            ''', unsafe_allow_html=True)
+                        with col_reset:
+                            if st.button('🔄 Reset Demo', key='reset_demo_btn', use_container_width=True):
+                                users['user@gmail.com'] = DEFAULT_USERS['user@gmail.com'].copy()
+                                save_json(USERS_FILE, users)
+                                st.success('✅ Demo account reset! Use user@gmail.com / user@123')
+                                st.rerun()
                 st.markdown(f'<div style="text-align:center;margin:18px 0;color:{MUTED};">— or —</div>', unsafe_allow_html=True)
                 if st.button('✨ Create a free account →', type='secondary', use_container_width=True, key='to_signup'):
                     st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
