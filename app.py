@@ -90,13 +90,10 @@ doctors = load_json(DOCTORS_FILE, DEFAULT_DOCTORS)
 admins = load_json(ADMINS_FILE, DEFAULT_ADMINS)
 reports = load_json(REPORTS_FILE, [])
 
-# ── Auto-migrate demo account password if it's still the old default ──
 _migrated = False
 if 'user@gmail.com' in users and users['user@gmail.com'].get('password') == 'Pass1234':
     users['user@gmail.com']['password'] = 'user@123'
     _migrated = True
-if 'doctor@glucotrack.com' in doctors and doctors['doctor@glucotrack.com'].get('password') == 'Doc@1234':
-    pass  # Doc@1234 is still the correct doctor password — keep it
 if _migrated:
     save_json(USERS_FILE, users)
 
@@ -203,32 +200,51 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 
-/* ── Hide keyboard_double_arrow text label — keep collapse button functional ── */
+/* ── Sidebar toggle button: make it visible ── */
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"] {{
     display: none !important;
 }}
-/* Hide the text span/p inside the collapse button — but NOT the button or SVG itself */
-[data-testid="stSidebarCollapsedControl"] span,
-[data-testid="stSidebarCollapsedControl"] p,
-[data-testid="collapsedControl"] span,
-[data-testid="collapsedControl"] p,
-/* Streamlit renders collapse label as a <span> with material icon font text */
+
+/* Show the collapse/expand button properly */
+button[data-testid="baseButton-headerNoPadding"],
+button[data-testid="baseButton-header"] {{
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: flex !important;
+}}
+
+/* Hide only the keyboard_double_arrow text, keep SVG icon */
 button[data-testid="baseButton-headerNoPadding"] > span:not(:has(svg)),
 button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
     display: none !important;
     width: 0 !important;
     overflow: hidden !important;
 }}
-/* The label text sits in a div above the sidebar — hide just the text wrapper */
-section[data-testid="stSidebar"] > div:first-child > div:first-child > div:first-child {{
-    font-size: 0 !important;
-    color: transparent !important;
-    overflow: hidden !important;
+
+/* ── Sidebar: remove ALL top gap ── */
+section[data-testid="stSidebar"] > div:first-child {{
+    padding-top: 0 !important;
+    margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] > div > div {{
     padding-top: 0 !important;
     margin-top: 0 !important;
+}}
+/* Remove the large top spacing Streamlit injects */
+section[data-testid="stSidebar"] .block-container {{
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}}
+/* Target the very first child div inside sidebar */
+section[data-testid="stSidebar"] > div:first-child > div:first-child {{
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    line-height: 0 !important;
+    overflow: hidden !important;
+    max-height: 0 !important;
 }}
 
 /* Header cleanup */
@@ -300,7 +316,17 @@ button * {{ color: white !important; }}
 section[data-testid="stSidebar"] {{ background: {SIDEBAR} !important; border-right: 1px solid {BORDER}; }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
 section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
-.sb-header {{ height: 80px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid {BORDER}; }}
+
+/* ── Sidebar header/profile: use flex column, no overlap ── */
+.sb-header {{
+    height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 18px;
+    border-bottom: 1px solid {BORDER};
+    margin-top: 0;
+}}
 .sb-logo-box {{
     width: 42px; height: 42px;
     background: {GRAD_PRIMARY};
@@ -308,17 +334,50 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 20px;
     box-shadow: 0 4px 12px rgba(14,165,233,0.35);
+    flex-shrink: 0;
 }}
 .sb-brand {{ font-size: 20px; font-weight: 800; color: {TEXT} !important; font-family: 'Sora', sans-serif !important; }}
-.sb-profile {{ display: flex; align-items: center; gap: 14px; padding: 20px 18px; border-bottom: 1px solid {BORDER}; }}
+
+/* Profile row: fix overlap — stack name & role clearly */
+.sb-profile {{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid {BORDER};
+}}
 .sb-avatar {{
-    width: 48px; height: 48px; border-radius: 14px;
+    width: 44px; height: 44px; border-radius: 12px;
     background: {GRAD_PRIMARY};
     color: white !important; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 17px; font-family: 'Sora', sans-serif !important;
+    font-weight: 800; font-size: 16px; font-family: 'Sora', sans-serif !important;
+    flex-shrink: 0;
 }}
-.sb-name {{ font-size: 15px; font-weight: 700; color: {TEXT} !important; margin-bottom: 3px; font-family: 'Sora', sans-serif !important; }}
-.sb-role {{ font-size: 13px; color: {MUTED} !important; font-weight: 500; }}
+.sb-info {{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+}}
+.sb-name {{
+    font-size: 14px;
+    font-weight: 700;
+    color: {TEXT} !important;
+    font-family: 'Sora', sans-serif !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}}
+.sb-role {{
+    font-size: 12px;
+    color: {MUTED} !important;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+}}
+
 div[data-testid="stRadio"] {{ padding: 18px 7px 0 !important; }}
 div[data-testid="stRadio"] label {{
     border-radius: 12px !important; padding: 13px 14px !important; margin: 3px 0 !important;
@@ -516,17 +575,37 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     font-weight: 900; box-shadow: 0 4px 14px rgba(14,165,233,0.35);
 }}
 
-/* Page header */
-.page-head {{ display: flex; align-items: center; gap: 16px; padding: 20px 28px 14px; }}
+/* Page header — use flex, no absolute positioning to avoid overlap */
+.page-head {{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 4px 20px;
+    position: relative;
+    z-index: 1;
+}}
 .page-icon {{
     width: 50px; height: 50px;
     background: {GRAD_PRIMARY};
     color: white !important; border-radius: 14px;
     display: flex; align-items: center; justify-content: center; font-size: 22px;
     box-shadow: 0 4px 16px rgba(14,165,233,0.30);
+    flex-shrink: 0;
 }}
-.page-title {{ font-family: 'Sora', sans-serif; font-size: 27px; font-weight: 800; color: {TEXT} !important; }}
-.page-sub {{ font-size: 15px; margin-top: 3px; color: {MUTED} !important; }}
+.page-title-text {{
+    font-family: 'Sora', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: {TEXT} !important;
+    line-height: 1.2;
+    margin: 0;
+}}
+.page-sub {{
+    font-size: 14px;
+    margin-top: 3px;
+    color: {MUTED} !important;
+    line-height: 1.4;
+}}
 
 /* Card headings */
 .card-heading {{ display: flex; align-items: center; gap: 10px; font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 20px; color: {TEXT} !important; }}
@@ -613,7 +692,7 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 }}
 
 /* Visibility fixes */
-.stMarkdown, .stMarkdown *, .page-title, .card-heading, .section-title, .auth-title h1, div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {{ color: {TEXT} !important; }}
+.stMarkdown, .stMarkdown *, .page-title-text, .card-heading, .section-title, .auth-title h1, div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {{ color: {TEXT} !important; }}
 .page-sub, .section-sub, .hero-sub, .step-text, .stat-label, .auth-title p, .param-label {{ color: {MUTED} !important; }}
 .stDataFrame, .stDataFrame *, [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * {{ color: {TEXT} !important; font-weight: 600 !important; }}
 
@@ -625,11 +704,30 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 '''
 st.markdown(css, unsafe_allow_html=True)
 
-# components.html actually executes JS (st.markdown strips <script> tags)
+# JS: hide keyboard_double_arrow text & zero out sidebar top padding
 components.html("""
 <script>
 (function() {
     var doc = window.parent.document;
+
+    function fixSidebar() {
+        // Remove gap at top of sidebar
+        var sidebar = doc.querySelector('section[data-testid="stSidebar"]');
+        if (sidebar) {
+            var firstDiv = sidebar.querySelector(':scope > div');
+            if (firstDiv) {
+                firstDiv.style.setProperty('padding-top', '0', 'important');
+                firstDiv.style.setProperty('margin-top', '0', 'important');
+            }
+            // Hide the label text div that causes the gap
+            var children = sidebar.querySelectorAll(':scope > div > div');
+            children.forEach(function(el) {
+                el.style.setProperty('padding-top', '0', 'important');
+                el.style.setProperty('margin-top', '0', 'important');
+            });
+        }
+    }
+
     function hideKbdText() {
         var tw = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
         var nodes = []; var n;
@@ -639,18 +737,26 @@ components.html("""
         nodes.forEach(function(node) {
             var el = node.parentElement;
             while (el && el !== doc.body) {
-                el.style.setProperty('font-size','0','important');
-                el.style.setProperty('color','transparent','important');
-                el.style.setProperty('line-height','0','important');
+                el.style.setProperty('font-size', '0', 'important');
+                el.style.setProperty('color', 'transparent', 'important');
+                el.style.setProperty('line-height', '0', 'important');
                 if (el.tagName === 'BUTTON') break;
                 el = el.parentElement;
             }
         });
     }
+
     hideKbdText();
+    fixSidebar();
+
     new MutationObserver(function(m) {
-        m.forEach(function(r) { if (r.addedNodes.length) hideKbdText(); });
-    }).observe(doc.body, {childList:true, subtree:true});
+        m.forEach(function(r) {
+            if (r.addedNodes.length) {
+                hideKbdText();
+                fixSidebar();
+            }
+        });
+    }).observe(doc.body, {childList: true, subtree: true});
 })();
 </script>
 """, height=0)
@@ -817,7 +923,6 @@ def create_risk_gauge_image(confidence, is_high):
     return img
 
 
-
 def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
@@ -852,33 +957,22 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     setc((1, 1, 1)); pdf.rect(0, 0, width, height, fill=True, stroke=False)
     setc(navy); pdf.rect(0, height - 128, width, 128, fill=True, stroke=False)
     setc(royal); pdf.roundRect(38, height - 90, 50, 50, 12, fill=True, stroke=False)
-    # Draw stethoscope icon using vector shapes (ReportLab cannot render emoji)
-    cx, cy = 63, height - 65  # center of icon box
+    cx, cy = 63, height - 65
     setc((1, 1, 1))
     stroke((1, 1, 1))
     pdf.setLineWidth(2.2)
-    # Chest piece — filled circle
     pdf.circle(cx, cy - 7, 7, fill=True, stroke=False)
-    # Chest piece inner circle
     setc(royal)
     pdf.circle(cx, cy - 7, 3.5, fill=True, stroke=False)
     setc((1, 1, 1))
-    # Tube — arc going up-left then curving right to earpiece fork
-    from reportlab.graphics.shapes import Path
-    from reportlab.lib.colors import Color, white
     pdf.setStrokeColorRGB(1, 1, 1)
     pdf.setLineWidth(2.4)
     pdf.setLineCap(1)
-    # Left tube arm
-    pdf.bezier(cx - 7, cy - 1,   cx - 14, cy + 4,   cx - 14, cy + 12,  cx - 9, cy + 16)
-    # Right tube arm
-    pdf.bezier(cx + 7, cy - 1,   cx + 14, cy + 4,   cx + 14, cy + 12,  cx + 9, cy + 16)
-    # Top connector bar
+    pdf.bezier(cx - 7, cy - 1, cx - 14, cy + 4, cx - 14, cy + 12, cx - 9, cy + 16)
+    pdf.bezier(cx + 7, cy - 1, cx + 14, cy + 4, cx + 14, cy + 12, cx + 9, cy + 16)
     pdf.line(cx - 9, cy + 16, cx + 9, cy + 16)
-    # Left earpiece dot
     pdf.setFillColorRGB(1, 1, 1)
     pdf.circle(cx - 9, cy + 18, 2.2, fill=True, stroke=False)
-    # Right earpiece dot
     pdf.circle(cx + 9, cy + 18, 2.2, fill=True, stroke=False)
     pdf.setFont('Helvetica-Bold', 23); pdf.drawString(108, height - 52, 'GlucoTrack Clinical Report')
     pdf.setFont('Helvetica', 10); setc((0.6, 0.75, 0.92))
@@ -957,6 +1051,19 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     return buffer.getvalue()
 
 
+def page_header(icon, title, subtitle):
+    """Renders page header using pure HTML — no st.subheader/st.title to avoid overlap."""
+    st.markdown(f'''
+    <div class="page-head">
+        <div class="page-icon">{icon}</div>
+        <div>
+            <div class="page-title-text">{title}</div>
+            <div class="page-sub">{subtitle}</div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+
 def public_header():
     col_logo, col_nav, col_spacer, col_theme, col_signin = st.columns([2.5, 4.0, 2.0, 1.2, 1.2])
     with col_logo:
@@ -983,14 +1090,27 @@ def public_header():
     st.markdown(f'<div class="grad-divider" style="margin-bottom:0;"></div>', unsafe_allow_html=True)
 
 
-# FIX 2: Doctor sidebar now includes Predict Risk + Doctor Portal + Dashboard
 def dashboard_sidebar():
     if not st.session_state.started or not st.session_state.logged_in: return
-    # components.html executes JS on every sidebar render
     components.html("""
     <script>
     (function() {
         var doc = window.parent.document;
+
+        function fixSidebar() {
+            var sidebar = doc.querySelector('section[data-testid="stSidebar"]');
+            if (!sidebar) return;
+            // Zero out every top padding/margin we can find
+            var toFix = sidebar.querySelectorAll('div');
+            toFix.forEach(function(el) {
+                var computed = window.getComputedStyle(el);
+                if (parseInt(computed.paddingTop) > 10 && el.children.length <= 3) {
+                    el.style.setProperty('padding-top', '0', 'important');
+                    el.style.setProperty('margin-top', '0', 'important');
+                }
+            });
+        }
+
         function hideKbdText() {
             var tw = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
             var nodes = []; var n;
@@ -1000,21 +1120,26 @@ def dashboard_sidebar():
             nodes.forEach(function(node) {
                 var el = node.parentElement;
                 while (el && el !== doc.body) {
-                    el.style.setProperty('font-size','0','important');
-                    el.style.setProperty('color','transparent','important');
-                    el.style.setProperty('line-height','0','important');
+                    el.style.setProperty('font-size', '0', 'important');
+                    el.style.setProperty('color', 'transparent', 'important');
+                    el.style.setProperty('line-height', '0', 'important');
                     if (el.tagName === 'BUTTON') break;
                     el = el.parentElement;
                 }
             });
         }
+
         hideKbdText();
+        fixSidebar();
         new MutationObserver(function(m) {
-            m.forEach(function(r) { if (r.addedNodes.length) hideKbdText(); });
-        }).observe(doc.body, {childList:true, subtree:true});
+            m.forEach(function(r) {
+                if (r.addedNodes.length) { hideKbdText(); fixSidebar(); }
+            });
+        }).observe(doc.body, {childList: true, subtree: true});
     })();
     </script>
     """, height=0)
+
     name = st.session_state.current_user_name; email = st.session_state.current_user_email
     role = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
     init = initials(name)
@@ -1023,16 +1148,31 @@ def dashboard_sidebar():
         profile_pic = users[email].get('profile_pic')
     elif st.session_state.user_type == 'doctor' and email in doctors:
         profile_pic = doctors[email].get('profile_pic')
+
     if profile_pic:
-        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:48px;height:48px;border-radius:14px;object-fit:cover;display:block;">'
+        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:44px;height:44px;border-radius:12px;object-fit:cover;display:block;flex-shrink:0;">'
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
-    st.sidebar.markdown(f'<div class="sb-header"><div class="sb-logo-box">🩺</div><div class="sb-brand">GlucoTrack</div></div><div class="sb-profile">{avatar_html}<div><div class="sb-name">{name if name else "Loading..."}</div><div class="sb-role">{role}</div></div></div>', unsafe_allow_html=True)
+
+    # FIX: Separate avatar from name/role so they never overlap
+    st.sidebar.markdown(f'''
+    <div class="sb-header">
+        <div class="sb-logo-box">🩺</div>
+        <div class="sb-brand">GlucoTrack</div>
+    </div>
+    <div class="sb-profile">
+        {avatar_html}
+        <div class="sb-info">
+            <div class="sb-name">{name if name else "Loading..."}</div>
+            <div class="sb-role">{role}</div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
+
     if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
     if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
 
-    # FIX 2: Doctors now get Predict Risk + Patient Data + Dashboard
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']
         labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -1060,8 +1200,6 @@ def dashboard_sidebar():
 
 def landing_page():
     public_header()
-
-    # Hero section with Get Started button INSIDE the hero card
     st.markdown(f'''
     <section class="hero-section">
         <div class="hero-bg"></div>
@@ -1091,31 +1229,19 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
-    # Check if hero HTML button was clicked (sets query param)
     params = st.query_params
     if params.get('hero_clicked') == '1':
         st.query_params.clear()
         st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
 
-    # Stats
     st.markdown(f'''
     <div class="stats-wrap" style="margin-top:52px;">
-        <div class="stat">
-            <div class="stat-num">95%+</div>
-            <div class="stat-label">🎯 Model Accuracy</div>
-        </div>
-        <div class="stat">
-            <div class="stat-num">8</div>
-            <div class="stat-label">🔬 Health Parameters Analyzed</div>
-        </div>
-        <div class="stat">
-            <div class="stat-num">100%</div>
-            <div class="stat-label">💸 Completely Free to Use</div>
-        </div>
+        <div class="stat"><div class="stat-num">95%+</div><div class="stat-label">🎯 Model Accuracy</div></div>
+        <div class="stat"><div class="stat-num">8</div><div class="stat-label">🔬 Health Parameters Analyzed</div></div>
+        <div class="stat"><div class="stat-num">100%</div><div class="stat-label">💸 Completely Free to Use</div></div>
     </div>
     ''', unsafe_allow_html=True)
 
-    # Features Section
     st.markdown(f'''
     <section id="features" class="section" style="padding-top:20px;">
         <h2 class="section-title">What GlucoTrack Does</h2>
@@ -1143,37 +1269,19 @@ def landing_page():
     </section>
     ''', unsafe_allow_html=True)
 
-    # How It Works
     st.markdown(f'''
     <section id="how-it-works" class="section">
         <h2 class="section-title">How It Works</h2>
         <p class="section-sub">Get your diabetes risk assessment in 4 simple steps</p>
         <div class="steps-grid">
-            <div class="step-card">
-                <div class="step-num">01</div>
-                <div class="step-title">🔐 Create Account</div>
-                <div class="step-text">Sign up free with your name and email address in under a minute</div>
-            </div>
-            <div class="step-card">
-                <div class="step-num">02</div>
-                <div class="step-title">🩺 Enter Health Data</div>
-                <div class="step-text">Fill in your 8 clinical health values from your latest lab report</div>
-            </div>
-            <div class="step-card">
-                <div class="step-num">03</div>
-                <div class="step-title">🤖 Get AI Prediction</div>
-                <div class="step-text">Our ML model instantly calculates your personalized diabetes risk</div>
-            </div>
-            <div class="step-card">
-                <div class="step-num">04</div>
-                <div class="step-title">📄 View & Share Report</div>
-                <div class="step-text">Download a PDF report or share it directly via WhatsApp with your doctor</div>
-            </div>
+            <div class="step-card"><div class="step-num">01</div><div class="step-title">🔐 Create Account</div><div class="step-text">Sign up free with your name and email address in under a minute</div></div>
+            <div class="step-card"><div class="step-num">02</div><div class="step-title">🩺 Enter Health Data</div><div class="step-text">Fill in your 8 clinical health values from your latest lab report</div></div>
+            <div class="step-card"><div class="step-num">03</div><div class="step-title">🤖 Get AI Prediction</div><div class="step-text">Our ML model instantly calculates your personalized diabetes risk</div></div>
+            <div class="step-card"><div class="step-num">04</div><div class="step-title">📄 View & Share Report</div><div class="step-text">Download a PDF report or share it directly via WhatsApp with your doctor</div></div>
         </div>
     </section>
     ''', unsafe_allow_html=True)
 
-    # Bottom CTA
     st.markdown(f'''
     <section class="section" style="padding-bottom:24px;">
         <div class="bottom-cta">
@@ -1225,11 +1333,7 @@ def auth_page():
                         st.error(f'❌ {msg}')
                         col_hint, col_reset = st.columns([3, 1])
                         with col_hint:
-                            st.markdown(f'''
-                            <div style="font-size:12px;color:{'#8BA4C8' if DARK else '#64748B'};margin-top:4px;padding:0 4px;">
-                                💡 Use your registered password, or click Reset to restore demo credentials.
-                            </div>
-                            ''', unsafe_allow_html=True)
+                            st.markdown(f'<div style="font-size:12px;color:{"#8BA4C8" if DARK else "#64748B"};margin-top:4px;padding:0 4px;">💡 Use your registered password, or click Reset to restore demo credentials.</div>', unsafe_allow_html=True)
                         with col_reset:
                             if st.button('🔄 Reset Demo', key='reset_demo_btn', use_container_width=True):
                                 users['user@gmail.com'] = DEFAULT_USERS['user@gmail.com'].copy()
@@ -1333,7 +1437,7 @@ def create_profile_page():
 
 
 def prediction_page():
-    st.markdown('<div class="page-head"><div class="page-icon">🩺</div><div><div class="page-title">Diabetes Risk Prediction</div><div class="page-sub">Enter your clinical parameters for an AI-powered assessment</div></div></div>', unsafe_allow_html=True)
+    page_header('🩺', 'Diabetes Risk Prediction', 'Enter your clinical parameters for an AI-powered assessment')
 
     components.html(f'''
     <div style="background:linear-gradient(135deg,{GRAD1}18,{GRAD2}12);border:1px solid {GRAD1}44;border-radius:18px;padding:18px 24px;margin-bottom:18px;font-family:'DM Sans',Arial;">
@@ -1362,7 +1466,6 @@ def prediction_page():
             bp = st.number_input('💓 Blood Pressure (mmHg)', 30, 140, 70, help='Diastolic blood pressure. Normal: 60–80 mmHg')
             skin = st.number_input('📏 Skin Thickness (mm)', 0, 100, 20, help='Triceps skin fold thickness')
             bmi = st.number_input('⚖️ BMI', 10.0, 70.0, 25.0, help='Body Mass Index. Normal: 18.5–24.9, Overweight: 25–29.9, Obese: ≥30')
-            # For doctor, use default age 35 since they may be entering for a patient
             if st.session_state.user_type == 'patient':
                 default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30))
             else:
@@ -1408,7 +1511,6 @@ def prediction_page():
         st.session_state.page = 'dashboard'; st.rerun()
 
 
-# FIX 4: WhatsApp share widget — now also used standalone for doctors
 def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidence, pred_time, patient_data, selected_idx=None):
     """Share PDF via browser native Web Share API — no API keys required."""
     import base64 as _b64
@@ -1419,7 +1521,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
     text_col   = '#F0F6FF' if DARK_LOCAL else '#0A1628'
     muted_col  = '#8BA4C8' if DARK_LOCAL else '#4A6589'
 
-    # Header card
+    # FIX: Only render the HTML card — no st.subheader above it (was causing double title)
     st.markdown(f"""
     <div style="background:{bg_col};border:1.5px solid {border_col};border-radius:18px;
                 padding:20px 24px;margin-top:8px;">
@@ -1438,16 +1540,15 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
 
     st.write("")
 
-    # Build caption
     caption = (
-        f"🩺 GlucoTrack Diabetes Risk Report\n"
-        f"👤 Patient: {patient_name}\n"
-        f"📊 Result: {result}\n"
-        f"🎯 Confidence: {confidence}%\n"
-        f"📅 Date: {pred_time}\n"
-        f"🩸 Glucose: {patient_data.get('Glucose','N/A')} mg/dL\n"
-        f"⚖️ BMI: {patient_data.get('BMI','N/A')}\n"
-        f"💓 BP: {patient_data.get('BloodPressure','N/A')} mmHg\n"
+        f"GlucoTrack Diabetes Risk Report\n"
+        f"Patient: {patient_name}\n"
+        f"Result: {result}\n"
+        f"Confidence: {confidence}%\n"
+        f"Date: {pred_time}\n"
+        f"Glucose: {patient_data.get('Glucose','N/A')} mg/dL\n"
+        f"BMI: {patient_data.get('BMI','N/A')}\n"
+        f"BP: {patient_data.get('BloodPressure','N/A')} mmHg\n"
         f"Powered by GlucoTrack AI Health Platform"
     )
     safe_caption = caption.replace("`", "'").replace("\\", "\\\\")
@@ -1457,7 +1558,6 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
     col_share, col_dl = st.columns([3, 2])
 
     with col_share:
-        # Web Share API button — shares the actual PDF file
         components.html(f"""
         <div style="margin:0;">
           <button id="sharePdfBtn_{phone_key}" style="
@@ -1500,7 +1600,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
           var btn    = document.getElementById('sharePdfBtn_{phone_key}');
           var status = document.getElementById('shareStatus_{phone_key}');
           btn.onmouseenter = function() {{ btn.style.transform='translateY(-2px)'; btn.style.boxShadow='0 12px 28px rgba(34,197,94,0.40)'; }};
-          btn.onmouseleave = function() {{ btn.style.transform='translateY(0)';    btn.style.boxShadow='0 8px 20px rgba(34,197,94,0.30)';  }};
+          btn.onmouseleave = function() {{ btn.style.transform='translateY(0)'; btn.style.boxShadow='0 8px 20px rgba(34,197,94,0.30)'; }};
           btn.onclick = async function() {{
             try {{
               var b64 = "{pdf_b64}";
@@ -1517,15 +1617,15 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
                   files: [file]
                 }});
                 status.style.color = "#16A34A";
-                status.innerText = "✅ Share panel opened — select WhatsApp to send the PDF.";
+                status.innerText = "Share panel opened — select WhatsApp to send the PDF.";
               }} else {{
                 status.style.color = "#F97316";
-                status.innerText = "⚠️ Your browser doesn\'t support file sharing. Please download the PDF and send it manually via WhatsApp.";
+                status.innerText = "Your browser does not support file sharing. Please download the PDF and send it manually via WhatsApp.";
               }}
             }} catch(err) {{
               if (err.name !== "AbortError") {{
                 status.style.color = "#EF4444";
-                status.innerText = "❌ Sharing cancelled or not supported. Download the PDF and attach it in WhatsApp.";
+                status.innerText = "Sharing cancelled or not supported. Download the PDF and attach it in WhatsApp.";
               }}
             }}
           }};
@@ -1547,7 +1647,8 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
 
 
 def dashboard_page():
-    st.markdown('<div class="page-head"><div class="page-icon">📊</div><div><div class="page-title">Health Dashboard</div><div class="page-sub">Your prediction result, analytics, and personalized recommendations</div></div></div>', unsafe_allow_html=True)
+    page_header('📊', 'Health Dashboard', 'Your prediction result, analytics, and personalized recommendations')
+
     if not st.session_state.prediction_done:
         st.warning('⚠️ No prediction found. Please complete a prediction first.')
         if st.button('🩺 Go to Prediction', type='primary'): st.session_state.page = 'prediction'; st.rerun()
@@ -1592,15 +1693,13 @@ def dashboard_page():
             <h3 style="font-family:Sora,sans-serif;font-size:18px;font-weight:800;
                        margin:0;color:{BOX_SUGGESTION_TITLE};">Personalized Health Suggestions</h3>
         </div>
-        <p style="color:{MUTED};font-size:13px;margin:0 0 12px 32px;">
-            Based on your clinical values
-        </p>
+        <p style="color:{MUTED};font-size:13px;margin:0 0 12px 32px;">Based on your clinical values</p>
         {suggestion_rows}
     </div>
     ''', unsafe_allow_html=True)
 
     st.write('')
-    st.subheader('📤 Send Report via WhatsApp')
+    # FIX: Removed duplicate st.subheader — the HTML card inside _render_whatsapp_share already has the title
     _render_whatsapp_share(
         phone_key='patient_dash',
         pdf_bytes=st.session_state.pdf_bytes,
@@ -1616,7 +1715,8 @@ def dashboard_page():
 
 
 def doctor_page():
-    st.markdown('<div class="page-head"><div class="page-icon">👨‍⚕️</div><div><div class="page-title">Doctor Portal</div><div class="page-sub">Comprehensive Patient Directory & Clinical Health Analytics</div></div></div>', unsafe_allow_html=True)
+    page_header('👨‍⚕️', 'Doctor Portal', 'Comprehensive Patient Directory & Clinical Health Analytics')
+
     high_cases = [r for r in reports if 'High' in r.get('result', '')]
     with st.container(border=True):
         c1, c2, c3 = st.columns(3)
@@ -1705,14 +1805,14 @@ def doctor_page():
                 ''', unsafe_allow_html=True)
 
             st.write('')
-            st.subheader('📤 Export & Share')
             pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time)
-            st.subheader('📤 Send Report via WhatsApp')
+            # FIX: Removed duplicate st.subheader before WhatsApp widget
             _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
 
 
 def admin_page():
-    st.markdown('<div class="page-head"><div class="page-icon">🛡️</div><div><div class="page-title">Admin Panel</div><div class="page-sub">Manage doctors, users, reports, and audit logs</div></div></div>', unsafe_allow_html=True)
+    page_header('🛡️', 'Admin Panel', 'Manage doctors, users, reports, and audit logs')
+
     pending = {email: d for email, d in doctors.items() if not d.get('approved', False)}
     high = [r for r in reports if 'High' in r.get('result', '')]
 
@@ -1749,7 +1849,8 @@ def admin_page():
 def profile_page():
     back_page = 'prediction' if st.session_state.user_type in ('patient', 'doctor') else 'admin'
     if st.button('← Back', key='profile_back', type='secondary'): st.session_state.page = back_page; st.rerun()
-    st.markdown('<div class="page-head"><div class="page-icon">👤</div><div><div class="page-title">My Profile</div><div class="page-sub">Update your personal details and photo</div></div></div>', unsafe_allow_html=True)
+    page_header('👤', 'My Profile', 'Update your personal details and photo')
+
     email = st.session_state.current_user_email; utype = st.session_state.user_type
 
     with st.container(border=True):
