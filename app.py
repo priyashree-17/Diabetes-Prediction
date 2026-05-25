@@ -129,65 +129,65 @@ for k, v in defaults.items():
 DARK = st.session_state.dark_mode
 
 if DARK:
-    BG = '#070B14'
-    BG2 = '#0D1525'
-    CARD = '#111827'
-    CARD2 = '#1A2540'
-    TEXT = '#F0F6FF'
-    MUTED = '#8BA4C8'
-    BORDER = '#1E3358'
-    INPUT = '#0F1E35'
-    GRAD1 = '#0EA5E9'
-    GRAD2 = '#6366F1'
-    GRAD3 = '#14B8A6'
-    BLUE = '#0EA5E9'
-    BLUE_DARK = '#0284C7'
-    TEAL = '#14B8A6'
-    INDIGO = '#6366F1'
-    SIDEBAR = '#0B1120'
+    BG = '#0D0618'
+    BG2 = '#130824'
+    CARD = '#1A0D2E'
+    CARD2 = '#220F3A'
+    TEXT = '#F3EEFF'
+    MUTED = '#A78BCC'
+    BORDER = '#3B1F6A'
+    INPUT = '#1A0D2E'
+    GRAD1 = '#7C3AED'
+    GRAD2 = '#EC4899'
+    GRAD3 = '#3B82F6'
+    BLUE = '#8B5CF6'
+    BLUE_DARK = '#6D28D9'
+    TEAL = '#A78BFA'
+    INDIGO = '#EC4899'
+    SIDEBAR = '#0D0618'
     PLOT_TEMPLATE = 'plotly_dark'
     RESULT_HIGH_BG = '#2D0A14'
     RESULT_HIGH_BORDER = '#F43F5E'
     RESULT_HIGH_TEXT = '#FDA4AF'
-    RESULT_LOW_BG = '#031A1A'
-    RESULT_LOW_BORDER = '#14B8A6'
-    RESULT_LOW_TEXT = '#5EEAD4'
-    BOX_SUGGESTION_BG = '#0F1E35'
-    BOX_SUGGESTION_TITLE = '#F0F6FF'
-    BOX_SUGGESTION_TEXT = '#5EEAD4'
-    HERO_OVERLAY = 'rgba(7,11,20,0.85)'
+    RESULT_LOW_BG = '#1A0D2E'
+    RESULT_LOW_BORDER = '#7C3AED'
+    RESULT_LOW_TEXT = '#C4B5FD'
+    BOX_SUGGESTION_BG = '#130824'
+    BOX_SUGGESTION_TITLE = '#F3EEFF'
+    BOX_SUGGESTION_TEXT = '#C4B5FD'
+    HERO_OVERLAY = 'rgba(13,6,24,0.85)'
 else:
-    BG = '#F0F7FF'
-    BG2 = '#E8F2FF'
+    BG = '#F5F3FF'
+    BG2 = '#EDE9FE'
     CARD = '#FFFFFF'
-    CARD2 = '#F8FBFF'
-    TEXT = '#0A1628'
-    MUTED = '#4A6589'
-    BORDER = '#C8DCF0'
+    CARD2 = '#FAF8FF'
+    TEXT = '#1A0533'
+    MUTED = '#6B52A0'
+    BORDER = '#DDD6FE'
     INPUT = '#FFFFFF'
-    GRAD1 = '#0EA5E9'
-    GRAD2 = '#6366F1'
-    GRAD3 = '#0D9488'
-    BLUE = '#0369A1'
-    BLUE_DARK = '#075985'
-    TEAL = '#0D9488'
-    INDIGO = '#4F46E5'
+    GRAD1 = '#6D28D9'
+    GRAD2 = '#EC4899'
+    GRAD3 = '#3B82F6'
+    BLUE = '#4F46E5'
+    BLUE_DARK = '#3730A3'
+    TEAL = '#8B5CF6'
+    INDIGO = '#EC4899'
     SIDEBAR = '#FFFFFF'
     PLOT_TEMPLATE = 'plotly_white'
     RESULT_HIGH_BG = '#FFF1F2'
     RESULT_HIGH_BORDER = '#FB7185'
     RESULT_HIGH_TEXT = '#BE123C'
-    RESULT_LOW_BG = '#F0FDFA'
-    RESULT_LOW_BORDER = '#5EEAD4'
-    RESULT_LOW_TEXT = '#0F766E'
-    BOX_SUGGESTION_BG = '#ECFDF5'
-    BOX_SUGGESTION_TITLE = '#0A1628'
-    BOX_SUGGESTION_TEXT = '#0F766E'
-    HERO_OVERLAY = 'rgba(240,247,255,0.92)'
+    RESULT_LOW_BG = '#F5F3FF'
+    RESULT_LOW_BORDER = '#8B5CF6'
+    RESULT_LOW_TEXT = '#5B21B6'
+    BOX_SUGGESTION_BG = '#FAF5FF'
+    BOX_SUGGESTION_TITLE = '#1A0533'
+    BOX_SUGGESTION_TEXT = '#6D28D9'
+    HERO_OVERLAY = 'rgba(245,243,255,0.92)'
 
 GRAD_PRIMARY = f'linear-gradient(135deg, {GRAD1} 0%, {GRAD2} 100%)'
 GRAD_CARD = f'linear-gradient(135deg, {GRAD1}18 0%, {GRAD2}18 100%)' if not DARK else f'linear-gradient(135deg, {GRAD1}22 0%, {GRAD2}22 100%)'
-GRAD_HERO = f'linear-gradient(135deg, #0369A1 0%, #4F46E5 50%, #0D9488 100%)'
+GRAD_HERO = 'linear-gradient(135deg, #3B82F6 0%, #6D28D9 40%, #EC4899 100%)'
 
 css = f'''
 <style>
@@ -196,7 +196,7 @@ css = f'''
 *, *::before, *::after {{ box-sizing: border-box; }}
 html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .stApp {{ background: {BG} !important; }}
-.block-container {{ padding-top: 1.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
+.block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 
@@ -281,7 +281,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
     border: 1px solid {BORDER} !important;
     border-radius: 22px !important;
     padding: 28px !important;
-    box-shadow: 0 4px 24px rgba(14,165,233,0.06), 0 1px 4px rgba(0,0,0,0.04) !important;
+    box-shadow: 0 4px 24px rgba(109,40,217,0.08), 0 1px 4px rgba(0,0,0,0.04) !important;
 }}
 
 /* Primary buttons */
@@ -290,13 +290,13 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
     color: white !important; border: none !important; border-radius: 14px !important;
     font-weight: 700 !important; font-size: 15px !important; min-height: 52px !important;
     font-family: 'DM Sans', sans-serif !important;
-    box-shadow: 0 8px 24px rgba(14,165,233,0.30) !important;
+    box-shadow: 0 8px 24px rgba(109,40,217,0.30) !important;
     transition: all 0.2s ease !important;
     letter-spacing: 0.2px !important;
 }}
 .stButton>button[kind="primary"]:hover, .stDownloadButton>button:hover, .stFormSubmitButton>button:hover {{
     transform: translateY(-2px) !important;
-    box-shadow: 0 14px 32px rgba(14,165,233,0.38) !important;
+    box-shadow: 0 14px 32px rgba(109,40,217,0.42) !important;
     filter: brightness(1.05) !important;
 }}
 .stButton>button[kind="secondary"] {{
@@ -319,11 +319,11 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
 
 /* ── Sidebar header/profile: use flex column, no overlap ── */
 .sb-header {{
-    height: 72px;
+    height: auto;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 0 18px;
+    padding: 18px 18px 16px 18px;
     border-bottom: 1px solid {BORDER};
     margin-top: 0;
 }}
@@ -333,7 +333,7 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
     color: white !important; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 20px;
-    box-shadow: 0 4px 12px rgba(14,165,233,0.35);
+    box-shadow: 0 4px 12px rgba(109,40,217,0.35);
     flex-shrink: 0;
 }}
 .sb-brand {{ font-size: 20px; font-weight: 800; color: {TEXT} !important; font-family: 'Sora', sans-serif !important; }}
@@ -390,96 +390,123 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 /* HERO */
 .hero-section {{
     position: relative;
-    min-height: 92vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 60px 20px 40px;
+    padding: 0 20px 40px;
     overflow: hidden;
 }}
-.hero-bg {{
-    position: absolute; inset: 0; z-index: 0;
+.hero-card {{
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: 28px;
     background: {GRAD_HERO};
-    opacity: {'0.12' if not DARK else '0.18'};
-    border-radius: 0 0 60px 60px;
+    padding: 64px 48px 52px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(109,40,217,0.35), 0 8px 32px rgba(236,72,153,0.18);
 }}
-.hero-glow {{
-    position: absolute; width: 700px; height: 700px;
+.hero-card::before {{
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
     border-radius: 50%;
-    background: radial-gradient(circle, {GRAD1}30 0%, transparent 70%);
-    top: -200px; left: 50%; transform: translateX(-50%);
-    pointer-events: none; z-index: 0;
+    background: rgba(255,255,255,0.07);
+    top: -200px; right: -150px;
+    pointer-events: none;
 }}
-.hero-glow2 {{
-    position: absolute; width: 500px; height: 500px;
+.hero-card::after {{
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
     border-radius: 50%;
-    background: radial-gradient(circle, {GRAD2}20 0%, transparent 70%);
-    bottom: -100px; right: -100px;
-    pointer-events: none; z-index: 0;
+    background: rgba(255,255,255,0.05);
+    bottom: -150px; left: -100px;
+    pointer-events: none;
 }}
+.hero-bg {{ display: none; }}
+.hero-glow {{ display: none; }}
+.hero-glow2 {{ display: none; }}
 .hero-badge {{
     position: relative; z-index: 1;
     display: inline-flex; align-items: center; gap: 8px;
-    background: {GRAD_PRIMARY};
+    background: rgba(255,255,255,0.18);
     color: white !important;
-    border-radius: 999px; padding: 8px 20px;
+    border-radius: 999px; padding: 8px 22px;
     font-weight: 700; font-size: 12px; letter-spacing: 2px;
     font-family: 'DM Sans', sans-serif;
     text-transform: uppercase;
-    box-shadow: 0 4px 20px rgba(14,165,233,0.35);
+    border: 1px solid rgba(255,255,255,0.28);
     margin-bottom: 28px;
+    backdrop-filter: blur(8px);
     animation: fadeInDown 0.6s ease both;
 }}
 .hero-title {{
     position: relative; z-index: 1;
     font-family: 'Sora', sans-serif;
-    font-size: clamp(52px, 8vw, 96px);
+    font-size: clamp(48px, 7vw, 88px);
     font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -3px;
-    color: {TEXT} !important;
-    margin: 0 0 24px;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    color: white !important;
+    margin: 0 0 20px;
     animation: fadeInUp 0.7s ease 0.1s both;
 }}
 .hero-gradient-text {{
-    background: {GRAD_PRIMARY};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white !important;
+    -webkit-text-fill-color: white;
     display: block;
 }}
 .hero-sub {{
     position: relative; z-index: 1;
-    font-size: clamp(17px, 2.2vw, 22px);
-    line-height: 1.6;
-    max-width: 680px;
-    margin: 0 auto 44px;
-    color: {MUTED} !important;
+    font-size: clamp(16px, 2vw, 19px);
+    line-height: 1.65;
+    max-width: 600px;
+    margin: 0 auto 40px;
+    color: rgba(255,255,255,0.82) !important;
     font-weight: 400;
     animation: fadeInUp 0.7s ease 0.2s both;
 }}
-
-/* Stats bar */
-.stats-wrap {{
-    max-width: 900px; margin: 44px auto 80px;
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    background: {CARD};
-    border: 1px solid {BORDER};
-    border-radius: 24px; overflow: hidden;
-    box-shadow: 0 8px 32px rgba(14,165,233,0.08);
+.hero-stats {{
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-top: 44px;
+    position: relative; z-index: 1;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    padding-top: 36px;
 }}
-.stat {{ padding: 40px 20px; text-align: center; border-right: 1px solid {BORDER}; }}
-.stat:last-child {{ border-right: none; }}
-.stat-num {{
+.hero-stat {{
+    flex: 1;
+    max-width: 220px;
+    text-align: center;
+    padding: 0 24px;
+    border-right: 1px solid rgba(255,255,255,0.18);
+}}
+.hero-stat:last-child {{ border-right: none; }}
+.hero-stat-num {{
     font-family: 'Sora', sans-serif;
-    font-size: 42px; font-weight: 900;
-    background: {GRAD_PRIMARY};
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 38px;
+    font-weight: 900;
+    color: white !important;
+    line-height: 1;
+    margin-bottom: 6px;
 }}
-.stat-label {{ font-size: 16px; margin-top: 6px; color: {MUTED} !important; font-weight: 500; }}
+.hero-stat-label {{
+    font-size: 13px;
+    color: rgba(255,255,255,0.75) !important;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}}
+
+/* Stats bar — now embedded inside hero card; keep for compat */
+.stats-wrap {{ display: none; }}
+.stat {{ display: none; }}
+.stat-num {{ display: none; }}
+.stat-label {{ display: none; }}
 
 /* Feature cards */
 .section {{ padding: 0 20px 80px; }}
@@ -502,11 +529,11 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     opacity: 0.06; pointer-events: none;
     border-radius: inherit;
 }}
-.feature-blue {{ background: {'#0E1A2E' if DARK else '#EFF8FF'} !important; }}
+.feature-blue {{ background: {'#1A0D2E' if DARK else '#F5F0FF'} !important; }}
 .feature-blue::before {{ background: linear-gradient(135deg, {GRAD1}, transparent); }}
-.feature-green {{ background: {'#081A18' if DARK else '#F0FDFA'} !important; }}
+.feature-green {{ background: {'#1E0A2E' if DARK else '#FDF0F8'} !important; }}
 .feature-green::before {{ background: linear-gradient(135deg, {TEAL}, transparent); }}
-.feature-purple {{ background: {'#120E2E' if DARK else '#F5F3FF'} !important; }}
+.feature-purple {{ background: {'#0D0A2E' if DARK else '#EEF2FF'} !important; }}
 .feature-purple::before {{ background: linear-gradient(135deg, {INDIGO}, transparent); }}
 .pill {{
     display: inline-flex; border-radius: 999px; padding: 6px 16px;
@@ -514,9 +541,9 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     margin-bottom: 28px; border: none;
     text-transform: uppercase; font-family: 'DM Sans', sans-serif;
 }}
-.pill-blue {{ background: {GRAD1}22 !important; color: {GRAD1} !important; }}
-.pill-green {{ background: {TEAL}22 !important; color: {TEAL} !important; }}
-.pill-purple {{ background: {INDIGO}22 !important; color: {INDIGO} !important; }}
+.pill-blue {{ background: {GRAD1}25 !important; color: {GRAD1} !important; }}
+.pill-green {{ background: {TEAL}25 !important; color: {TEAL} !important; }}
+.pill-purple {{ background: {INDIGO}25 !important; color: {INDIGO} !important; }}
 .icon-box {{
     width: 56px; height: 56px; border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
@@ -551,10 +578,10 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 .bottom-cta {{
     max-width: 860px; margin: 0 auto 80px;
     text-align: center;
-    border-radius: 32px; padding: 60px 60px;
-    background: {GRAD_PRIMARY};
+    border-radius: 28px; padding: 60px 60px;
+    background: {GRAD_HERO};
     position: relative; overflow: hidden;
-    box-shadow: 0 20px 60px rgba(14,165,233,0.35);
+    box-shadow: 0 20px 60px rgba(109,40,217,0.40);
 }}
 .bottom-cta::before {{
     content: ''; position: absolute;
@@ -580,7 +607,7 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 8px 4px 20px;
+    padding: 2px 4px 16px;
     position: relative;
     z-index: 1;
 }}
@@ -589,7 +616,7 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
     background: {GRAD_PRIMARY};
     color: white !important; border-radius: 14px;
     display: flex; align-items: center; justify-content: center; font-size: 22px;
-    box-shadow: 0 4px 16px rgba(14,165,233,0.30);
+    box-shadow: 0 4px 16px rgba(109,40,217,0.30);
     flex-shrink: 0;
 }}
 .page-title-text {{
@@ -1202,29 +1229,40 @@ def landing_page():
     public_header()
     st.markdown(f'''
     <section class="hero-section">
-        <div class="hero-bg"></div>
-        <div class="hero-glow"></div>
-        <div class="hero-glow2"></div>
-        <div class="hero-badge">🧬 AI-POWERED HEALTH PLATFORM</div>
-        <h1 class="hero-title">
-            Know Your<br>
-            <span class="hero-gradient-text">Diabetes Risk</span>
-        </h1>
-        <p class="hero-sub">
-            Get a science-backed diabetes risk assessment in under 2 minutes.<br>
-            Powered by Machine Learning. Built for your health.
-        </p>
-        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:20px;">
-            <a href="?hero_clicked=1" style="
-                display:inline-flex;align-items:center;justify-content:center;gap:10px;
-                background:{GRAD_PRIMARY};
-                color:white !important;text-decoration:none;border-radius:16px;
-                padding:16px 52px;
-                font-family:'DM Sans',sans-serif;
-                font-weight:700;font-size:17px;cursor:pointer;
-                box-shadow:0 8px 28px rgba(14,165,233,0.38);
-                min-width:270px;transition:all 0.2s ease;
-            ">🚀 Get Started Free</a>
+        <div class="hero-card">
+            <div class="hero-badge">🧬 AI-POWERED HEALTH PLATFORM</div>
+            <h1 class="hero-title">GlucoTrack</h1>
+            <p class="hero-sub">
+                Predict diabetes risk in seconds using Machine Learning.<br>
+                Understand your health. Take action early. Live better.
+            </p>
+            <div style="position:relative;z-index:2;display:flex;justify-content:center;gap:14px;margin-top:8px;">
+                <a href="?hero_clicked=1" style="
+                    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+                    background:rgba(255,255,255,0.22);
+                    color:white !important;text-decoration:none;border-radius:14px;
+                    padding:15px 44px;
+                    font-family:'DM Sans',sans-serif;
+                    font-weight:700;font-size:16px;cursor:pointer;
+                    border:2px solid rgba(255,255,255,0.40);
+                    backdrop-filter:blur(8px);
+                    transition:all 0.2s ease;
+                ">🚀 Get Started Free</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-num">95%+</div>
+                    <div class="hero-stat-label">Model Accuracy</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num">8</div>
+                    <div class="hero-stat-label">Health Parameters</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num">100%</div>
+                    <div class="hero-stat-label">Free to Use</div>
+                </div>
+            </div>
         </div>
     </section>
     ''', unsafe_allow_html=True)
@@ -1234,17 +1272,11 @@ def landing_page():
         st.query_params.clear()
         st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
 
-    st.markdown(f'''
-    <div class="stats-wrap" style="margin-top:52px;">
-        <div class="stat"><div class="stat-num">95%+</div><div class="stat-label">🎯 Model Accuracy</div></div>
-        <div class="stat"><div class="stat-num">8</div><div class="stat-label">🔬 Health Parameters Analyzed</div></div>
-        <div class="stat"><div class="stat-num">100%</div><div class="stat-label">💸 Completely Free to Use</div></div>
-    </div>
-    ''', unsafe_allow_html=True)
+    # stats now embedded inside hero card
 
     st.markdown(f'''
     <section id="features" class="section" style="padding-top:20px;">
-        <h2 class="section-title">What GlucoTrack Does</h2>
+        <h2 class="section-title">✨ What GlucoTrack Does</h2>
         <p class="section-sub">Three powerful features to monitor, predict, and improve your health</p>
         <div class="feature-grid">
             <div class="feature-card feature-blue">
@@ -1271,7 +1303,7 @@ def landing_page():
 
     st.markdown(f'''
     <section id="how-it-works" class="section">
-        <h2 class="section-title">How It Works</h2>
+        <h2 class="section-title">🔄 How It Works</h2>
         <p class="section-sub">Get your diabetes risk assessment in 4 simple steps</p>
         <div class="steps-grid">
             <div class="step-card"><div class="step-num">01</div><div class="step-title">🔐 Create Account</div><div class="step-text">Sign up free with your name and email address in under a minute</div></div>
