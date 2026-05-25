@@ -331,6 +331,8 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
     gap: 12px;
     padding: 18px 18px 16px 18px;
     border-bottom: 1px solid {BORDER};
+    border-top: 3px solid transparent;
+    border-image: {GRAD_PRIMARY} 1;
     margin-top: 0;
     background: {'rgba(109,40,217,0.12)' if DARK else 'rgba(109,40,217,0.05)'};
 }}
@@ -345,12 +347,9 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
 }}
 .sb-brand {{
     font-size: 20px; font-weight: 800;
-    color: {TEXT} !important;
+    color: {GRAD1} !important;
     font-family: 'Sora', sans-serif !important;
-    background: {GRAD_PRIMARY};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    letter-spacing: -0.3px;
 }}
 
 /* Profile row */
@@ -383,12 +382,8 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
 }}
 .sb-role {{
     font-size: 12px; font-weight: 600;
-    color: {GRAD1} !important;
+    color: {GRAD2} !important;
     line-height: 1.3; white-space: nowrap;
-    background: {GRAD_PRIMARY};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }}
 
 /* Nav radio items */
@@ -407,11 +402,16 @@ div[data-testid="stRadio"] label:hover {{
     background: {'rgba(109,40,217,0.15)' if DARK else 'rgba(109,40,217,0.08)'} !important;
     border-color: {'rgba(129,140,248,0.3)' if DARK else 'rgba(109,40,217,0.2)'} !important;
 }}
-div[data-testid="stRadio"] [aria-checked="true"] {{
+div[data-testid="stRadio"] [aria-checked="true"],
+div[data-testid="stRadio"] label[data-checked="true"],
+div[data-testid="stRadio"] [data-baseweb="radio"][aria-checked="true"] {{
     background: {GRAD_PRIMARY} !important;
     border-color: transparent !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(109,40,217,0.30) !important;
 }}
-div[data-testid="stRadio"] [aria-checked="true"] * {{
+div[data-testid="stRadio"] [aria-checked="true"] *,
+div[data-testid="stRadio"] label[data-checked="true"] * {{
     color: white !important;
     -webkit-text-fill-color: white !important;
 }}
@@ -1279,7 +1279,12 @@ def dashboard_sidebar():
         selected_label = st.sidebar.radio('', labels, index=idx, label_visibility='collapsed')
         selected_page = options[labels.index(selected_label)]
         if selected_page != st.session_state.page: st.session_state.page = selected_page; st.rerun()
-    st.sidebar.markdown('<div style="height:180px;"></div>', unsafe_allow_html=True)
+    st.sidebar.markdown(f'''
+    <div style="height:120px;"></div>
+    <div style="padding:0 8px 4px;">
+        <div style="height:1px;background:{GRAD_PRIMARY};border-radius:99px;opacity:0.4;margin-bottom:14px;"></div>
+    </div>
+    ''', unsafe_allow_html=True)
     if st.sidebar.button('↪ Sign Out', use_container_width=True):
         add_audit('Logout', st.session_state.current_user_email, 'User logged out')
         for key in ['logged_in', 'user_type', 'current_user_name', 'current_user_email', 'prediction_done', 'patient_data', 'prediction_result', 'confidence', 'prediction_time', 'pdf_bytes']:
@@ -1408,6 +1413,21 @@ def landing_page():
 
 def auth_page():
     public_header()
+    # Full-page gradient background for auth pages
+    st.markdown(f'''
+    <style>
+    .stApp {{
+        background: {'linear-gradient(135deg, #0A1628 0%, #1a0d3e 50%, #0d1a3a 100%)' if DARK else 'linear-gradient(135deg, #f5f0ff 0%, #fdf0f8 50%, #eef2ff 100%)'} !important;
+    }}
+    /* Auth card gets glass effect */
+    div[data-testid="stVerticalBlockBorderWrapper"] {{
+        background: {'rgba(17,34,64,0.85)' if DARK else 'rgba(255,255,255,0.88)'} !important;
+        backdrop-filter: blur(16px) !important;
+        border: 1px solid {'rgba(129,140,248,0.25)' if DARK else 'rgba(109,40,217,0.15)'} !important;
+        box-shadow: 0 8px 40px rgba(109,40,217,0.18) !important;
+    }}
+    </style>
+    ''', unsafe_allow_html=True)
     if st.button('← Back to Home', key='auth_back_home', type='secondary'):
         st.session_state.started = False; st.session_state.page = 'home'; st.rerun()
 
@@ -1488,6 +1508,19 @@ def auth_page():
 
 def create_profile_page():
     public_header()
+    st.markdown(f'''
+    <style>
+    .stApp {{
+        background: {'linear-gradient(135deg, #0A1628 0%, #1a0d3e 50%, #0d1a3a 100%)' if DARK else 'linear-gradient(135deg, #f5f0ff 0%, #fdf0f8 50%, #eef2ff 100%)'} !important;
+    }}
+    div[data-testid="stVerticalBlockBorderWrapper"] {{
+        background: {'rgba(17,34,64,0.85)' if DARK else 'rgba(255,255,255,0.88)'} !important;
+        backdrop-filter: blur(16px) !important;
+        border: 1px solid {'rgba(129,140,248,0.25)' if DARK else 'rgba(109,40,217,0.15)'} !important;
+        box-shadow: 0 8px 40px rgba(109,40,217,0.18) !important;
+    }}
+    </style>
+    ''', unsafe_allow_html=True)
     if st.button('← Back to Password Setup', key='create_profile_back', type='secondary'):
         st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 2; st.rerun()
     st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">🩺</div><div>GlucoTrack</div></div><h1>Choose Your Profile 👤</h1><p>Are you a patient or a healthcare professional?</p></div>', unsafe_allow_html=True)
