@@ -315,12 +315,15 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
 button * {{ color: white !important; }}
 .stButton>button[kind="secondary"] * {{ color: {TEXT} !important; }}
 
-/* Sidebar */
-section[data-testid="stSidebar"] {{ background: {SIDEBAR} !important; border-right: 1px solid {BORDER}; }}
+/* ── SIDEBAR — full purple/pink themed ── */
+section[data-testid="stSidebar"] {{
+    background: {'linear-gradient(180deg, #0A1628 0%, #0F1E3C 60%, #1A0D2E 100%)' if DARK else 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 60%, #F5F0FF 100%)'} !important;
+    border-right: 1px solid {BORDER} !important;
+}}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
 section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
 
-/* ── Sidebar header/profile: use flex column, no overlap ── */
+/* Sidebar header */
 .sb-header {{
     height: auto;
     display: flex;
@@ -329,6 +332,7 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
     padding: 18px 18px 16px 18px;
     border-bottom: 1px solid {BORDER};
     margin-top: 0;
+    background: {'rgba(109,40,217,0.12)' if DARK else 'rgba(109,40,217,0.05)'};
 }}
 .sb-logo-box {{
     width: 42px; height: 42px;
@@ -336,18 +340,27 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
     color: white !important; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 20px;
-    box-shadow: 0 4px 12px rgba(109,40,217,0.35);
+    box-shadow: 0 4px 16px rgba(109,40,217,0.45);
     flex-shrink: 0;
 }}
-.sb-brand {{ font-size: 20px; font-weight: 800; color: {TEXT} !important; font-family: 'Sora', sans-serif !important; }}
+.sb-brand {{
+    font-size: 20px; font-weight: 800;
+    color: {TEXT} !important;
+    font-family: 'Sora', sans-serif !important;
+    background: {GRAD_PRIMARY};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}}
 
-/* Profile row: fix overlap — stack name & role clearly */
+/* Profile row */
 .sb-profile {{
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px 18px;
+    padding: 14px 18px;
     border-bottom: 1px solid {BORDER};
+    background: {'rgba(129,140,248,0.06)' if DARK else 'rgba(109,40,217,0.04)'};
 }}
 .sb-avatar {{
     width: 44px; height: 44px; border-radius: 12px;
@@ -355,40 +368,81 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
     color: white !important; display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 16px; font-family: 'Sora', sans-serif !important;
     flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(109,40,217,0.35);
 }}
 .sb-info {{
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    overflow: hidden;
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 0; overflow: hidden;
 }}
 .sb-name {{
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 14px; font-weight: 700;
     color: {TEXT} !important;
     font-family: 'Sora', sans-serif !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     line-height: 1.3;
 }}
 .sb-role {{
-    font-size: 12px;
-    color: {MUTED} !important;
-    font-weight: 500;
-    line-height: 1.3;
-    white-space: nowrap;
+    font-size: 12px; font-weight: 600;
+    color: {GRAD1} !important;
+    line-height: 1.3; white-space: nowrap;
+    background: {GRAD_PRIMARY};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }}
 
-div[data-testid="stRadio"] {{ padding: 18px 7px 0 !important; }}
+/* Nav radio items */
+div[data-testid="stRadio"] {{ padding: 14px 8px 0 !important; }}
 div[data-testid="stRadio"] label {{
-    border-radius: 12px !important; padding: 13px 14px !important; margin: 3px 0 !important;
-    font-size: 15px !important; font-weight: 600 !important; background: transparent !important;
-    transition: all 0.15s ease !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    margin: 3px 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    background: transparent !important;
+    transition: all 0.18s ease !important;
+    border: 1px solid transparent !important;
 }}
-div[data-testid="stRadio"] label:hover {{ background: {GRAD1}12 !important; }}
+div[data-testid="stRadio"] label:hover {{
+    background: {'rgba(109,40,217,0.15)' if DARK else 'rgba(109,40,217,0.08)'} !important;
+    border-color: {'rgba(129,140,248,0.3)' if DARK else 'rgba(109,40,217,0.2)'} !important;
+}}
+div[data-testid="stRadio"] [aria-checked="true"] {{
+    background: {GRAD_PRIMARY} !important;
+    border-color: transparent !important;
+}}
+div[data-testid="stRadio"] [aria-checked="true"] * {{
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+}}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
+
+/* Sidebar buttons (Edit Profile, Dark Mode, Sign Out) */
+section[data-testid="stSidebar"] .stButton>button {{
+    background: {'rgba(109,40,217,0.15)' if DARK else 'rgba(109,40,217,0.07)'} !important;
+    border: 1px solid {'rgba(129,140,248,0.25)' if DARK else 'rgba(109,40,217,0.18)'} !important;
+    color: {TEXT} !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    transition: all 0.18s ease !important;
+    box-shadow: none !important;
+}}
+section[data-testid="stSidebar"] .stButton>button:hover {{
+    background: {GRAD_PRIMARY} !important;
+    border-color: transparent !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(109,40,217,0.35) !important;
+}}
+section[data-testid="stSidebar"] .stButton>button:hover * {{
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+}}
+section[data-testid="stSidebar"] .stButton>button * {{
+    color: {TEXT} !important;
+    -webkit-text-fill-color: {TEXT} !important;
+}}
 
 /* HERO */
 .hero-section {{
