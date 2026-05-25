@@ -129,33 +129,33 @@ for k, v in defaults.items():
 DARK = st.session_state.dark_mode
 
 if DARK:
-    BG = '#0D0618'
-    BG2 = '#130824'
-    CARD = '#1A0D2E'
-    CARD2 = '#220F3A'
-    TEXT = '#F3EEFF'
-    MUTED = '#A78BCC'
-    BORDER = '#3B1F6A'
-    INPUT = '#1A0D2E'
-    GRAD1 = '#7C3AED'
-    GRAD2 = '#EC4899'
-    GRAD3 = '#3B82F6'
-    BLUE = '#8B5CF6'
-    BLUE_DARK = '#6D28D9'
-    TEAL = '#A78BFA'
-    INDIGO = '#EC4899'
-    SIDEBAR = '#0D0618'
+    BG = '#0A1628'
+    BG2 = '#0D1E38'
+    CARD = '#112240'
+    CARD2 = '#162B50'
+    TEXT = '#E8F0FF'
+    MUTED = '#8BA8D4'
+    BORDER = '#1E3A5F'
+    INPUT = '#112240'
+    GRAD1 = '#818CF8'
+    GRAD2 = '#F472B6'
+    GRAD3 = '#60A5FA'
+    BLUE = '#60A5FA'
+    BLUE_DARK = '#3B82F6'
+    TEAL = '#A5B4FC'
+    INDIGO = '#F472B6'
+    SIDEBAR = '#0A1628'
     PLOT_TEMPLATE = 'plotly_dark'
     RESULT_HIGH_BG = '#2D0A14'
     RESULT_HIGH_BORDER = '#F43F5E'
     RESULT_HIGH_TEXT = '#FDA4AF'
-    RESULT_LOW_BG = '#1A0D2E'
-    RESULT_LOW_BORDER = '#7C3AED'
-    RESULT_LOW_TEXT = '#C4B5FD'
-    BOX_SUGGESTION_BG = '#130824'
-    BOX_SUGGESTION_TITLE = '#F3EEFF'
-    BOX_SUGGESTION_TEXT = '#C4B5FD'
-    HERO_OVERLAY = 'rgba(13,6,24,0.85)'
+    RESULT_LOW_BG = '#0A1F3A'
+    RESULT_LOW_BORDER = '#818CF8'
+    RESULT_LOW_TEXT = '#C7D2FE'
+    BOX_SUGGESTION_BG = '#0D1E38'
+    BOX_SUGGESTION_TITLE = '#E8F0FF'
+    BOX_SUGGESTION_TEXT = '#A5B4FC'
+    HERO_OVERLAY = 'rgba(10,22,40,0.85)'
 else:
     BG = '#F5F3FF'
     BG2 = '#EDE9FE'
@@ -199,6 +199,9 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
+/* Hero card overrides — must come after global rules */
+.hero-card h1, .hero-card h2, .hero-card p, .hero-card span, .hero-card div {{ color: white !important; -webkit-text-fill-color: white !important; }}
+.hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
 
 /* ── Sidebar toggle button: make it visible ── */
 [data-testid="stSidebarNavItems"],
@@ -720,7 +723,12 @@ div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ displa
 
 /* Visibility fixes */
 .stMarkdown, .stMarkdown *, .page-title-text, .card-heading, .section-title, .auth-title h1, div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"], .stTabs [data-baseweb="tab"], .stTabs [data-baseweb="tab"] * {{ color: {TEXT} !important; }}
-.page-sub, .section-sub, .hero-sub, .step-text, .stat-label, .auth-title p, .param-label {{ color: {MUTED} !important; }}
+/* Force all text inside hero card to be white regardless of global overrides */
+.hero-card, .hero-card *, .hero-title, .hero-badge, .hero-stat-num, .hero-stat-label {{ color: white !important; -webkit-text-fill-color: white !important; }}
+.hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
+.page-sub, .section-sub, .step-text, .stat-label, .auth-title p, .param-label {{ color: {MUTED} !important; }}
+/* hero-sub is white on gradient — do NOT override it here */
+.hero-sub {{ color: rgba(255,255,255,0.85) !important; }}
 .stDataFrame, .stDataFrame *, [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * {{ color: {TEXT} !important; font-weight: 600 !important; }}
 
 @media(max-width:900px) {{
