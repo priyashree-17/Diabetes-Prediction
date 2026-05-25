@@ -317,10 +317,11 @@ button * {{ color: white !important; }}
 
 /* ── SIDEBAR — full purple/pink themed ── */
 section[data-testid="stSidebar"] {{
-    background: {'linear-gradient(180deg, #0A1628 0%, #0F1E3C 60%, #1A0D2E 100%)' if DARK else 'linear-gradient(180deg, #FFFFFF 0%, #FAF8FF 60%, #F5F0FF 100%)'} !important;
+    background: {'linear-gradient(180deg,#0A1628 0%,#0f1e3c 60%,#1a0d2e 100%)' if DARK else 'linear-gradient(180deg,#ffffff 0%,#f8f5ff 40%,#f0ebff 100%)'} !important;
     border-right: 1px solid {BORDER} !important;
 }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
+section[data-testid="stSidebar"] .block-container {{ background: transparent !important; }}
 section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
 
 /* Sidebar header */
@@ -792,6 +793,48 @@ section[data-testid="stSidebar"] .stButton>button * {{
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
+
+# JS: inject page-specific backgrounds into parent DOM
+_pg   = st.session_state.get('page', 'home')
+_auth = _pg in ('auth', 'create_profile') or not st.session_state.get('logged_in', False)
+
+_auth_light = 'linear-gradient(135deg,#f0ebff 0%,#fce8f6 50%,#e8eeff 100%)'
+_auth_dark  = 'linear-gradient(135deg,#0A1628 0%,#1a0d3e 50%,#0d1a3a 100%)'
+_sb_light   = 'linear-gradient(180deg,#ffffff 0%,#f8f5ff 40%,#f0ebff 100%)'
+_sb_dark    = 'linear-gradient(180deg,#0A1628 0%,#0f1e3c 60%,#1a0d2e 100%)'
+
+_app_bg     = (_auth_dark  if DARK else _auth_light) if _auth else (BG)
+_sb_bg      = _sb_dark if DARK else _sb_light
+_card_bg    = 'rgba(17,34,64,0.92)' if DARK else 'rgba(255,255,255,0.93)'
+_card_bdr   = 'rgba(129,140,248,0.30)' if DARK else 'rgba(109,40,217,0.18)'
+
+components.html(f"""<script>
+(function(){{
+  var doc=window.parent.document;
+  var isAuth={'true' if _auth else 'false'};
+  function applyStyles(){{
+    var app=doc.querySelector('.stApp');
+    if(app) app.style.setProperty('background','{_app_bg}','important');
+    var sb=doc.querySelector('section[data-testid="stSidebar"]');
+    if(sb){{
+      sb.style.setProperty('background','{_sb_bg}','important');
+      var inner=sb.querySelector(':scope > div');
+      if(inner) inner.style.setProperty('background','transparent','important');
+    }}
+    if(isAuth){{
+      var cards=doc.querySelectorAll('[data-testid="stVerticalBlockBorderWrapper"]');
+      cards.forEach(function(c){{
+        c.style.setProperty('background','{_card_bg}','important');
+        c.style.setProperty('backdrop-filter','blur(20px)','important');
+        c.style.setProperty('border','1px solid {_card_bdr}','important');
+        c.style.setProperty('box-shadow','0 8px 40px rgba(109,40,217,0.18)','important');
+      }});
+    }}
+  }}
+  applyStyles();
+  new MutationObserver(function(m){{m.forEach(function(r){{if(r.addedNodes.length) applyStyles();}});}}).observe(doc.body,{{childList:true,subtree:true}});
+}})();
+</script>""", height=0)
 
 # JS: hide keyboard_double_arrow text & zero out sidebar top padding
 components.html("""
@@ -1413,21 +1456,6 @@ def landing_page():
 
 def auth_page():
     public_header()
-    # Full-page gradient background for auth pages
-    st.markdown(f'''
-    <style>
-    .stApp {{
-        background: {'linear-gradient(135deg, #0A1628 0%, #1a0d3e 50%, #0d1a3a 100%)' if DARK else 'linear-gradient(135deg, #f5f0ff 0%, #fdf0f8 50%, #eef2ff 100%)'} !important;
-    }}
-    /* Auth card gets glass effect */
-    div[data-testid="stVerticalBlockBorderWrapper"] {{
-        background: {'rgba(17,34,64,0.85)' if DARK else 'rgba(255,255,255,0.88)'} !important;
-        backdrop-filter: blur(16px) !important;
-        border: 1px solid {'rgba(129,140,248,0.25)' if DARK else 'rgba(109,40,217,0.15)'} !important;
-        box-shadow: 0 8px 40px rgba(109,40,217,0.18) !important;
-    }}
-    </style>
-    ''', unsafe_allow_html=True)
     if st.button('← Back to Home', key='auth_back_home', type='secondary'):
         st.session_state.started = False; st.session_state.page = 'home'; st.rerun()
 
@@ -1508,19 +1536,6 @@ def auth_page():
 
 def create_profile_page():
     public_header()
-    st.markdown(f'''
-    <style>
-    .stApp {{
-        background: {'linear-gradient(135deg, #0A1628 0%, #1a0d3e 50%, #0d1a3a 100%)' if DARK else 'linear-gradient(135deg, #f5f0ff 0%, #fdf0f8 50%, #eef2ff 100%)'} !important;
-    }}
-    div[data-testid="stVerticalBlockBorderWrapper"] {{
-        background: {'rgba(17,34,64,0.85)' if DARK else 'rgba(255,255,255,0.88)'} !important;
-        backdrop-filter: blur(16px) !important;
-        border: 1px solid {'rgba(129,140,248,0.25)' if DARK else 'rgba(109,40,217,0.15)'} !important;
-        box-shadow: 0 8px 40px rgba(109,40,217,0.18) !important;
-    }}
-    </style>
-    ''', unsafe_allow_html=True)
     if st.button('← Back to Password Setup', key='create_profile_back', type='secondary'):
         st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 2; st.rerun()
     st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">🩺</div><div>GlucoTrack</div></div><h1>Choose Your Profile 👤</h1><p>Are you a patient or a healthcare professional?</p></div>', unsafe_allow_html=True)
