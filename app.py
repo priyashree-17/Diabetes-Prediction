@@ -197,7 +197,7 @@ css = f'''
 *, *::before, *::after {{ box-sizing: border-box; }}
 html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .stApp {{
-    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0d2e 100%)' if DARK else 'linear-gradient(135deg, #3B82F6 0%, #6D28D9 45%, #EC4899 100%)'} !important;
+    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0d2e 100%)' if DARK else 'linear-gradient(135deg, #F3F0FF 0%, #FAF5FF 50%, #FDF2F8 100%)'} !important;
     min-height: 100vh !important;
 }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
@@ -307,42 +307,42 @@ button * {{ color: white !important; }}
 
 /* Sidebar */
 section[data-testid="stSidebar"] {{
-    background: {'linear-gradient(180deg, #0A1628 0%, #0f1e3c 35%, #1a0d2e 65%, #0D1117 100%)' if DARK else 'linear-gradient(180deg, #3B82F6 0%, #5B21B6 30%, #6D28D9 65%, #7C3AED 100%)'} !important;
-    border-right: 1px solid {'rgba(129,140,248,0.15)' if DARK else 'rgba(99,102,241,0.30)'} !important;
-    box-shadow: {'4px 0 24px rgba(0,0,0,0.4)' if DARK else '4px 0 32px rgba(15,10,60,0.55)'} !important;
+    background: {'linear-gradient(180deg, #0A1628 0%, #0f1e3c 35%, #1a0d2e 65%, #0D1117 100%)' if DARK else 'linear-gradient(180deg, #EDE9FE 0%, #F3E8FF 40%, #FCE7F3 75%, #FDF2F8 100%)'} !important;
+    border-right: 1px solid {'rgba(129,140,248,0.15)' if DARK else 'rgba(167,139,250,0.35)'} !important;
+    box-shadow: {'4px 0 24px rgba(0,0,0,0.4)' if DARK else '4px 0 20px rgba(139,92,246,0.12)'} !important;
 }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
-section[data-testid="stSidebar"] * {{ color: #E2D9F3 !important; }}
+section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} !important; }}
 .sb-header {{
     display: flex; align-items: center; gap: 12px;
-    padding: 18px 18px 16px 18px; border-bottom: 1px solid rgba(167,139,250,0.30);
-    background: rgba(109,40,217,0.25);
+    padding: 18px 18px 16px 18px; border-bottom: 1px solid {'rgba(167,139,250,0.30)' if DARK else 'rgba(167,139,250,0.40)'};
+    background: {'rgba(109,40,217,0.25)' if DARK else 'rgba(167,139,250,0.18)'};
 }}
 .sb-logo-box {{
     width: 42px; height: 42px; background: {GRAD_PRIMARY};
     color: white !important; border-radius: 12px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 20px; box-shadow: 0 4px 16px rgba(109,40,217,0.45);
+    font-weight: 900; font-size: 20px; box-shadow: 0 4px 16px rgba(109,40,217,0.30);
 }}
-.sb-brand {{ font-size: 20px; font-weight: 800; color: #C4B5FD !important; font-family: 'Sora', sans-serif !important; }}
+.sb-brand {{ font-size: 20px; font-weight: 800; color: {'#C4B5FD' if DARK else '#5B21B6'} !important; font-family: 'Sora', sans-serif !important; }}
 .sb-profile {{
     display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-    border-bottom: 1px solid rgba(167,139,250,0.28);
-    background: rgba(109,40,217,0.18);
+    border-bottom: 1px solid {'rgba(167,139,250,0.28)' if DARK else 'rgba(167,139,250,0.35)'};
+    background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(196,181,253,0.20)'};
 }}
 .sb-avatar {{
     width: 44px; height: 44px; border-radius: 12px; background: {GRAD_PRIMARY};
     color: white !important; display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 16px; font-family: 'Sora', sans-serif !important;
-    flex-shrink: 0; box-shadow: 0 4px 12px rgba(109,40,217,0.35);
+    flex-shrink: 0; box-shadow: 0 4px 12px rgba(109,40,217,0.25);
 }}
 .sb-info {{ display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }}
 .sb-name {{
-    font-size: 14px; font-weight: 700; color: #E2D9F3 !important;
+    font-size: 14px; font-weight: 700; color: {'#E2D9F3' if DARK else '#3B0764'} !important;
     font-family: 'Sora', sans-serif !important;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
 }}
-.sb-role {{ font-size: 12px; font-weight: 600; color: #F9A8D4 !important; line-height: 1.3; white-space: nowrap; }}
+.sb-role {{ font-size: 12px; font-weight: 600; color: {'#F9A8D4' if DARK else '#7C3AED'} !important; line-height: 1.3; white-space: nowrap; }}
 
 div[data-testid="stRadio"] {{ padding: 14px 8px 0 !important; }}
 div[data-testid="stRadio"] label {{
@@ -350,22 +350,22 @@ div[data-testid="stRadio"] label {{
     font-size: 14px !important; font-weight: 600 !important; background: transparent !important;
     transition: all 0.18s ease !important; border: 1px solid transparent !important;
 }}
-div[data-testid="stRadio"] label:hover {{ background: rgba(139,92,246,0.20) !important; }}
+div[data-testid="stRadio"] label:hover {{ background: {'rgba(139,92,246,0.20)' if DARK else 'rgba(167,139,250,0.25)'} !important; }}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
 
 section[data-testid="stSidebar"] .stButton>button {{
-    background: rgba(139,92,246,0.18) !important;
-    border: 1px solid rgba(167,139,250,0.30) !important;
-    color: #E2D9F3 !important; border-radius: 12px !important; font-weight: 600 !important;
+    background: {'rgba(139,92,246,0.18)' if DARK else 'rgba(167,139,250,0.20)'} !important;
+    border: 1px solid {'rgba(167,139,250,0.30)' if DARK else 'rgba(139,92,246,0.35)'} !important;
+    color: {'#E2D9F3' if DARK else '#5B21B6'} !important; border-radius: 12px !important; font-weight: 600 !important;
     font-size: 14px !important; transition: all 0.18s ease !important; box-shadow: none !important;
 }}
 section[data-testid="stSidebar"] .stButton>button:hover {{
     background: {GRAD_PRIMARY} !important; border-color: transparent !important;
     color: white !important; transform: translateY(-1px) !important;
-    box-shadow: 0 6px 20px rgba(109,40,217,0.50) !important;
+    box-shadow: 0 6px 20px rgba(109,40,217,0.35) !important;
 }}
 section[data-testid="stSidebar"] .stButton>button:hover * {{ color: white !important; -webkit-text-fill-color: white !important; }}
-section[data-testid="stSidebar"] .stButton>button * {{ color: #E2D9F3 !important; -webkit-text-fill-color: #E2D9F3 !important; }}
+section[data-testid="stSidebar"] .stButton>button * {{ color: {'#E2D9F3' if DARK else '#5B21B6'} !important; -webkit-text-fill-color: {'#E2D9F3' if DARK else '#5B21B6'} !important; }}
 
 /* HERO */
 .hero-section {{
@@ -426,9 +426,9 @@ section[data-testid="stSidebar"] .stButton>button * {{ color: #E2D9F3 !important
     position: relative; overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease;
 }}
 .feature-card:hover {{ transform: translateY(-8px); box-shadow: 0 24px 56px rgba(0,0,0,0.25); }}
-.feature-blue {{ background: linear-gradient(145deg, #3B82F6 0%, #5B6CF6 50%, #6D28D9 100%) !important; }}
-.feature-green {{ background: linear-gradient(145deg, #6D28D9 0%, #8B5CF6 50%, #A855F7 100%) !important; }}
-.feature-purple {{ background: linear-gradient(145deg, #9333EA 0%, #C026D3 50%, #EC4899 100%) !important; }}
+.feature-blue {{ background: linear-gradient(145deg, #818CF8 0%, #6D28D9 50%, #7C3AED 100%) !important; }}
+.feature-green {{ background: linear-gradient(145deg, #8B5CF6 0%, #A855F7 50%, #C084FC 100%) !important; }}
+.feature-purple {{ background: linear-gradient(145deg, #C084FC 0%, #E879F9 50%, #F472B6 100%) !important; }}
 .pill {{ display: inline-flex; border-radius: 999px; padding: 6px 16px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 28px; border: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }}
 .pill-blue {{ background: rgba(99,102,241,0.22) !important; color: #A5B4FC !important; }}
 .pill-green {{ background: rgba(139,92,246,0.22) !important; color: #C4B5FD !important; }}
@@ -943,7 +943,7 @@ def landing_page():
 
 
 def auth_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#4F7FE8 0%,#6D28D9 45%,#8B5CF6 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#C4B5FD 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
     if st.button('← Back to Home', key='auth_back_home', type='secondary'):
         st.session_state.started = False; st.session_state.page = 'home'; st.rerun()
@@ -1026,7 +1026,7 @@ def auth_page():
 
 
 def create_profile_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#4F7FE8 0%,#6D28D9 45%,#8B5CF6 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#C4B5FD 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
     if st.button('← Back to Password Setup', key='create_profile_back', type='secondary'):
         st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 2; st.rerun()
@@ -1067,7 +1067,7 @@ def create_profile_page():
 
 
 def prediction_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#3B82F6 0%,#5B6CF6 40%,#6D28D9 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#BAE6FD 0%,#C7D2FE 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🩺', 'Diabetes Risk Prediction', 'Enter your clinical parameters for an AI-powered assessment')
 
     # Pure st.markdown info box — no components.html iframe
@@ -1263,7 +1263,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
 
 
 def dashboard_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#3B82F6 0%,#5B6CF6 40%,#6D28D9 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#BAE6FD 0%,#C7D2FE 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('📊', 'Health Dashboard', 'Your prediction result, analytics, and personalized recommendations')
 
     if not st.session_state.prediction_done:
@@ -1327,7 +1327,7 @@ def dashboard_page():
 
 
 def doctor_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071E14 0%,#0A2E1E 45%,#06180F 100%)' if DARK else 'linear-gradient(135deg,#6D28D9 0%,#A855F7 40%,#EC4899 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071E14 0%,#0A2E1E 45%,#06180F 100%)' if DARK else 'linear-gradient(135deg,#E9D5FF 0%,#F5D0FE 45%,#FBCFE8 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('👨‍⚕️', 'Doctor Portal', 'Your Patient Directory & Clinical Health Analytics')
     doctor_email = st.session_state.current_user_email
     # Only show reports that this doctor created
@@ -1419,7 +1419,7 @@ def doctor_page():
 
 
 def admin_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#1A0808 0%,#2D0D0D 45%,#1A0A1A 100%)' if DARK else 'linear-gradient(135deg,#EC4899 0%,#DB2777 40%,#9333EA 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#1A0808 0%,#2D0D0D 45%,#1A0A1A 100%)' if DARK else 'linear-gradient(135deg,#FBCFE8 0%,#F9A8D4 40%,#E9D5FF 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🛡️', 'Admin Panel', 'Manage doctors, users, reports, and audit logs')
     pending = {email: d for email, d in doctors.items() if not d.get('approved', False)}
     high = [r for r in reports if 'High' in r.get('result', '')]
