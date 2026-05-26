@@ -158,13 +158,13 @@ if DARK:
     BOX_SUGGESTION_TEXT = '#A5B4FC'
     HERO_OVERLAY = 'rgba(10,22,40,0.85)'
 else:
-    BG = '#F5F3FF'
-    BG2 = '#EDE9FE'
+    BG = '#F0F4FF'
+    BG2 = '#E8EDFF'
     CARD = '#FFFFFF'
-    CARD2 = '#FAF8FF'
+    CARD2 = '#F7F9FF'
     TEXT = '#1A0533'
     MUTED = '#6B52A0'
-    BORDER = '#DDD6FE'
+    BORDER = '#C7D2FE'
     INPUT = '#FFFFFF'
     GRAD1 = '#6D28D9'
     GRAD2 = '#EC4899'
@@ -196,7 +196,10 @@ css = f'''
 
 *, *::before, *::after {{ box-sizing: border-box; }}
 html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
-.stApp {{ background: {BG} !important; }}
+.stApp {{
+    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0d2e 100%)' if DARK else 'linear-gradient(135deg, #EEF2FF 0%, #F5F0FF 40%, #FDF2F8 100%)'} !important;
+    min-height: 100vh !important;
+}}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
@@ -258,9 +261,12 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
 
 /* Cards */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
-    background: {CARD} !important; border: 1px solid {BORDER} !important;
+    background: {'rgba(17,34,64,0.85)' if DARK else 'rgba(255,255,255,0.82)'} !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid {'rgba(129,140,248,0.18)' if DARK else 'rgba(109,40,217,0.12)'} !important;
     border-radius: 22px !important; padding: 28px !important;
-    box-shadow: 0 4px 24px rgba(109,40,217,0.08), 0 1px 4px rgba(0,0,0,0.04) !important;
+    box-shadow: 0 8px 32px rgba(109,40,217,0.12), 0 2px 8px rgba(0,0,0,0.06) !important;
 }}
 
 /* Buttons */
@@ -285,15 +291,16 @@ button * {{ color: white !important; }}
 
 /* Sidebar */
 section[data-testid="stSidebar"] {{
-    background: {'linear-gradient(180deg,#0A1628 0%,#0f1e3c 60%,#1a0d2e 100%)' if DARK else 'linear-gradient(180deg,#ffffff 0%,#f8f5ff 40%,#f0ebff 100%)'} !important;
-    border-right: 1px solid {BORDER} !important;
+    background: {'linear-gradient(180deg, #0A1628 0%, #0f1e3c 35%, #1a0d2e 65%, #0D1117 100%)' if DARK else 'linear-gradient(180deg, #3B0764 0%, #4C1D95 25%, #1E1B4B 60%, #0F172A 100%)'} !important;
+    border-right: 1px solid {'rgba(129,140,248,0.15)' if DARK else 'rgba(139,92,246,0.20)'} !important;
+    box-shadow: {'4px 0 24px rgba(0,0,0,0.4)' if DARK else '4px 0 32px rgba(76,29,149,0.25)'} !important;
 }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
-section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
+section[data-testid="stSidebar"] * {{ color: #E2D9F3 !important; }}
 .sb-header {{
     display: flex; align-items: center; gap: 12px;
-    padding: 18px 18px 16px 18px; border-bottom: 1px solid {BORDER};
-    background: {'rgba(109,40,217,0.12)' if DARK else 'rgba(109,40,217,0.05)'};
+    padding: 18px 18px 16px 18px; border-bottom: 1px solid rgba(139,92,246,0.30);
+    background: rgba(109,40,217,0.20);
 }}
 .sb-logo-box {{
     width: 42px; height: 42px; background: {GRAD_PRIMARY};
@@ -301,11 +308,11 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 20px; box-shadow: 0 4px 16px rgba(109,40,217,0.45);
 }}
-.sb-brand {{ font-size: 20px; font-weight: 800; color: {GRAD1} !important; font-family: 'Sora', sans-serif !important; }}
+.sb-brand {{ font-size: 20px; font-weight: 800; color: #C4B5FD !important; font-family: 'Sora', sans-serif !important; }}
 .sb-profile {{
     display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-    border-bottom: 1px solid {BORDER};
-    background: {'rgba(129,140,248,0.06)' if DARK else 'rgba(109,40,217,0.04)'};
+    border-bottom: 1px solid rgba(139,92,246,0.25);
+    background: rgba(139,92,246,0.12);
 }}
 .sb-avatar {{
     width: 44px; height: 44px; border-radius: 12px; background: {GRAD_PRIMARY};
@@ -315,11 +322,11 @@ section[data-testid="stSidebar"] * {{ color: {TEXT} !important; }}
 }}
 .sb-info {{ display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }}
 .sb-name {{
-    font-size: 14px; font-weight: 700; color: {TEXT} !important;
+    font-size: 14px; font-weight: 700; color: #E2D9F3 !important;
     font-family: 'Sora', sans-serif !important;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
 }}
-.sb-role {{ font-size: 12px; font-weight: 600; color: {GRAD2} !important; line-height: 1.3; white-space: nowrap; }}
+.sb-role {{ font-size: 12px; font-weight: 600; color: #F9A8D4 !important; line-height: 1.3; white-space: nowrap; }}
 
 div[data-testid="stRadio"] {{ padding: 14px 8px 0 !important; }}
 div[data-testid="stRadio"] label {{
@@ -327,22 +334,22 @@ div[data-testid="stRadio"] label {{
     font-size: 14px !important; font-weight: 600 !important; background: transparent !important;
     transition: all 0.18s ease !important; border: 1px solid transparent !important;
 }}
-div[data-testid="stRadio"] label:hover {{ background: {'rgba(109,40,217,0.15)' if DARK else 'rgba(109,40,217,0.08)'} !important; }}
+div[data-testid="stRadio"] label:hover {{ background: rgba(139,92,246,0.20) !important; }}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
 
 section[data-testid="stSidebar"] .stButton>button {{
-    background: {'rgba(109,40,217,0.15)' if DARK else 'rgba(109,40,217,0.07)'} !important;
-    border: 1px solid {'rgba(129,140,248,0.25)' if DARK else 'rgba(109,40,217,0.18)'} !important;
-    color: {TEXT} !important; border-radius: 12px !important; font-weight: 600 !important;
+    background: rgba(139,92,246,0.18) !important;
+    border: 1px solid rgba(167,139,250,0.30) !important;
+    color: #E2D9F3 !important; border-radius: 12px !important; font-weight: 600 !important;
     font-size: 14px !important; transition: all 0.18s ease !important; box-shadow: none !important;
 }}
 section[data-testid="stSidebar"] .stButton>button:hover {{
     background: {GRAD_PRIMARY} !important; border-color: transparent !important;
     color: white !important; transform: translateY(-1px) !important;
-    box-shadow: 0 6px 20px rgba(109,40,217,0.35) !important;
+    box-shadow: 0 6px 20px rgba(109,40,217,0.50) !important;
 }}
 section[data-testid="stSidebar"] .stButton>button:hover * {{ color: white !important; -webkit-text-fill-color: white !important; }}
-section[data-testid="stSidebar"] .stButton>button * {{ color: {TEXT} !important; -webkit-text-fill-color: {TEXT} !important; }}
+section[data-testid="stSidebar"] .stButton>button * {{ color: #E2D9F3 !important; -webkit-text-fill-color: #E2D9F3 !important; }}
 
 /* HERO */
 .hero-section {{
@@ -498,6 +505,24 @@ section[data-testid="stSidebar"] .stButton>button * {{ color: {TEXT} !important;
 /* Animations */
 @keyframes fadeInDown {{ from {{ opacity: 0; transform: translateY(-16px); }} to {{ opacity: 1; transform: translateY(0); }} }}
 @keyframes fadeInUp {{ from {{ opacity: 0; transform: translateY(20px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+
+/* ── Per-page background tints injected via .page-bg-* on block-container ── */
+/* Login / Auth page */
+.page-bg-auth .stApp {{
+    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0533 100%)' if DARK else 'linear-gradient(135deg, #EDE9FE 0%, #F5F0FF 35%, #FFF0FB 70%, #EEF2FF 100%)'} !important;
+}}
+/* Patient / User page */
+.page-bg-patient .stApp {{
+    background: {'linear-gradient(135deg, #0A1F2E 0%, #0D2B3E 50%, #091A2E 100%)' if DARK else 'linear-gradient(135deg, #E0F2FE 0%, #EFF6FF 40%, #F0F9FF 70%, #E8F5E9 100%)'} !important;
+}}
+/* Doctor page */
+.page-bg-doctor .stApp {{
+    background: {'linear-gradient(135deg, #0A2018 0%, #0D2E22 50%, #091A14 100%)' if DARK else 'linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 30%, #F0FDFA 60%, #EEF9FF 100%)'} !important;
+}}
+/* Admin page */
+.page-bg-admin .stApp {{
+    background: {'linear-gradient(135deg, #1A0A0A 0%, #2D0D0D 50%, #1A0A1A 100%)' if DARK else 'linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 30%, #FFF1F2 60%, #FDF4FF 100%)'} !important;
+}}
 
 /* Visibility */
 .stMarkdown, .stMarkdown *, .page-title-text, .card-heading, .section-title, .auth-title h1,
@@ -906,6 +931,7 @@ def landing_page():
 
 
 def auth_page():
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#EDE9FE 0%,#F3E8FF 30%,#FCE7F3 65%,#EEF2FF 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
     if st.button('← Back to Home', key='auth_back_home', type='secondary'):
         st.session_state.started = False; st.session_state.page = 'home'; st.rerun()
@@ -988,6 +1014,7 @@ def auth_page():
 
 
 def create_profile_page():
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#EDE9FE 0%,#F3E8FF 30%,#FCE7F3 65%,#EEF2FF 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
     if st.button('← Back to Password Setup', key='create_profile_back', type='secondary'):
         st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 2; st.rerun()
@@ -1028,6 +1055,7 @@ def create_profile_page():
 
 
 def prediction_page():
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#E0F2FE 0%,#EFF6FF 35%,#F0F9FF 65%,#E8F5E9 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🩺', 'Diabetes Risk Prediction', 'Enter your clinical parameters for an AI-powered assessment')
 
     # Pure st.markdown info box — no components.html iframe
@@ -1223,6 +1251,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
 
 
 def dashboard_page():
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#E0F2FE 0%,#EFF6FF 35%,#F0F9FF 65%,#E8F5E9 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('📊', 'Health Dashboard', 'Your prediction result, analytics, and personalized recommendations')
 
     if not st.session_state.prediction_done:
@@ -1286,6 +1315,7 @@ def dashboard_page():
 
 
 def doctor_page():
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071E14 0%,#0A2E1E 45%,#06180F 100%)' if DARK else 'linear-gradient(135deg,#F0FDF4 0%,#ECFDF5 30%,#E0F7FA 60%,#EEF9FF 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('👨‍⚕️', 'Doctor Portal', 'Your Patient Directory & Clinical Health Analytics')
     doctor_email = st.session_state.current_user_email
     # Only show reports that this doctor created
@@ -1377,6 +1407,7 @@ def doctor_page():
 
 
 def admin_page():
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#1A0808 0%,#2D0D0D 45%,#1A0A1A 100%)' if DARK else 'linear-gradient(135deg,#FFF7ED 0%,#FEF3C7 25%,#FFF1F2 55%,#FDF4FF 85%,#F0F4FF 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🛡️', 'Admin Panel', 'Manage doctors, users, reports, and audit logs')
     pending = {email: d for email, d in doctors.items() if not d.get('approved', False)}
     high = [r for r in reports if 'High' in r.get('result', '')]
