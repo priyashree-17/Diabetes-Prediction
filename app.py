@@ -121,6 +121,7 @@ defaults = {
     'confidence': None,
     'prediction_time': None,
     'pdf_bytes': None,
+    'current_prediction_patient_name': '',
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -540,7 +541,7 @@ def password_strength(password):
 
 
 def reset_prediction_state():
-    for k in ['prediction_done', 'patient_data', 'prediction_result', 'confidence', 'prediction_time', 'pdf_bytes']:
+    for k in ['prediction_done', 'patient_data', 'prediction_result', 'confidence', 'prediction_time', 'pdf_bytes', 'current_prediction_patient_name']:
         st.session_state[k] = defaults[k]
 
 
@@ -1044,6 +1045,24 @@ def prediction_page():
 </div>
 ''', unsafe_allow_html=True)
 
+    # If doctor, let them enter the patient's details
+    if st.session_state.user_type == 'doctor':
+        st.markdown(f'''
+<div style="background:linear-gradient(135deg,{GRAD1}18,{GRAD2}12);border:1px solid {GRAD1}44;
+            border-radius:18px;padding:18px 24px;margin-bottom:18px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:20px;">👤</span>
+        <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:{TEXT};">Patient Details</span>
+    </div>
+    <p style="color:{MUTED};font-size:14px;margin:0;line-height:1.6;">
+        Enter the patient's name and email so this assessment is saved under their record.
+    </p>
+</div>
+''', unsafe_allow_html=True)
+        with st.container(border=True):
+            doc_patient_name = st.text_input('👤 Patient Full Name *', placeholder='e.g. Ramesh Kumar', key='doc_patient_name')
+            doc_patient_email = st.text_input('📧 Patient Email *', placeholder='patient@example.com', key='doc_patient_email')
+
     with st.container(border=True):
         st.markdown('<div class="card-heading"><div class="badge-num">1</div>Clinical Health Parameters</div>', unsafe_allow_html=True)
         c_left, c_right = st.columns(2)
@@ -1088,16 +1107,33 @@ def prediction_page():
 ''', unsafe_allow_html=True)
 
     st.write('')
-    if st.button('🔍 Predict My Diabetes Risk →', type='primary', use_container_width=True):
+    btn_label = '🔍 Predict Patient Diabetes Risk →' if st.session_state.user_type == 'doctor' else '🔍 Predict My Diabetes Risk →'
+    if st.button(btn_label, type='primary', use_container_width=True):
+        # Validate doctor patient fields
+        if st.session_state.user_type == 'doctor':
+            p_name = st.session_state.get('doc_patient_name', '').strip()
+            p_email = st.session_state.get('doc_patient_email', '').strip().lower()
+            if not p_name or not p_email:
+                st.error('⚠️ Please enter the patient\'s name and email before predicting.')
+                st.stop()
+            name = p_name
+            email = p_email
+        else:
+            name = st.session_state.current_user_name
+            email = st.session_state.current_user_email
+
         patient_data = {'Pregnancies': preg, 'Glucose': glucose, 'BloodPressure': bp, 'SkinThickness': skin, 'Insulin': insulin, 'BMI': bmi, 'DiabetesPedigreeFunction': dpf, 'Age': age}
         result, confidence = model_predict(patient_data)
         pred_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-        name = st.session_state.current_user_name; email = st.session_state.current_user_email
         pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time)
         st.session_state.patient_data = patient_data; st.session_state.prediction_result = result
         st.session_state.confidence = confidence; st.session_state.prediction_time = pred_time
         st.session_state.pdf_bytes = pdf; st.session_state.prediction_done = True
-        reports.append({'name': name, 'email': email, 'result': result, 'confidence': confidence, 'time': pred_time, 'data': patient_data})
+        st.session_state.current_prediction_patient_name = name
+        report_entry = {'name': name, 'email': email, 'result': result, 'confidence': confidence, 'time': pred_time, 'data': patient_data}
+        if st.session_state.user_type == 'doctor':
+            report_entry['doctor_email'] = st.session_state.current_user_email
+        reports.append(report_entry)
         save_json(REPORTS_FILE, reports); add_audit('Prediction', email, result)
         st.session_state.page = 'dashboard'; st.rerun()
 
@@ -1237,9 +1273,11 @@ def dashboard_page():
 ''', unsafe_allow_html=True)
 
     st.write('')
+    # For doctors, use the patient name stored at prediction time; for patients use their own name
+    display_name = st.session_state.get('current_prediction_patient_name') or st.session_state.current_user_name
     _render_whatsapp_share(
         phone_key='patient_dash', pdf_bytes=st.session_state.pdf_bytes,
-        patient_name=st.session_state.current_user_name, result=result, confidence=confidence,
+        patient_name=display_name, result=result, confidence=confidence,
         pred_time=st.session_state.prediction_time, patient_data=patient_data
     )
     st.write('')
@@ -1248,32 +1286,41 @@ def dashboard_page():
 
 
 def doctor_page():
-    page_header('👨‍⚕️', 'Doctor Portal', 'Comprehensive Patient Directory & Clinical Health Analytics')
-    high_cases = [r for r in reports if 'High' in r.get('result', '')]
+    page_header('👨‍⚕️', 'Doctor Portal', 'Your Patient Directory & Clinical Health Analytics')
+    doctor_email = st.session_state.current_user_email
+    # Only show reports that this doctor created
+    my_reports = [r for r in reports if r.get('doctor_email') == doctor_email]
+    high_cases = [r for r in my_reports if 'High' in r.get('result', '')]
+    # Unique patient emails seen by this doctor
+    my_patient_emails = list({r.get('email') for r in my_reports})
     with st.container(border=True):
         c1, c2, c3 = st.columns(3)
-        c1.metric('📋 Total Assessments', len(reports))
+        c1.metric('📋 My Assessments', len(my_reports))
         c2.metric('⚠️ High Risk Patients', len(high_cases))
-        c3.metric('🧑 Registered Patients', len(users))
+        c3.metric('🧑 My Patients', len(my_patient_emails))
+
+    if not my_reports:
+        st.info('📭 You have no patient reports yet. Use the 🩺 Predict Risk page to assess a patient.')
+        return
 
     st.write('')
     tab_dir, tab_detail = st.tabs(['📋 Patient Reports Directory', '🔍 Detailed Patient Analysis'])
     with tab_dir:
-        st.subheader('All Patient Reports')
-        if not reports: st.info('📭 No patient reports available yet.')
+        st.subheader('My Patient Reports')
+        if not my_reports: st.info('📭 No patient reports available yet.')
         else:
             report_data = []
-            for idx, r in enumerate(reports):
+            for idx, r in enumerate(my_reports):
                 data_dict = r.get('data', {})
                 report_data.append({'ID': idx, 'Patient Name': r.get('name'), 'Email': r.get('email'), 'Risk Level': r.get('result'), 'Confidence': f"{r.get('confidence')}%", 'Assessment Time': r.get('time'), 'Glucose': data_dict.get('Glucose', 'N/A'), 'BMI': data_dict.get('BMI', 'N/A'), 'BP': data_dict.get('BloodPressure', 'N/A'), 'Age': data_dict.get('Age', 'N/A')})
             st.dataframe(pd.DataFrame(report_data).drop(columns=['ID']), use_container_width=True)
 
     with tab_detail:
-        if not reports: st.info('📭 No patient reports available.')
+        if not my_reports: st.info('📭 No patient reports available.')
         else:
-            report_options = [f"{r.get('name')} ({r.get('time')}) — {r.get('result')}" for r in reports]
-            selected_idx = st.selectbox('🔍 Select Patient Report:', range(len(reports)), format_func=lambda x: report_options[x])
-            selected_report = reports[selected_idx]
+            report_options = [f"{r.get('name')} ({r.get('time')}) — {r.get('result')}" for r in my_reports]
+            selected_idx = st.selectbox('🔍 Select Patient Report:', range(len(my_reports)), format_func=lambda x: report_options[x])
+            selected_report = my_reports[selected_idx]
             patient_data = selected_report.get('data', {})
             result = selected_report.get('result'); confidence = selected_report.get('confidence')
             pred_time = selected_report.get('time'); name = selected_report.get('name'); email = selected_report.get('email')
