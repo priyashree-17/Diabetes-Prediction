@@ -197,7 +197,7 @@ css = f'''
 *, *::before, *::after {{ box-sizing: border-box; }}
 html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .stApp {{
-    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0d2e 100%)' if DARK else 'linear-gradient(135deg, #6D28D9 0%, #7C3AED 40%, #9333EA 100%)'} !important;
+    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0d2e 100%)' if DARK else 'linear-gradient(135deg, #2D1B69 0%, #3B1F8C 40%, #1E1B4B 100%)'} !important;
     min-height: 100vh !important;
 }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
@@ -216,6 +216,22 @@ button[data-testid="baseButton-header"] {{
 button[data-testid="baseButton-headerNoPadding"] > span:not(:has(svg)),
 button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
     display: none !important; width: 0 !important; overflow: hidden !important;
+}}
+
+/* ── Hamburger / collapse button ── */
+[data-testid="stSidebarCollapsedControl"] {{
+    visibility: visible !important; display: flex !important; opacity: 1 !important;
+    background: {'rgba(15,30,60,0.95)' if DARK else '#4C1D95'} !important;
+    border-radius: 0 12px 12px 0 !important;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.30) !important;
+    padding: 8px 6px !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button {{
+    background: transparent !important; border: none !important;
+    color: #C4B5FD !important;
+}}
+[data-testid="stSidebarCollapsedControl"] svg {{
+    fill: #C4B5FD !important; stroke: #C4B5FD !important;
 }}
 
 /* ── Sidebar: remove top gap ── */
@@ -409,18 +425,18 @@ section[data-testid="stSidebar"] .stButton>button * {{ color: #E2D9F3 !important
     border-radius: 24px; padding: 36px 32px; min-height: 380px; border: none;
     position: relative; overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease;
 }}
-.feature-card:hover {{ transform: translateY(-8px); box-shadow: 0 24px 56px rgba(0,0,0,0.30); }}
-.feature-blue {{ background: linear-gradient(145deg, #4F46E5 0%, #7C3AED 50%, #6D28D9 100%) !important; }}
-.feature-green {{ background: linear-gradient(145deg, #0F766E 0%, #059669 50%, #047857 100%) !important; }}
-.feature-purple {{ background: linear-gradient(145deg, #BE185D 0%, #DB2777 50%, #9333EA 100%) !important; }}
+.feature-card:hover {{ transform: translateY(-8px); box-shadow: 0 24px 56px rgba(0,0,0,0.25); }}
+.feature-blue {{ background: linear-gradient(145deg, #1E1B4B 0%, #2D1B69 50%, #312E81 100%) !important; }}
+.feature-green {{ background: linear-gradient(145deg, #052E16 0%, #064E3B 50%, #0D3D2E 100%) !important; }}
+.feature-purple {{ background: linear-gradient(145deg, #4A0E2E 0%, #6B1741 50%, #500724 100%) !important; }}
 .pill {{ display: inline-flex; border-radius: 999px; padding: 6px 16px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 28px; border: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }}
-.pill-blue {{ background: rgba(255,255,255,0.22) !important; color: #ffffff !important; }}
-.pill-green {{ background: rgba(255,255,255,0.22) !important; color: #ffffff !important; }}
-.pill-purple {{ background: rgba(255,255,255,0.22) !important; color: #ffffff !important; }}
+.pill-blue {{ background: rgba(165,180,252,0.18) !important; color: #A5B4FC !important; }}
+.pill-green {{ background: rgba(110,231,183,0.18) !important; color: #6EE7B7 !important; }}
+.pill-purple {{ background: rgba(249,168,212,0.18) !important; color: #F9A8D4 !important; }}
 .icon-box {{ width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 20px; }}
-.icon-blue {{ background: rgba(255,255,255,0.20) !important; }} .icon-green {{ background: rgba(255,255,255,0.20) !important; }} .icon-purple {{ background: rgba(255,255,255,0.20) !important; }}
+.icon-blue {{ background: rgba(165,180,252,0.15) !important; }} .icon-green {{ background: rgba(110,231,183,0.15) !important; }} .icon-purple {{ background: rgba(249,168,212,0.15) !important; }}
 .feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: #ffffff !important; }}
-.feature-text {{ font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.85) !important; }}
+.feature-text {{ font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.72) !important; }}
 
 /* Steps */
 .steps-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }}
@@ -927,7 +943,7 @@ def landing_page():
 
 
 def auth_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#6D28D9 0%,#7C3AED 30%,#9333EA 60%,#6366F1 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#2D1B69 0%,#3B1F8C 40%,#1E1B4B 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
     if st.button('← Back to Home', key='auth_back_home', type='secondary'):
         st.session_state.started = False; st.session_state.page = 'home'; st.rerun()
@@ -1010,7 +1026,7 @@ def auth_page():
 
 
 def create_profile_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#6D28D9 0%,#7C3AED 30%,#9333EA 60%,#6366F1 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#2D1B69 0%,#3B1F8C 40%,#1E1B4B 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
     if st.button('← Back to Password Setup', key='create_profile_back', type='secondary'):
         st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 2; st.rerun()
@@ -1051,7 +1067,7 @@ def create_profile_page():
 
 
 def prediction_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#0369A1 0%,#0284C7 30%,#0EA5E9 60%,#06B6D4 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#0C2A4A 0%,#0A3D62 40%,#0F4C75 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🩺', 'Diabetes Risk Prediction', 'Enter your clinical parameters for an AI-powered assessment')
 
     # Pure st.markdown info box — no components.html iframe
@@ -1247,7 +1263,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
 
 
 def dashboard_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#0369A1 0%,#0284C7 30%,#0EA5E9 60%,#06B6D4 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#0C2A4A 0%,#0A3D62 40%,#0F4C75 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('📊', 'Health Dashboard', 'Your prediction result, analytics, and personalized recommendations')
 
     if not st.session_state.prediction_done:
@@ -1311,7 +1327,7 @@ def dashboard_page():
 
 
 def doctor_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071E14 0%,#0A2E1E 45%,#06180F 100%)' if DARK else 'linear-gradient(135deg,#065F46 0%,#047857 30%,#059669 60%,#0D9488 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071E14 0%,#0A2E1E 45%,#06180F 100%)' if DARK else 'linear-gradient(135deg,#052E16 0%,#064E3B 40%,#065F46 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('👨‍⚕️', 'Doctor Portal', 'Your Patient Directory & Clinical Health Analytics')
     doctor_email = st.session_state.current_user_email
     # Only show reports that this doctor created
@@ -1403,7 +1419,7 @@ def doctor_page():
 
 
 def admin_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#1A0808 0%,#2D0D0D 45%,#1A0A1A 100%)' if DARK else 'linear-gradient(135deg,#9F1239 0%,#BE123C 30%,#E11D48 60%,#C026D3 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#1A0808 0%,#2D0D0D 45%,#1A0A1A 100%)' if DARK else 'linear-gradient(135deg,#3D0812 0%,#5B0F1E 40%,#450A28 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🛡️', 'Admin Panel', 'Manage doctors, users, reports, and audit logs')
     pending = {email: d for email, d in doctors.items() if not d.get('approved', False)}
     high = [r for r in reports if 'High' in r.get('result', '')]
