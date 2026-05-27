@@ -246,6 +246,9 @@ header[data-testid="stHeader"] {{
 header[data-testid="stHeader"] [data-testid="stAppDeployButton"] {{ display: none !important; }}
 header[data-testid="stHeader"] #MainMenu {{ display: none !important; }}
 header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: none !important; }}
+[data-testid="stSidebarCollapsedControl"] {{
+    display: none !important;
+}}
 
 /* Final fix: hide keyboard_double text and show hamburger */
 button[data-testid="baseButton-headerNoPadding"],
