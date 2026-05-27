@@ -221,28 +221,30 @@ button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
 /* Hide Streamlit's text fallback such as keyboard_double_arrow_* on sidebar controls */
 button[data-testid="baseButton-headerNoPadding"],
 button[data-testid="baseButton-header"],
-[data-testid="stSidebarCollapsedControl"] button {
+[data-testid="stSidebarCollapsedControl"] button {{
     font-size: 0 !important;
     line-height: 0 !important;
     text-indent: -9999px !important;
     overflow: hidden !important;
-}
+}}
+
 button[data-testid="baseButton-headerNoPadding"] svg,
 button[data-testid="baseButton-header"] svg,
-[data-testid="stSidebarCollapsedControl"] svg {
+[data-testid="stSidebarCollapsedControl"] svg {{
     text-indent: 0 !important;
     font-size: 18px !important;
     display: block !important;
-}
+}}
+
 button[data-testid="baseButton-headerNoPadding"]::before,
 button[data-testid="baseButton-header"]::before,
-[data-testid="stSidebarCollapsedControl"] button::before {
+[data-testid="stSidebarCollapsedControl"] button::before {{
     content: "☰";
     text-indent: 0 !important;
     font-size: 20px !important;
     line-height: 1 !important;
     color: #C4B5FD !important;
-}
+}}
 
 /* ── Hamburger / sidebar collapse button ── */
 button[data-testid="baseButton-headerNoPadding"],
