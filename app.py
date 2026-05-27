@@ -197,7 +197,7 @@ css = f'''
 *, *::before, *::after {{ box-sizing: border-box; }}
 html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .stApp {{
-    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0d2e 100%)' if DARK else 'linear-gradient(135deg, #F3F0FF 0%, #FAF5FF 50%, #FDF2F8 100%)'} !important;
+    background: {'linear-gradient(135deg, #0A1628 0%, #0f1e3c 50%, #1a0d2e 100%)' if DARK else 'linear-gradient(135deg, #A5B4FC 0%, #C4B5FD 40%, #DDD6FE 100%)'} !important;
     min-height: 100vh !important;
 }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
@@ -307,16 +307,16 @@ button * {{ color: white !important; }}
 
 /* Sidebar */
 section[data-testid="stSidebar"] {{
-    background: {'linear-gradient(180deg, #0A1628 0%, #0f1e3c 35%, #1a0d2e 65%, #0D1117 100%)' if DARK else 'linear-gradient(180deg, #EDE9FE 0%, #F3E8FF 40%, #FCE7F3 75%, #FDF2F8 100%)'} !important;
-    border-right: 1px solid {'rgba(129,140,248,0.15)' if DARK else 'rgba(167,139,250,0.35)'} !important;
-    box-shadow: {'4px 0 24px rgba(0,0,0,0.4)' if DARK else '4px 0 20px rgba(139,92,246,0.12)'} !important;
+    background: {'linear-gradient(180deg, #0A1628 0%, #0f1e3c 35%, #1a0d2e 65%, #0D1117 100%)' if DARK else 'linear-gradient(180deg, #A5B4FC 0%, #B9AAFF 30%, #C4B5FD 60%, #DDD6FE 100%)'} !important;
+    border-right: 1px solid {'rgba(129,140,248,0.15)' if DARK else 'rgba(167,139,250,0.50)'} !important;
+    box-shadow: {'4px 0 24px rgba(0,0,0,0.4)' if DARK else '4px 0 24px rgba(139,92,246,0.22)'} !important;
 }}
 section[data-testid="stSidebar"]>div {{ background: transparent !important; padding-top: 0 !important; }}
 section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} !important; }}
 .sb-header {{
     display: flex; align-items: center; gap: 12px;
-    padding: 18px 18px 16px 18px; border-bottom: 1px solid {'rgba(167,139,250,0.30)' if DARK else 'rgba(167,139,250,0.40)'};
-    background: {'rgba(109,40,217,0.25)' if DARK else 'rgba(167,139,250,0.18)'};
+    padding: 18px 18px 16px 18px; border-bottom: 1px solid {'rgba(167,139,250,0.30)' if DARK else 'rgba(139,92,246,0.30)'};
+    background: {'rgba(109,40,217,0.25)' if DARK else 'rgba(139,92,246,0.18)'};
 }}
 .sb-logo-box {{
     width: 42px; height: 42px; background: {GRAD_PRIMARY};
@@ -324,11 +324,11 @@ section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} 
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 20px; box-shadow: 0 4px 16px rgba(109,40,217,0.30);
 }}
-.sb-brand {{ font-size: 20px; font-weight: 800; color: {'#C4B5FD' if DARK else '#5B21B6'} !important; font-family: 'Sora', sans-serif !important; }}
+.sb-brand {{ font-size: 20px; font-weight: 800; color: {'#C4B5FD' if DARK else '#4C1D95'} !important; font-family: 'Sora', sans-serif !important; }}
 .sb-profile {{
     display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-    border-bottom: 1px solid {'rgba(167,139,250,0.28)' if DARK else 'rgba(167,139,250,0.35)'};
-    background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(196,181,253,0.20)'};
+    border-bottom: 1px solid {'rgba(167,139,250,0.28)' if DARK else 'rgba(139,92,246,0.28)'};
+    background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(139,92,246,0.15)'};
 }}
 .sb-avatar {{
     width: 44px; height: 44px; border-radius: 12px; background: {GRAD_PRIMARY};
@@ -342,7 +342,7 @@ section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} 
     font-family: 'Sora', sans-serif !important;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
 }}
-.sb-role {{ font-size: 12px; font-weight: 600; color: {'#F9A8D4' if DARK else '#7C3AED'} !important; line-height: 1.3; white-space: nowrap; }}
+.sb-role {{ font-size: 12px; font-weight: 600; color: {'#F9A8D4' if DARK else '#6D28D9'} !important; line-height: 1.3; white-space: nowrap; }}
 
 div[data-testid="stRadio"] {{ padding: 14px 8px 0 !important; }}
 div[data-testid="stRadio"] label {{
@@ -350,13 +350,13 @@ div[data-testid="stRadio"] label {{
     font-size: 14px !important; font-weight: 600 !important; background: transparent !important;
     transition: all 0.18s ease !important; border: 1px solid transparent !important;
 }}
-div[data-testid="stRadio"] label:hover {{ background: {'rgba(139,92,246,0.20)' if DARK else 'rgba(167,139,250,0.25)'} !important; }}
+div[data-testid="stRadio"] label:hover {{ background: {'rgba(139,92,246,0.20)' if DARK else 'rgba(109,40,217,0.15)'} !important; }}
 div[data-testid="stRadio"] label[data-baseweb="radio"]>div:first-child {{ display: none !important; }}
 
 section[data-testid="stSidebar"] .stButton>button {{
-    background: {'rgba(139,92,246,0.18)' if DARK else 'rgba(167,139,250,0.20)'} !important;
-    border: 1px solid {'rgba(167,139,250,0.30)' if DARK else 'rgba(139,92,246,0.35)'} !important;
-    color: {'#E2D9F3' if DARK else '#5B21B6'} !important; border-radius: 12px !important; font-weight: 600 !important;
+    background: {'rgba(139,92,246,0.18)' if DARK else 'rgba(109,40,217,0.12)'} !important;
+    border: 1px solid {'rgba(167,139,250,0.30)' if DARK else 'rgba(109,40,217,0.30)'} !important;
+    color: {'#E2D9F3' if DARK else '#4C1D95'} !important; border-radius: 12px !important; font-weight: 600 !important;
     font-size: 14px !important; transition: all 0.18s ease !important; box-shadow: none !important;
 }}
 section[data-testid="stSidebar"] .stButton>button:hover {{
@@ -365,7 +365,7 @@ section[data-testid="stSidebar"] .stButton>button:hover {{
     box-shadow: 0 6px 20px rgba(109,40,217,0.35) !important;
 }}
 section[data-testid="stSidebar"] .stButton>button:hover * {{ color: white !important; -webkit-text-fill-color: white !important; }}
-section[data-testid="stSidebar"] .stButton>button * {{ color: {'#E2D9F3' if DARK else '#5B21B6'} !important; -webkit-text-fill-color: {'#E2D9F3' if DARK else '#5B21B6'} !important; }}
+section[data-testid="stSidebar"] .stButton>button * {{ color: {'#E2D9F3' if DARK else '#4C1D95'} !important; -webkit-text-fill-color: {'#E2D9F3' if DARK else '#4C1D95'} !important; }}
 
 /* HERO */
 .hero-section {{
@@ -426,9 +426,9 @@ section[data-testid="stSidebar"] .stButton>button * {{ color: {'#E2D9F3' if DARK
     position: relative; overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease;
 }}
 .feature-card:hover {{ transform: translateY(-8px); box-shadow: 0 24px 56px rgba(0,0,0,0.25); }}
-.feature-blue {{ background: linear-gradient(145deg, #818CF8 0%, #6D28D9 50%, #7C3AED 100%) !important; }}
-.feature-green {{ background: linear-gradient(145deg, #8B5CF6 0%, #A855F7 50%, #C084FC 100%) !important; }}
-.feature-purple {{ background: linear-gradient(145deg, #C084FC 0%, #E879F9 50%, #F472B6 100%) !important; }}
+.feature-blue {{ background: linear-gradient(145deg, #6D28D9 0%, #7C3AED 50%, #8B5CF6 100%) !important; }}
+.feature-green {{ background: linear-gradient(145deg, #7C3AED 0%, #8B5CF6 50%, #A855F7 100%) !important; }}
+.feature-purple {{ background: linear-gradient(145deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%) !important; }}
 .pill {{ display: inline-flex; border-radius: 999px; padding: 6px 16px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 28px; border: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }}
 .pill-blue {{ background: rgba(99,102,241,0.22) !important; color: #A5B4FC !important; }}
 .pill-green {{ background: rgba(139,92,246,0.22) !important; color: #C4B5FD !important; }}
@@ -587,7 +587,7 @@ def login_user(email, password):
     if email in admins and admins[email] == password:
         st.session_state.logged_in = True; st.session_state.user_type = 'admin'
         st.session_state.current_user_name = 'Admin'; st.session_state.current_user_email = email
-        st.session_state.page = 'admin'; add_audit('Login', email, 'Admin logged in'); return True, ''
+        st.session_state.page = 'admin'; st.session_state.prediction_done = False; add_audit('Login', email, 'Admin logged in'); return True, ''
     if email in users and users[email].get('password') == password:
         user = users[email]; st.session_state.logged_in = True; st.session_state.user_type = 'patient'
         st.session_state.current_user_name = user.get('name', 'User'); st.session_state.current_user_email = email
@@ -703,7 +703,9 @@ def create_risk_gauge_image(confidence, is_high):
     return img
 
 
-def generate_pdf(patient_data, result, confidence, name, email, pred_time):
+def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
+    """extra = {'phone','gender','age','address','doctor_name','doctor_email'} (all optional)"""
+    if extra is None: extra = {}
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
@@ -737,18 +739,34 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time):
     rr(width-185,height-88,140,32,chip_fill,chip_fill,r=16,sw=0)
     pdf.setFont('Helvetica-Bold',10); setc(chip_text)
     pdf.drawCentredString(width-115,height-67,'HIGH RISK' if high else 'LOW RISK')
-    y=height-168; rr(38,y-78,248,78,soft,line,r=16)
-    pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(56,y-24,'Patient Information')
-    pdf.setFont('Helvetica',9.5); setc(muted)
-    pdf.drawString(56,y-44,f'Name: {name}'); pdf.drawString(56,y-61,f'Email: {email}')
+
+    # ── Patient information block (expanded) ────────────────────────────────
+    y=height-155; rr(38,y-108,width-76,108,soft,line,r=16)
+    pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(56,y-20,'Patient Information')
+    pdf.setFont('Helvetica',9); setc(muted)
+    pdf.drawString(56, y-38, f'Name: {name}');           pdf.drawString(56, y-54, f'Email: {email}')
+    pdf.drawString(56, y-70, f'Age: {extra.get("age", patient_data.get("Age","N/A"))} yrs   Gender: {extra.get("gender","N/A")}')
+    pdf.drawString(56, y-86, f'Phone: {extra.get("phone","N/A")}')
+    pdf.drawString(300,y-38, f'Address: {extra.get("address","N/A")}')
+    # Doctor info (right column) if available
+    doc_name  = extra.get('doctor_name','')
+    doc_email = extra.get('doctor_email','')
+    if doc_name or doc_email:
+        pdf.setFont('Helvetica-Bold',10); setc(slate); pdf.drawString(300,y-58,'Assessed By')
+        pdf.setFont('Helvetica',9); setc(muted)
+        pdf.drawString(300,y-74, f'Dr. {doc_name}');   pdf.drawString(300,y-90, doc_email)
+
+    # ── Risk result block ────────────────────────────────────────────────────
+    y -= 128
     risk_bg=rgb('#FEF2F2') if high else rgb('#ECFDF5')
     risk_border=rgb('#FCA5A5') if high else rgb('#6EE7B7')
     risk_text=rgb('#B91C1C') if high else rgb('#047857')
-    rr(306,y-78,width-344,78,risk_bg,risk_border,r=16,sw=1.2)
-    pdf.setFont('Helvetica-Bold',15); setc(risk_text); pdf.drawString(326,y-30,result)
-    pdf.setFont('Helvetica',9.5); setc(muted); pdf.drawString(326,y-50,'Assessment based on clinical parameters')
+    rr(38,y-78,width-76,78,risk_bg,risk_border,r=16,sw=1.2)
+    pdf.setFont('Helvetica-Bold',15); setc(risk_text); pdf.drawString(56,y-30,result)
+    pdf.setFont('Helvetica',9.5); setc(muted); pdf.drawString(56,y-50,'Assessment based on clinical parameters')
     pdf.setFont('Helvetica-Bold',13); setc(risk_text); pdf.drawRightString(width-54,y-34,f'{confidence}%')
     pdf.setFont('Helvetica',8.5); setc(muted); pdf.drawRightString(width-54,y-50,'confidence')
+
     y-=112; pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(38,y,'Quick Health Summary')
     y-=48
     summary=[('Glucose',f"{patient_data['Glucose']} mg/dL",'#0EA5E9'),('BMI',f"{patient_data['BMI']}",'#0D9488'),('Blood Pressure',f"{patient_data['BloodPressure']} mmHg",'#F97316'),('Age',f"{patient_data['Age']} years",'#6366F1')]
@@ -853,7 +871,29 @@ def dashboard_sidebar():
 ''', unsafe_allow_html=True)
 
     if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
-    if st.sidebar.button('☀️ Light Mode' if st.session_state.dark_mode else '🌙 Dark Mode', use_container_width=True):
+
+    # ── Theme toggle switch ──────────────────────────────────────────────────
+    is_dark = st.session_state.dark_mode
+    st.sidebar.markdown(f'''
+<style>
+.theme-toggle-row{{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 14px;border-radius:14px;margin:4px 0 2px 0;
+    background:{'rgba(109,40,217,0.18)' if is_dark else 'rgba(165,180,252,0.25)'};
+    border:1px solid {'rgba(167,139,250,0.28)' if is_dark else 'rgba(139,92,246,0.30)'}}}
+.theme-label{{font-size:13px;font-weight:700;color:{'#C4B5FD' if is_dark else '#4C1D95'};font-family:"DM Sans",sans-serif}}
+.toggle-track{{width:48px;height:26px;border-radius:13px;
+    background:{'linear-gradient(90deg,#6D28D9,#A855F7)' if is_dark else 'linear-gradient(90deg,#A5B4FC,#DDD6FE)'};
+    display:flex;align-items:center;padding:3px;box-shadow:inset 0 1px 4px rgba(0,0,0,0.15);cursor:pointer}}
+.toggle-knob{{width:20px;height:20px;border-radius:50%;background:white;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);margin-left:{'22px' if is_dark else '0px'};
+    display:flex;align-items:center;justify-content:center;font-size:11px}}
+</style>
+<div class="theme-toggle-row">
+  <span class="theme-label">{'🌙 Dark Mode' if is_dark else '☀️ Light Mode'}</span>
+  <div class="toggle-track"><div class="toggle-knob">{'🌙' if is_dark else '☀️'}</div></div>
+</div>''', unsafe_allow_html=True)
+    if st.sidebar.button('🌙 Dark' if not is_dark else '☀️ Light', key='theme_toggle_btn',
+                         use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
 
     if st.session_state.user_type == 'patient':
@@ -861,7 +901,7 @@ def dashboard_sidebar():
     elif st.session_state.user_type == 'doctor':
         options = ['prediction', 'doctor', 'dashboard']; labels = ['🩺 Predict Risk', '👨‍⚕️ Patient Data', '📊 Health Dashboard']
     else:
-        options = ['admin', 'prediction', 'dashboard']; labels = ['🛡️ Admin Panel', '🩺 Predict Risk', '📊 Dashboard']
+        options = ['admin']; labels = ['🛡️ Admin Panel']
 
     if st.session_state.page not in options and st.session_state.page != 'profile':
         st.session_state.page = options[0]
@@ -1067,7 +1107,7 @@ def create_profile_page():
 
 
 def prediction_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#BAE6FD 0%,#C7D2FE 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#BAC8FF 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🩺', 'Diabetes Risk Prediction', 'Enter your clinical parameters for an AI-powered assessment')
 
     # Pure st.markdown info box — no components.html iframe
@@ -1085,23 +1125,73 @@ def prediction_page():
 </div>
 ''', unsafe_allow_html=True)
 
-    # If doctor, let them enter the patient's details
+    # ── Doctor: two-step flow ──────────────────────────────────────────────────
     if st.session_state.user_type == 'doctor':
-        st.markdown(f'''
+        if 'doctor_patient_step' not in st.session_state:
+            st.session_state.doctor_patient_step = 1
+
+        if st.session_state.doctor_patient_step == 1:
+            st.markdown(f'''
 <div style="background:linear-gradient(135deg,{GRAD1}18,{GRAD2}12);border:1px solid {GRAD1}44;
             border-radius:18px;padding:18px 24px;margin-bottom:18px;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
         <span style="font-size:20px;">👤</span>
-        <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:{TEXT};">Patient Details</span>
+        <span style="font-family:Sora,sans-serif;font-weight:800;font-size:16px;color:{TEXT};">Step 1 — Patient Details</span>
     </div>
     <p style="color:{MUTED};font-size:14px;margin:0;line-height:1.6;">
-        Enter the patient's name and email so this assessment is saved under their record.
+        Fill in the patient's personal information before proceeding to clinical assessment.
     </p>
-</div>
-''', unsafe_allow_html=True)
-        with st.container(border=True):
-            doc_patient_name = st.text_input('👤 Patient Full Name *', placeholder='e.g. Ramesh Kumar', key='doc_patient_name')
-            doc_patient_email = st.text_input('📧 Patient Email *', placeholder='patient@example.com', key='doc_patient_email')
+</div>''', unsafe_allow_html=True)
+            with st.container(border=True):
+                c1, c2 = st.columns(2)
+                with c1:
+                    doc_patient_name    = st.text_input('👤 Patient Full Name *', placeholder='e.g. Ramesh Kumar',         key='doc_patient_name',    value=st.session_state.get('doc_patient_name',''))
+                    doc_patient_age     = st.number_input('🎂 Age *', 1, 120, int(st.session_state.get('doc_patient_age_val', 30)), key='doc_patient_age_num')
+                    doc_patient_gender  = st.selectbox('⚧ Gender *', ['Male','Female','Other'],
+                                                        index=['Male','Female','Other'].index(st.session_state.get('doc_patient_gender','Male')),
+                                                        key='doc_patient_gender_sel')
+                with c2:
+                    doc_patient_email   = st.text_input('📧 Email *', placeholder='patient@example.com',                  key='doc_patient_email',   value=st.session_state.get('doc_patient_email',''))
+                    doc_patient_phone   = st.text_input('📞 Contact Number *', placeholder='+91 98765 43210',             key='doc_patient_phone',   value=st.session_state.get('doc_patient_phone',''))
+                    doc_patient_address = st.text_input('🏠 Address', placeholder='123, Main St, City',                   key='doc_patient_address', value=st.session_state.get('doc_patient_address',''))
+
+            if st.button('Proceed to Clinical Assessment →', type='primary', use_container_width=True):
+                p_name  = st.session_state.get('doc_patient_name','').strip()
+                p_email = st.session_state.get('doc_patient_email','').strip().lower()
+                p_phone = st.session_state.get('doc_patient_phone','').strip()
+                if not p_name or not p_email or not p_phone:
+                    st.error('⚠️ Patient name, email and contact number are required.')
+                    st.stop()
+                # persist values
+                st.session_state.doc_patient_age_val     = doc_patient_age
+                st.session_state.doc_patient_gender_val  = doc_patient_gender
+                st.session_state.doc_patient_address_val = doc_patient_address
+                st.session_state.doctor_patient_step = 2
+                st.rerun()
+            return   # don't show clinical form until step 1 is complete
+
+        # Step 2 header — show patient summary
+        p_name    = st.session_state.get('doc_patient_name','').strip()
+        p_email   = st.session_state.get('doc_patient_email','').strip().lower()
+        p_phone   = st.session_state.get('doc_patient_phone','').strip()
+        p_age     = st.session_state.get('doc_patient_age_val', 30)
+        p_gender  = st.session_state.get('doc_patient_gender_val', 'Male')
+        p_address = st.session_state.get('doc_patient_address_val', '')
+
+        st.markdown(f'''
+<div style="background:linear-gradient(135deg,{GRAD1}18,{GRAD2}12);border:1px solid {GRAD1}44;
+            border-radius:18px;padding:16px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <span style="font-size:20px;">👤</span>
+    <div>
+        <span style="font-family:Sora,sans-serif;font-weight:800;font-size:15px;color:{TEXT};">Step 2 — Clinical Assessment for: {p_name}</span><br>
+        <span style="font-size:13px;color:{MUTED};">📧 {p_email} &nbsp;·&nbsp; 📞 {p_phone} &nbsp;·&nbsp; 🎂 {p_age} yrs &nbsp;·&nbsp; ⚧ {p_gender}</span>
+    </div>
+    <div style="margin-left:auto;">
+        <button onclick="window.location.reload()" style="background:none;border:1px solid {GRAD1}55;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;color:{MUTED};">← Change Patient</button>
+    </div>
+</div>''', unsafe_allow_html=True)
+        if st.button('← Change Patient Details', key='change_patient_btn', type='secondary'):
+            st.session_state.doctor_patient_step = 1; st.rerun()
 
     with st.container(border=True):
         st.markdown('<div class="card-heading"><div class="badge-num">1</div>Clinical Health Parameters</div>', unsafe_allow_html=True)
@@ -1149,32 +1239,53 @@ def prediction_page():
     st.write('')
     btn_label = '🔍 Predict Patient Diabetes Risk →' if st.session_state.user_type == 'doctor' else '🔍 Predict My Diabetes Risk →'
     if st.button(btn_label, type='primary', use_container_width=True):
-        # Validate doctor patient fields
         if st.session_state.user_type == 'doctor':
-            p_name = st.session_state.get('doc_patient_name', '').strip()
-            p_email = st.session_state.get('doc_patient_email', '').strip().lower()
-            if not p_name or not p_email:
-                st.error('⚠️ Please enter the patient\'s name and email before predicting.')
-                st.stop()
-            name = p_name
-            email = p_email
+            name  = st.session_state.get('doc_patient_name','').strip()
+            email = st.session_state.get('doc_patient_email','').strip().lower()
         else:
-            name = st.session_state.current_user_name
+            name  = st.session_state.current_user_name
             email = st.session_state.current_user_email
 
         patient_data = {'Pregnancies': preg, 'Glucose': glucose, 'BloodPressure': bp, 'SkinThickness': skin, 'Insulin': insulin, 'BMI': bmi, 'DiabetesPedigreeFunction': dpf, 'Age': age}
         result, confidence = model_predict(patient_data)
         pred_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-        pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time)
+
+        # Build extra info dict for PDF
+        if st.session_state.user_type == 'doctor':
+            extra_info = {
+                'phone':        st.session_state.get('doc_patient_phone',''),
+                'gender':       st.session_state.get('doc_patient_gender_val',''),
+                'age':          st.session_state.get('doc_patient_age_val', age),
+                'address':      st.session_state.get('doc_patient_address_val',''),
+                'doctor_name':  st.session_state.current_user_name,
+                'doctor_email': st.session_state.current_user_email,
+            }
+        else:
+            u = users.get(st.session_state.current_user_email, {})
+            extra_info = {
+                'phone':   u.get('phone',''),
+                'gender':  u.get('gender',''),
+                'age':     u.get('age', age),
+                'address': u.get('address',''),
+            }
+
+        pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra_info)
         st.session_state.patient_data = patient_data; st.session_state.prediction_result = result
         st.session_state.confidence = confidence; st.session_state.prediction_time = pred_time
         st.session_state.pdf_bytes = pdf; st.session_state.prediction_done = True
         st.session_state.current_prediction_patient_name = name
-        report_entry = {'name': name, 'email': email, 'result': result, 'confidence': confidence, 'time': pred_time, 'data': patient_data}
+        report_entry = {
+            'name': name, 'email': email, 'result': result, 'confidence': confidence,
+            'time': pred_time, 'data': patient_data, 'extra': extra_info,
+        }
         if st.session_state.user_type == 'doctor':
             report_entry['doctor_email'] = st.session_state.current_user_email
+            report_entry['doctor_name']  = st.session_state.current_user_name
         reports.append(report_entry)
         save_json(REPORTS_FILE, reports); add_audit('Prediction', email, result)
+        # Reset doctor step for next patient
+        if st.session_state.user_type == 'doctor':
+            st.session_state.doctor_patient_step = 1
         st.session_state.page = 'dashboard'; st.rerun()
 
 
@@ -1263,7 +1374,7 @@ def _render_whatsapp_share(phone_key, pdf_bytes, patient_name, result, confidenc
 
 
 def dashboard_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#BAE6FD 0%,#C7D2FE 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#BAC8FF 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('📊', 'Health Dashboard', 'Your prediction result, analytics, and personalized recommendations')
 
     if not st.session_state.prediction_done:
@@ -1327,7 +1438,7 @@ def dashboard_page():
 
 
 def doctor_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071E14 0%,#0A2E1E 45%,#06180F 100%)' if DARK else 'linear-gradient(135deg,#E9D5FF 0%,#F5D0FE 45%,#FBCFE8 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071E14 0%,#0A2E1E 45%,#06180F 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#C4B5FD 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('👨‍⚕️', 'Doctor Portal', 'Your Patient Directory & Clinical Health Analytics')
     doctor_email = st.session_state.current_user_email
     # Only show reports that this doctor created
@@ -1370,14 +1481,26 @@ def doctor_page():
             age = patient_info.get('age', patient_data.get('Age', 'N/A')); gender = patient_info.get('gender', 'Not Provided')
             is_high_d = 'High' in result
 
+            saved_extra = selected_report.get('extra', {})
+            s_phone   = saved_extra.get('phone',   phone)
+            s_gender  = saved_extra.get('gender',  gender)
+            s_age     = saved_extra.get('age',     age)
+            s_address = saved_extra.get('address', 'N/A')
+            s_doc_name  = saved_extra.get('doctor_name',  doctors.get(doctor_email,{}).get('name',''))
+            s_doc_email = saved_extra.get('doctor_email', doctor_email)
+
             st.markdown(f'''
 <div style="background:{CARD};border:1px solid {BORDER};padding:24px;border-radius:20px;margin-bottom:20px;">
     <h3 style="margin-top:0;font-family:Sora,sans-serif;color:{TEXT};">👤 Patient Profile: {name}</h3>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;font-size:14px;color:{TEXT};">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;font-size:14px;color:{TEXT};">
         <div><b>📧 Email:</b><br>{email}</div>
-        <div><b>📞 Phone:</b><br>{phone}</div>
-        <div><b>🎂 Age:</b><br>{age}</div>
-        <div><b>⚧ Gender:</b><br>{gender}</div>
+        <div><b>📞 Phone:</b><br>{s_phone or 'N/A'}</div>
+        <div><b>🎂 Age:</b><br>{s_age}</div>
+        <div><b>⚧ Gender:</b><br>{s_gender or 'N/A'}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:14px;font-size:14px;color:{TEXT};">
+        <div><b>🏠 Address:</b><br>{s_address}</div>
+        <div><b>👨‍⚕️ Assessed By:</b><br>Dr. {s_doc_name} &nbsp;·&nbsp; {s_doc_email}</div>
     </div>
     <div class="{"result-high" if is_high_d else "result-low"}" style="padding:14px;">
         {"⚠️" if is_high_d else "✅"} <b>Assessment:</b> {result} &nbsp;·&nbsp; {confidence}% Confidence
@@ -1414,12 +1537,16 @@ def doctor_page():
                 st.markdown(f'<div style="background:{BOX_SUGGESTION_BG};padding:18px 20px;border-radius:16px;border:1px solid {BORDER};margin-top:4px;"><h4 style="font-family:Sora,sans-serif;font-size:16px;font-weight:800;margin:0 0 12px;color:{BOX_SUGGESTION_TITLE};">💡 Recommendations</h4>{doc_rows}</div>', unsafe_allow_html=True)
 
             st.write('')
-            pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time)
+            saved_extra = selected_report.get('extra', {})
+            if not saved_extra.get('doctor_name'):
+                saved_extra['doctor_name']  = selected_report.get('doctor_name', doctors.get(doctor_email,{}).get('name',''))
+                saved_extra['doctor_email'] = doctor_email
+            pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=saved_extra)
             _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
 
 
 def admin_page():
-    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#1A0808 0%,#2D0D0D 45%,#1A0A1A 100%)' if DARK else 'linear-gradient(135deg,#FBCFE8 0%,#F9A8D4 40%,#E9D5FF 100%)'}!important;}}</style>''', unsafe_allow_html=True)
+    st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#1A0808 0%,#2D0D0D 45%,#1A0A1A 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#C4B5FD 40%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     page_header('🛡️', 'Admin Panel', 'Manage doctors, users, reports, and audit logs')
     pending = {email: d for email, d in doctors.items() if not d.get('approved', False)}
     high = [r for r in reports if 'High' in r.get('result', '')]
