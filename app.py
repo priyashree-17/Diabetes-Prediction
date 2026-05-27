@@ -267,7 +267,27 @@ section[data-testid="stSidebar"] .block-container {{
 section[data-testid="stSidebar"] > div:first-child > div:first-child {{
     padding-top: 0 !important; margin-top: 0 !important;
 }}
+/* Hide keyboard_double_arrow text inside sidebar */
+section[data-testid="stSidebar"] button {{
+    font-size: 0 !important;
+    color: transparent !important;
+    text-indent: -9999px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}}
 
+section[data-testid="stSidebar"] button * {{
+    font-size: 0 !important;
+    color: transparent !important;
+}}
+
+section[data-testid="stSidebar"] button svg {{
+    display: block !important;
+    width: 22px !important;
+    height: 22px !important;
+    fill: #4C1D95 !important;
+    stroke: #4C1D95 !important;
+}}
 /* Header cleanup */
 [data-testid="stDecoration"] {{ display: none !important; }}
 header[data-testid="stHeader"] {{ background: transparent !important; box-shadow: none !important; border: none !important; }}
