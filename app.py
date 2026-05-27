@@ -267,21 +267,17 @@ section[data-testid="stSidebar"] .block-container {{
 section[data-testid="stSidebar"] > div:first-child > div:first-child {{
     padding-top: 0 !important; margin-top: 0 !important;
 }}
-/* Hide keyboard_double_arrow text inside sidebar */
-section[data-testid="stSidebar"] button {{
-    font-size: 0 !important;
-    color: transparent !important;
-    text-indent: -9999px !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-}}
-
-section[data-testid="stSidebar"] button * {{
+/* Hide only keyboard_double text, keep hamburger visible */
+section[data-testid="stSidebar"] button[kind="header"] span,
+section[data-testid="stSidebar"] button[kind="header"] div,
+section[data-testid="stSidebar"] button[kind="header"] p {{
+    display: none !important;
+    visibility: hidden !important;
     font-size: 0 !important;
     color: transparent !important;
 }}
 
-section[data-testid="stSidebar"] button svg {{
+section[data-testid="stSidebar"] button[kind="header"] svg {{
     display: block !important;
     width: 22px !important;
     height: 22px !important;
