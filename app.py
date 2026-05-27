@@ -274,7 +274,26 @@ header[data-testid="stHeader"] {{ background: transparent !important; box-shadow
 header[data-testid="stHeader"] [data-testid="stAppDeployButton"] {{ display: none !important; }}
 header[data-testid="stHeader"] #MainMenu {{ display: none !important; }}
 header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: none !important; }}
+/* Hide keyboard_double_arrow text from Streamlit header toggle */
+header[data-testid="stHeader"] button p,
+header[data-testid="stHeader"] button span,
+header[data-testid="stHeader"] button div {{
+    display: none !important;
+    visibility: hidden !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}}
 
+header[data-testid="stHeader"] button svg {{
+    display: block !important;
+    width: 22px !important;
+    height: 22px !important;
+    fill: #C4B5FD !important;
+    stroke: #C4B5FD !important;
+}}
 .nav-link {{ text-decoration: none !important; color: {TEXT} !important; font-weight: 600 !important; font-size: 15px !important; transition: all 0.2s ease !important; font-family: 'DM Sans', sans-serif !important; }}
 .nav-link:hover {{ color: {GRAD1} !important; }}
 
