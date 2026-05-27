@@ -234,6 +234,25 @@ button[data-testid="baseButton-header"] svg {{
 [data-testid="stSidebarCollapsedControl"] {{
     visibility: visible !important; display: flex !important; opacity: 1 !important;
 }}
+/* Force-hide keyboard_double_arrow text */
+[data-testid="stSidebarCollapsedControl"] {{
+    font-size: 0 !important;
+    color: transparent !important;
+    overflow: hidden !important;
+}}
+
+[data-testid="stSidebarCollapsedControl"] * {{
+    font-size: 0 !important;
+    color: transparent !important;
+}}
+
+[data-testid="stSidebarCollapsedControl"] svg {{
+    display: block !important;
+    width: 22px !important;
+    height: 22px !important;
+    fill: #4C1D95 !important;
+    stroke: #4C1D95 !important;
+}}
 
 /* ── Sidebar: remove top gap ── */
 section[data-testid="stSidebar"] > div:first-child {{
