@@ -218,97 +218,63 @@ button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
     display: none !important; width: 0 !important; overflow: hidden !important;
 }}
 
-/* ── Hamburger / sidebar collapse button ── */
-button[data-testid="baseButton-headerNoPadding"],
-button[data-testid="baseButton-header"] {{
-    visibility: visible !important; opacity: 1 !important; display: inline-flex !important;
-    align-items: center !important; justify-content: center !important;
-    background: {'rgba(15,30,60,0.95)' if DARK else '#4C1D95'} !important;
-    border-radius: 12px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.22) !important;
-    color: #C4B5FD !important;
-}}
-button[data-testid="baseButton-headerNoPadding"] svg,
-button[data-testid="baseButton-header"] svg {{
-    fill: #C4B5FD !important; stroke: #C4B5FD !important;
-}}
-[data-testid="stSidebarCollapsedControl"] {{
-    visibility: visible !important; display: flex !important; opacity: 1 !important;
-}}
-/* Force-hide keyboard_double_arrow text */
-[data-testid="stSidebarCollapsedControl"] {{
-    font-size: 0 !important;
-    color: transparent !important;
-    overflow: hidden !important;
-}}
-
-[data-testid="stSidebarCollapsedControl"] * {{
-    font-size: 0 !important;
-    color: transparent !important;
-}}
-
-[data-testid="stSidebarCollapsedControl"] svg {{
-    display: block !important;
-    width: 22px !important;
-    height: 22px !important;
-    fill: #4C1D95 !important;
-    stroke: #4C1D95 !important;
-}}
-
 /* ── Sidebar: remove top gap ── */
 section[data-testid="stSidebar"] > div:first-child {{
-    padding-top: 0 !important; margin-top: 0 !important;
+    padding-top: 0 !important; 
+    margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] > div > div {{
-    padding-top: 0 !important; margin-top: 0 !important;
+    padding-top: 0 !important; 
+    margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] .block-container {{
-    padding-top: 0 !important; margin-top: 0 !important;
+    padding-top: 0 !important; 
+    margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] > div:first-child > div:first-child {{
-    padding-top: 0 !important; margin-top: 0 !important;
-}}
-/* Hide only keyboard_double text, keep hamburger visible */
-section[data-testid="stSidebar"] button[kind="header"] span,
-section[data-testid="stSidebar"] button[kind="header"] div,
-section[data-testid="stSidebar"] button[kind="header"] p {{
-    display: none !important;
-    visibility: hidden !important;
-    font-size: 0 !important;
-    color: transparent !important;
+    padding-top: 0 !important; 
+    margin-top: 0 !important;
 }}
 
-section[data-testid="stSidebar"] button[kind="header"] svg {{
-    display: block !important;
-    width: 22px !important;
-    height: 22px !important;
-    fill: #4C1D95 !important;
-    stroke: #4C1D95 !important;
-}}
 /* Header cleanup */
 [data-testid="stDecoration"] {{ display: none !important; }}
-header[data-testid="stHeader"] {{ background: transparent !important; box-shadow: none !important; border: none !important; }}
+header[data-testid="stHeader"] {{ 
+    background: transparent !important; 
+    box-shadow: none !important; 
+    border: none !important; 
+}}
 header[data-testid="stHeader"] [data-testid="stAppDeployButton"] {{ display: none !important; }}
 header[data-testid="stHeader"] #MainMenu {{ display: none !important; }}
 header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: none !important; }}
-/* Hide keyboard_double_arrow text from Streamlit header toggle */
-header[data-testid="stHeader"] button p,
-header[data-testid="stHeader"] button span,
-header[data-testid="stHeader"] button div {{
-    display: none !important;
-    visibility: hidden !important;
+
+/* Final fix: hide keyboard_double text and show hamburger */
+button[data-testid="baseButton-headerNoPadding"],
+button[data-testid="baseButton-header"] {{
     font-size: 0 !important;
     color: transparent !important;
-    width: 0 !important;
-    height: 0 !important;
+    background: #4C1D95 !important;
+    border-radius: 12px !important;
+    width: 42px !important;
+    height: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     overflow: hidden !important;
 }}
 
-header[data-testid="stHeader"] button svg {{
+button[data-testid="baseButton-headerNoPadding"] *,
+button[data-testid="baseButton-header"] * {{
+    display: none !important;
+}}
+
+button[data-testid="baseButton-headerNoPadding"]::after,
+button[data-testid="baseButton-header"]::after {{
+    content: "☰";
+    font-size: 24px !important;
+    line-height: 42px !important;
+    color: #FFFFFF !important;
     display: block !important;
-    width: 22px !important;
-    height: 22px !important;
-    fill: #C4B5FD !important;
-    stroke: #C4B5FD !important;
+    text-align: center !important;
 }}
 .nav-link {{ text-decoration: none !important; color: {TEXT} !important; font-weight: 600 !important; font-size: 15px !important; transition: all 0.2s ease !important; font-family: 'DM Sans', sans-serif !important; }}
 .nav-link:hover {{ color: {GRAD1} !important; }}
