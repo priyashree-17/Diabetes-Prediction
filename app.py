@@ -218,21 +218,18 @@ button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
     display: none !important; width: 0 !important; overflow: hidden !important;
 }}
 
-/* Hide Streamlit keyboard_double_arrow text */
-button[data-testid="baseButton-headerNoPadding"],
-button[data-testid="baseButton-header"],
-[data-testid="stSidebarCollapsedControl"] button {{
+/* Completely hide Streamlit accessibility text */
+[data-testid="stSidebarCollapsedControl"] span,
+[data-testid="stSidebarCollapsedControl"] div,
+button[data-testid="baseButton-headerNoPadding"] span,
+button[data-testid="baseButton-header"] span {{
+    display: none !important;
+    visibility: hidden !important;
     font-size: 0 !important;
     color: transparent !important;
-    text-indent: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
     overflow: hidden !important;
-}}
-
-button[data-testid="baseButton-headerNoPadding"] *,
-button[data-testid="baseButton-header"] *,
-[data-testid="stSidebarCollapsedControl"] button * {{
-    font-size: 0 !important;
-    color: transparent !important;
 }}
 
 button[data-testid="baseButton-headerNoPadding"] svg,
@@ -244,7 +241,6 @@ button[data-testid="baseButton-header"] svg,
     fill: #C4B5FD !important;
     stroke: #C4B5FD !important;
 }}
-
 /* ── Hamburger / sidebar collapse button ── */
 button[data-testid="baseButton-headerNoPadding"],
 button[data-testid="baseButton-header"] {{
