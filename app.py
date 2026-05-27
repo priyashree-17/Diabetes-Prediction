@@ -206,79 +206,108 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
 .hero-card h1, .hero-card h2, .hero-card p, .hero-card span, .hero-card div {{ color: white !important; -webkit-text-fill-color: white !important; }}
 .hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
 
-/* ── Sidebar toggle ── */
+/* ── Sidebar nav items ── */
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"] {{ display: none !important; }}
-button[data-testid="baseButton-headerNoPadding"],
-button[data-testid="baseButton-header"] {{
-    visibility: visible !important; opacity: 1 !important; display: flex !important;
+
+/* ── "Open sidebar" tab (shown when sidebar is collapsed) ── */
+[data-testid="stSidebarCollapsedControl"] {{
+    visibility: visible !important;
+    display: flex !important;
+    opacity: 1 !important;
+    background: {'rgba(30,20,60,0.96)' if DARK else '#4C1D95'} !important;
+    border-radius: 0 14px 14px 0 !important;
+    box-shadow: 4px 0 18px rgba(76,29,149,0.50) !important;
+    width: 34px !important;
+    height: 54px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    transition: width 0.18s ease !important;
+    overflow: hidden !important;
 }}
-button[data-testid="baseButton-headerNoPadding"] > span:not(:has(svg)),
-button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
-    display: none !important; width: 0 !important; overflow: hidden !important;
+[data-testid="stSidebarCollapsedControl"]:hover {{
+    width: 40px !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button {{
+    background: transparent !important;
+    border: none !important;
+    width: 34px !important;
+    height: 54px !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}}
+/* Kill the Material Icons text node */
+[data-testid="stSidebarCollapsedControl"] button > * {{
+    display: none !important;
+}}
+/* SVG injected by JS gets display:flex */
+[data-testid="stSidebarCollapsedControl"] button > svg.gt-icon {{
+    display: block !important;
+}}
+
+/* ── "Close sidebar" button (inside the open sidebar) ── */
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
+    visibility: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: {'rgba(109,40,217,0.28)' if DARK else 'rgba(109,40,217,0.15)'} !important;
+    border: 1.5px solid {'rgba(196,181,253,0.40)' if DARK else 'rgba(109,40,217,0.35)'} !important;
+    border-radius: 12px !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    overflow: hidden !important;
+    transition: background 0.18s ease !important;
+    flex-shrink: 0 !important;
+}}
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
+    background: {'rgba(109,40,217,0.50)' if DARK else 'rgba(109,40,217,0.32)'} !important;
+}}
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] > *,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] > * {{
+    display: none !important;
+}}
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] > svg.gt-icon,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] > svg.gt-icon {{
+    display: block !important;
+}}
+
+/* hide any stray header-level toggle outside sidebar */
+header button[data-testid="baseButton-headerNoPadding"],
+header button[data-testid="baseButton-header"] {{
+    display: none !important;
 }}
 
 /* ── Sidebar: remove top gap ── */
 section[data-testid="stSidebar"] > div:first-child {{
-    padding-top: 0 !important; 
-    margin-top: 0 !important;
+    padding-top: 0 !important; margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] > div > div {{
-    padding-top: 0 !important; 
-    margin-top: 0 !important;
+    padding-top: 0 !important; margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] .block-container {{
-    padding-top: 0 !important; 
-    margin-top: 0 !important;
+    padding-top: 0 !important; margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] > div:first-child > div:first-child {{
-    padding-top: 0 !important; 
+    padding-top: 0 !important;
     margin-top: 0 !important;
 }}
 
 /* Header cleanup */
 [data-testid="stDecoration"] {{ display: none !important; }}
-header[data-testid="stHeader"] {{ 
-    background: transparent !important; 
-    box-shadow: none !important; 
-    border: none !important; 
-}}
+header[data-testid="stHeader"] {{ background: transparent !important; box-shadow: none !important; border: none !important; }}
 header[data-testid="stHeader"] [data-testid="stAppDeployButton"] {{ display: none !important; }}
 header[data-testid="stHeader"] #MainMenu {{ display: none !important; }}
 header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: none !important; }}
-[data-testid="stSidebarCollapsedControl"] {{
-    display: none !important;
-}}
 
-/* Final fix: hide keyboard_double text and show hamburger */
-button[data-testid="baseButton-headerNoPadding"],
-button[data-testid="baseButton-header"] {{
-    font-size: 0 !important;
-    color: transparent !important;
-    background: #4C1D95 !important;
-    border-radius: 12px !important;
-    width: 42px !important;
-    height: 42px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-}}
-
-button[data-testid="baseButton-headerNoPadding"] *,
-button[data-testid="baseButton-header"] * {{
-    display: none !important;
-}}
-
-button[data-testid="baseButton-headerNoPadding"]::after,
-button[data-testid="baseButton-header"]::after {{
-    content: "☰";
-    font-size: 24px !important;
-    line-height: 42px !important;
-    color: #FFFFFF !important;
-    display: block !important;
-    text-align: center !important;
-}}
 .nav-link {{ text-decoration: none !important; color: {TEXT} !important; font-weight: 600 !important; font-size: 15px !important; transition: all 0.2s ease !important; font-family: 'DM Sans', sans-serif !important; }}
 .nav-link:hover {{ color: {GRAD1} !important; }}
 
@@ -348,19 +377,17 @@ section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} 
 }}
 .sb-brand {{ font-size: 20px; font-weight: 800; color: {'#C4B5FD' if DARK else '#4C1D95'} !important; font-family: 'Sora', sans-serif !important; }}
 .sb-profile {{
-    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 18px 18px;
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
     border-bottom: 1px solid {'rgba(167,139,250,0.28)' if DARK else 'rgba(139,92,246,0.28)'};
     background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(139,92,246,0.15)'};
-    text-align: center;
 }}
 .sb-avatar {{
-    width: 72px; height: 72px; border-radius: 50%; background: {GRAD_PRIMARY};
+    width: 44px; height: 44px; border-radius: 12px; background: {GRAD_PRIMARY};
     color: white !important; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 22px; font-family: 'Sora', sans-serif !important;
-    flex-shrink: 0; box-shadow: 0 6px 18px rgba(109,40,217,0.30);
-    border: 3px solid {'rgba(255,255,255,0.24)' if DARK else 'rgba(255,255,255,0.78)'};
+    font-weight: 800; font-size: 16px; font-family: 'Sora', sans-serif !important;
+    flex-shrink: 0; box-shadow: 0 4px 12px rgba(109,40,217,0.25);
 }}
-.sb-info {{ display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; overflow: hidden; width: 100%; }}
+.sb-info {{ display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }}
 .sb-name {{
     font-size: 14px; font-weight: 700; color: {'#E2D9F3' if DARK else '#3B0764'} !important;
     font-family: 'Sora', sans-serif !important;
@@ -450,29 +477,25 @@ section[data-testid="stSidebar"] .stButton>button * {{ color: {'#E2D9F3' if DARK
     position: relative; overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease;
 }}
 .feature-card:hover {{ transform: translateY(-8px); box-shadow: 0 24px 56px rgba(0,0,0,0.25); }}
-.feature-blue {{ background: linear-gradient(145deg, #DFF3FF 0%, #BFE8FB 100%) !important; }}
-.feature-green {{ background: linear-gradient(145deg, #DCFCE7 0%, #BBF7D0 100%) !important; }}
-.feature-purple {{ background: linear-gradient(145deg, #FEF9C3 0%, #FDE68A 100%) !important; }}
+.feature-blue {{ background: linear-gradient(145deg, #6D28D9 0%, #7C3AED 50%, #8B5CF6 100%) !important; }}
+.feature-green {{ background: linear-gradient(145deg, #7C3AED 0%, #8B5CF6 50%, #A855F7 100%) !important; }}
+.feature-purple {{ background: linear-gradient(145deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%) !important; }}
 .pill {{ display: inline-flex; border-radius: 999px; padding: 6px 16px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 28px; border: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }}
-.pill-blue {{ background: rgba(255,255,255,0.55) !important; color: #0F2A44 !important; }}
-.pill-green {{ background: rgba(255,255,255,0.55) !important; color: #064E3B !important; }}
-.pill-purple {{ background: rgba(255,255,255,0.55) !important; color: #713F12 !important; }}
+.pill-blue {{ background: rgba(99,102,241,0.22) !important; color: #A5B4FC !important; }}
+.pill-green {{ background: rgba(139,92,246,0.22) !important; color: #C4B5FD !important; }}
+.pill-purple {{ background: rgba(236,72,153,0.22) !important; color: #F9A8D4 !important; }}
 .icon-box {{ width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 20px; }}
-.icon-blue {{ background: rgba(255,255,255,0.28) !important; }} .icon-green {{ background: rgba(255,255,255,0.28) !important; }} .icon-purple {{ background: rgba(255,255,255,0.28) !important; }}
-.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: #0F2A44 !important; }}
-.feature-text {{ font-size: 16px; line-height: 1.6; color: #475569 !important; }}
-.feature-green .feature-title {{ color: #065F46 !important; }}
-.feature-green .feature-text {{ color: #166534 !important; }}
-.feature-purple .feature-title {{ color: #713F12 !important; }}
-.feature-purple .feature-text {{ color: #854D0E !important; }}
+.icon-blue {{ background: rgba(99,102,241,0.18) !important; }} .icon-green {{ background: rgba(139,92,246,0.18) !important; }} .icon-purple {{ background: rgba(236,72,153,0.18) !important; }}
+.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: #ffffff !important; }}
+.feature-text {{ font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.72) !important; }}
 
 /* Steps */
 .steps-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }}
-.step-card {{ border: 1px solid #A7D8F0; border-radius: 20px; padding: 32px 22px; text-align: center; background: #DFF3FF !important; position: relative; overflow: hidden; transition: transform 0.2s ease; box-shadow: 0 4px 24px rgba(15,42,68,0.08); }}
-.step-card:hover {{ transform: translateY(-4px); box-shadow: 0 12px 36px rgba(15,42,68,0.14); }}
-.step-num {{ font-family: 'Sora', sans-serif; font-size: 40px; font-weight: 900; color: #0284C7 !important; -webkit-text-fill-color: #0284C7 !important; margin-bottom: 12px; }}
-.step-title {{ font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 10px; color: #0F2A44 !important; }}
-.step-text {{ font-size: 15px; line-height: 1.55; color: #64748B !important; }}
+.step-card {{ border: none; border-radius: 20px; padding: 32px 22px; text-align: center; background: {'rgba(255,255,255,0.07)' if DARK else 'rgba(255,255,255,0.75)'} !important; position: relative; overflow: hidden; transition: transform 0.2s ease; backdrop-filter: blur(10px); box-shadow: 0 4px 24px rgba(0,0,0,0.12); }}
+.step-card:hover {{ transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.20); }}
+.step-num {{ font-family: 'Sora', sans-serif; font-size: 40px; font-weight: 900; background: {GRAD_PRIMARY}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }}
+.step-title {{ font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 10px; color: {TEXT} !important; }}
+.step-text {{ font-size: 15px; line-height: 1.55; color: {MUTED} !important; }}
 
 /* CTA */
 .bottom-cta {{ max-width: 860px; margin: 0 auto 80px; text-align: center; border-radius: 28px; padding: 60px; background: {GRAD_HERO}; position: relative; overflow: hidden; box-shadow: 0 20px 60px rgba(109,40,217,0.40); }}
@@ -572,7 +595,6 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
 .hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
 .page-sub, .section-sub, .step-text, .auth-title p, .param-label {{ color: {MUTED} !important; }}
 .stDataFrame, .stDataFrame *, [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * {{ color: {TEXT} !important; font-weight: 600 !important; }}
-section[data-testid="stSidebar"] [data-testid="stWidgetLabel"], section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] * {{ color: {'#E2D9F3' if DARK else '#4C1D95'} !important; }}
 
 @media(max-width:900px) {{
     .feature-grid, .steps-grid {{ grid-template-columns: 1fr; }}
@@ -581,6 +603,63 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"], section[data-tes
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
+
+# ── Sidebar toggle icon injector ────────────────────────────────────────────
+# CSS alone cannot reliably override Streamlit's Material Icons font span.
+# This JS runs on every page load and physically replaces each button's
+# children with a proper inline SVG chevron icon.
+_ICON_COLOR_OPEN  = '#C4B5FD'
+_ICON_COLOR_CLOSE = '#C4B5FD' if DARK else '#4C1D95'
+st.markdown(f'''
+<script>
+(function injectSidebarIcons() {{
+  // Right-facing double chevron  ›› (open sidebar)
+  const OPEN_SVG = `<svg class="gt-icon" xmlns="http://www.w3.org/2000/svg"
+      width="22" height="22" viewBox="0 0 24 24" fill="none"
+      stroke="{_ICON_COLOR_OPEN}" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="13 17 18 12 13 7"/>
+    <polyline points="6 17 11 12 6 7"/>
+  </svg>`;
+
+  // Left-facing double chevron  ‹‹ (close sidebar)
+  const CLOSE_SVG = `<svg class="gt-icon" xmlns="http://www.w3.org/2000/svg"
+      width="22" height="22" viewBox="0 0 24 24" fill="none"
+      stroke="{_ICON_COLOR_CLOSE}" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="11 17 6 12 11 7"/>
+    <polyline points="18 17 13 12 18 7"/>
+  </svg>`;
+
+  function patch() {{
+    // 1. "Open" button — lives in stSidebarCollapsedControl
+    const openWrap = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
+    if (openWrap) {{
+      const btn = openWrap.querySelector('button');
+      if (btn && !btn.querySelector('svg.gt-icon')) {{
+        btn.innerHTML = OPEN_SVG;
+      }}
+    }}
+
+    // 2. "Close" button — lives inside the sidebar itself
+    const sidebar = document.querySelector('section[data-testid="stSidebar"]');
+    if (sidebar) {{
+      const closeBtn = sidebar.querySelector(
+        'button[data-testid="baseButton-headerNoPadding"], button[data-testid="baseButton-header"]'
+      );
+      if (closeBtn && !closeBtn.querySelector('svg.gt-icon')) {{
+        closeBtn.innerHTML = CLOSE_SVG;
+      }}
+    }}
+  }}
+
+  // Run immediately and keep watching for Streamlit re-renders
+  patch();
+  const observer = new MutationObserver(patch);
+  observer.observe(document.body, {{ childList: true, subtree: true }});
+}})();
+</script>
+''', unsafe_allow_html=True)
 
 
 def initials(name):
@@ -732,8 +811,8 @@ def create_risk_gauge_image(confidence, is_high):
     return img
 
 
-def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=None, report_type='patient'):
-    """Clean PDF report. report_type='patient' keeps patient-only details; report_type='doctor' adds doctor details."""
+def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
+    """Clean two-section PDF: patient/doctor info + full clinical report."""
     if extra is None: extra = {}
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
@@ -748,7 +827,6 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     C_LINE   = (0.82,0.86,0.96)
     C_WHITE  = (1,1,1)
     high = 'High' in result
-    is_doctor_report = report_type == 'doctor' or bool(extra.get('doctor_email') or extra.get('doctor_name'))
 
     def rgb(h):
         h = h.lstrip('#')
@@ -778,70 +856,57 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     setc(C_NAVY); pdf.rect(0,H-90,W,90,fill=True,stroke=False)
     # Logo box
     setc(C_ROYAL); pdf.roundRect(30,H-72,44,44,8,fill=True,stroke=False)
-    pdf.setFont('Helvetica-Bold',18); setc(C_WHITE); pdf.drawString(43,H-50,'G')
+    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(42,H-50,'🩺')
     # Title
-    report_title = 'GlucoTrack Doctor Clinical Report' if is_doctor_report else 'GlucoTrack Patient Health Report'
-    report_subtitle = 'Doctor-generated diabetes risk assessment with patient and doctor details' if is_doctor_report else 'Personal diabetes risk assessment and health action plan'
-    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(86,H-46,report_title)
+    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(86,H-46,'GlucoTrack  Clinical Report')
     pdf.setFont('Helvetica',9); setc((0.65,0.78,0.95))
-    pdf.drawString(86,H-62,report_subtitle)
+    pdf.drawString(86,H-62,'Diabetes Risk Assessment  ·  Health Analytics  ·  Action Plan')
     pdf.drawString(86,H-76,f'Generated: {pred_time}')
     # Risk badge
     badge_bg  = rgb('#FEE2E2') if high else rgb('#D1FAE5')
     badge_txt = rgb('#991B1B') if high else rgb('#065F46')
     rect_fill(W-148,H-72,118,28,badge_bg,badge_bg,radius=14,lw=0)
     pdf.setFont('Helvetica-Bold',10); setc(badge_txt)
-    pdf.drawCentredString(W-89,H-54,'HIGH RISK' if high else 'LOW RISK')
+    pdf.drawCentredString(W-89,H-54,'⚠ HIGH RISK' if high else '✓ LOW RISK')
 
     y = H - 110   # cursor below banner
 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 1 — PATIENT & DOCTOR INFORMATION
     # ════════════════════════════════════════════════════════════════════════
-    section_title(30, y, 'Patient Information' if not is_doctor_report else 'Patient & Doctor Information')
+    section_title(30, y, 'Patient & Doctor Information')
     y -= 14
 
+    # Patient info card (left half)
     p_age     = extra.get('age', patient_data.get('Age','N/A'))
     p_gender  = extra.get('gender','N/A')
     p_phone   = extra.get('phone','N/A')
     p_address = extra.get('address','N/A')
-
     doc_name  = extra.get('doctor_name','')
     doc_email_val = extra.get('doctor_email','')
-    doc_phone = extra.get('doctor_phone','N/A')
-    doc_spec  = extra.get('doctor_specialization','N/A')
-    doc_hosp  = extra.get('doctor_hospital','N/A')
-    doc_lic   = extra.get('doctor_license_no','N/A')
 
-    if is_doctor_report:
-        card_h = 124
-        half = (W - 72) / 2
-        rect_fill(30, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
-        pdf.setFont('Helvetica-Bold',9); setc(C_ROYAL); pdf.drawString(42, y-14, 'PATIENT')
-        field_row(42, y-30, 'Name:', name)
-        field_row(42, y-45, 'Email:', email)
-        field_row(42, y-60, 'Age / Gender:', f'{p_age} yrs  -  {p_gender}')
-        field_row(42, y-75, 'Phone:', p_phone)
-        field_row(42, y-90, 'Address:', p_address)
+    card_h = 108 if (doc_name or doc_email_val) else 80
+    half   = (W - 72) / 2
 
-        rx = 30 + half + 12
+    rect_fill(30, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
+    pdf.setFont('Helvetica-Bold',9); setc(C_ROYAL)
+    pdf.drawString(42, y-14, 'PATIENT')
+    field_row(42, y-28, 'Name:',    name)
+    field_row(42, y-42, 'Email:',   email)
+    field_row(42, y-56, 'Age / Gender:', f'{p_age} yrs  ·  {p_gender}')
+    field_row(42, y-70, 'Phone:',   p_phone)
+    if card_h > 80:
+        field_row(42, y-84, 'Address:', p_address)
+
+    # Doctor info card (right half) — only if doctor details present
+    rx = 30 + half + 12
+    if doc_name or doc_email_val:
         rect_fill(rx, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
-        pdf.setFont('Helvetica-Bold',9); setc(C_TEAL); pdf.drawString(rx+12, y-14, 'DOCTOR')
-        field_row(rx+12, y-30, 'Name:', f'Dr. {doc_name}' if doc_name and not str(doc_name).lower().startswith('dr') else doc_name)
-        field_row(rx+12, y-45, 'Email:', doc_email_val)
-        field_row(rx+12, y-60, 'Phone:', doc_phone)
-        field_row(rx+12, y-75, 'Specialization:', doc_spec)
-        field_row(rx+12, y-90, 'Hospital:', doc_hosp)
-        field_row(rx+12, y-105, 'License No.:', doc_lic)
-    else:
-        card_h = 96
-        rect_fill(30, y-card_h, W-60, card_h, C_SOFT, C_LINE, radius=10)
-        pdf.setFont('Helvetica-Bold',9); setc(C_ROYAL); pdf.drawString(42, y-14, 'PATIENT')
-        field_row(42, y-30, 'Name:', name, lw=95)
-        field_row(42, y-45, 'Email:', email, lw=95)
-        field_row(42, y-60, 'Age / Gender:', f'{p_age} yrs  -  {p_gender}', lw=95)
-        field_row(42, y-75, 'Phone:', p_phone, lw=95)
-        field_row(300, y-75, 'Address:', p_address, lw=70)
+        pdf.setFont('Helvetica-Bold',9); setc(C_TEAL)
+        pdf.drawString(rx+12, y-14, 'ASSESSED BY')
+        field_row(rx+12, y-28, 'Doctor:',  f'Dr. {doc_name}')
+        field_row(rx+12, y-42, 'Email:',   doc_email_val)
+        field_row(rx+12, y-56, 'Date:',    pred_time.split(' ')[0] if ' ' in pred_time else pred_time)
 
     y -= card_h + 18
 
@@ -916,7 +981,7 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
 
     chart_img = create_pdf_chart_image(patient_data)
     gauge_img = create_risk_gauge_image(confidence, high)
-    chart_h   = 130
+    chart_h   = 150
     chart_w   = int((W - 72) * 0.62)
     gauge_w   = int((W - 72) * 0.34)
 
@@ -931,7 +996,7 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     pdf.setFont('Helvetica-Bold',8); setc(C_SLATE)
     pdf.drawCentredString(gx+gauge_w/2, y-chart_h+6, 'Confidence Gauge')
 
-    y -= chart_h + 14
+    y -= chart_h + 18
 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 6 — HEALTH ACTION PLAN
@@ -940,40 +1005,27 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     y -= 14
 
     suggestions = get_suggestions(patient_data)
-    # Compact box so the disclaimer stays in a separate clean footer area.
-    plan_h = max(64, len(suggestions) * 18 + 14)
-    min_footer_gap = 62
-    if y - plan_h < min_footer_gap:
-        plan_h = max(58, y - min_footer_gap)
+    plan_h = max(90, len(suggestions) * 22 + 20)
     rect_fill(30, y-plan_h, W-60, plan_h, rgb('#F0FDFA'), rgb('#99F6E4'), radius=12)
-    yy = y - 17
+    yy = y - 18
     for i, s in enumerate(suggestions, 1):
         s_clean = ''.join(c for c in s if ord(c)<65536 and not (0x1F000<=ord(c)<=0x1FFFF))
-        setc(C_TEAL); pdf.circle(50, yy+3, 7, fill=True, stroke=False)
-        setc(C_WHITE); pdf.setFont('Helvetica-Bold',7); pdf.drawCentredString(50, yy+1, str(i))
-        setc(C_SLATE); pdf.setFont('Helvetica',8.5); pdf.drawString(66, yy, s_clean.strip())
-        yy -= 18
+        setc(C_TEAL); pdf.circle(48, yy+3, 7, fill=True, stroke=False)
+        setc(C_WHITE); pdf.setFont('Helvetica-Bold',7); pdf.drawCentredString(48, yy+1, str(i))
+        setc(C_SLATE); pdf.setFont('Helvetica',9); pdf.drawString(62, yy, s_clean.strip())
+        yy -= 22
 
     # ════════════════════════════════════════════════════════════════════════
-    # FOOTER — separate from action-plan card
+    # FOOTER
     # ════════════════════════════════════════════════════════════════════════
-    footer_top = 48
-    setstroke(C_LINE); pdf.setLineWidth(0.6); pdf.line(30, footer_top, W-30, footer_top)
+    setstroke(C_LINE); pdf.setLineWidth(0.6); pdf.line(30, 38, W-30, 38)
     pdf.setFont('Helvetica-Oblique', 7); setc(C_MUTED)
-    pdf.drawCentredString(W/2, 34, 'Disclaimer: This report is for educational and screening purposes only — not a medical diagnosis.')
-    pdf.drawCentredString(W/2, 21, 'Please consult a qualified healthcare professional before making any medical decisions.')
+    pdf.drawCentredString(W/2, 26, 'Disclaimer: This report is for educational and screening purposes only — not a medical diagnosis.')
+    pdf.drawCentredString(W/2, 14, 'Please consult a qualified healthcare professional before making any medical decisions.')
 
     pdf.save()
     return buffer.getvalue()
 
-
-
-def generate_user_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
-    return generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra or {}, report_type='patient')
-
-
-def generate_doctor_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
-    return generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra or {}, report_type='doctor')
 
 def page_header(icon, title, subtitle):
     """Pure st.markdown page header — no components.html, no iframe overlap."""
@@ -1023,7 +1075,7 @@ def dashboard_sidebar():
     elif st.session_state.user_type == 'doctor' and email in doctors:
         profile_pic = doctors[email].get('profile_pic')
     if profile_pic:
-        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" class="sb-avatar" style="object-fit:cover;display:block;">'
+        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:44px;height:44px;border-radius:12px;object-fit:cover;display:block;flex-shrink:0;">'
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
 
@@ -1033,11 +1085,11 @@ def dashboard_sidebar():
     <div class="sb-brand">GlucoTrack</div>
 </div>
 <div class="sb-profile">
+    {avatar_html}
     <div class="sb-info">
         <div class="sb-name">{name if name else "Loading..."}</div>
         <div class="sb-role">{role}</div>
     </div>
-    {avatar_html}
 </div>
 ''', unsafe_allow_html=True)
 
@@ -1045,13 +1097,36 @@ def dashboard_sidebar():
 
     # ── Theme toggle ─────────────────────────────────────────────────────────
     is_dark = st.session_state.dark_mode
-    theme_new_value = st.sidebar.toggle(
-        '🌙 Dark Mode' if is_dark else '☀️ Light Mode',
-        value=is_dark
-    )
-    if theme_new_value != st.session_state.dark_mode:
-        st.session_state.dark_mode = theme_new_value
-        st.rerun()
+    knob_pos  = '24px' if is_dark else '2px'
+    track_bg  = 'linear-gradient(90deg,#6D28D9,#A855F7)' if is_dark else 'linear-gradient(90deg,#A5B4FC,#DDD6FE)'
+    lbl_color = '#C4B5FD' if is_dark else '#4C1D95'
+    lbl_text  = '🌙 Dark Mode' if is_dark else '☀️ Light Mode'
+    knob_icon = '🌙' if is_dark else '☀️'
+    st.sidebar.markdown(f'''
+<style>
+section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"]#theme_toggle_btn {{
+    background: transparent !important; border: none !important;
+    padding: 0 !important; height: auto !important; box-shadow: none !important;
+}}
+</style>
+<div style="display:flex;align-items:center;justify-content:space-between;
+     padding:10px 4px 6px 4px;margin:2px 0 4px;">
+  <span style="font-size:13px;font-weight:700;color:{lbl_color};font-family:'DM Sans',sans-serif;">{lbl_text}</span>
+  <div style="position:relative;width:50px;height:28px;border-radius:14px;
+       background:{track_bg};box-shadow:inset 0 1px 4px rgba(0,0,0,0.18);">
+    <div style="position:absolute;top:4px;left:{knob_pos};width:20px;height:20px;
+         border-radius:50%;background:white;box-shadow:0 2px 6px rgba(0,0,0,0.28);
+         display:flex;align-items:center;justify-content:center;font-size:11px;
+         transition:left 0.25s ease;">{knob_icon}</div>
+  </div>
+</div>''', unsafe_allow_html=True)
+    if st.sidebar.button(lbl_text, key='theme_toggle_btn', use_container_width=True):
+        st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
+    st.sidebar.markdown(f'''<style>
+div[data-testid="stSidebar"] div.stButton:has(button[kind="secondary"]) {{
+    margin-top: -44px !important; opacity: 0 !important; pointer-events: auto !important;
+}}
+</style>''', unsafe_allow_html=True)
 
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']; labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -1142,13 +1217,6 @@ def landing_page():
 def auth_page():
     st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#C4B5FD 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
-    if st.query_params.get('forgot_password') == '1':
-        st.session_state.auth_mode = 'forgot_password'
-        st.session_state.fp_step = 1
-        try:
-            del st.query_params['forgot_password']
-        except Exception:
-            pass
     if st.button('← Back to Home', key='auth_back_home', type='secondary'):
         st.session_state.started = False; st.session_state.page = 'home'; st.rerun()
 
@@ -1159,13 +1227,14 @@ def auth_page():
             with st.container(border=True):
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
-                # Forgot password link — styled as text link, not a button
-                st.markdown(f'''
-<div style="text-align:right;margin:-6px 2px 10px 0;">
-  <a href="?forgot_password=1" target="_self"
-     style="color:{BLUE};font-weight:700;font-size:14px;text-decoration:none;">Forgot password?</a>
-</div>
-''', unsafe_allow_html=True)
+                # Forgot password link
+                st.markdown(f'<div style="text-align:right;margin:-6px 0 10px;"><span style="font-size:12px;color:{GRAD1};font-weight:600;cursor:pointer;" onclick="">Forgot password?</span></div>', unsafe_allow_html=True)
+                col_fp, _ = st.columns([1,2])
+                with col_fp:
+                    if st.button('🔑 Forgot Password?', key='goto_forgot', use_container_width=True):
+                        st.session_state.auth_mode = 'forgot_password'
+                        st.session_state.fp_step = 1
+                        st.rerun()
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
@@ -1501,18 +1570,13 @@ def prediction_page():
 
         # Build extra info dict for PDF
         if st.session_state.user_type == 'doctor':
-            doc_profile = doctors.get(st.session_state.current_user_email, {})
             extra_info = {
                 'phone':        st.session_state.get('doc_patient_phone',''),
                 'gender':       st.session_state.get('doc_patient_gender_val',''),
                 'age':          st.session_state.get('doc_patient_age_val', age),
                 'address':      st.session_state.get('doc_patient_address_val',''),
-                'doctor_name':  doc_profile.get('name', st.session_state.current_user_name),
+                'doctor_name':  st.session_state.current_user_name,
                 'doctor_email': st.session_state.current_user_email,
-                'doctor_phone': doc_profile.get('phone',''),
-                'doctor_specialization': doc_profile.get('specialization',''),
-                'doctor_hospital': doc_profile.get('hospital',''),
-                'doctor_license_no': doc_profile.get('license_no',''),
             }
         else:
             u = users.get(st.session_state.current_user_email, {})
@@ -1523,7 +1587,7 @@ def prediction_page():
                 'address': u.get('address',''),
             }
 
-        pdf = generate_doctor_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra_info) if st.session_state.user_type == 'doctor' else generate_user_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra_info)
+        pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra_info)
         st.session_state.patient_data = patient_data; st.session_state.prediction_result = result
         st.session_state.confidence = confidence; st.session_state.prediction_time = pred_time
         st.session_state.pdf_bytes = pdf; st.session_state.prediction_done = True
@@ -1792,14 +1856,10 @@ def doctor_page():
 
             st.write('')
             saved_extra = selected_report.get('extra', {})
-            doc_profile = doctors.get(doctor_email,{})
-            saved_extra['doctor_name'] = saved_extra.get('doctor_name') or selected_report.get('doctor_name') or doc_profile.get('name','')
-            saved_extra['doctor_email'] = saved_extra.get('doctor_email') or doctor_email
-            saved_extra['doctor_phone'] = saved_extra.get('doctor_phone') or doc_profile.get('phone','')
-            saved_extra['doctor_specialization'] = saved_extra.get('doctor_specialization') or doc_profile.get('specialization','')
-            saved_extra['doctor_hospital'] = saved_extra.get('doctor_hospital') or doc_profile.get('hospital','')
-            saved_extra['doctor_license_no'] = saved_extra.get('doctor_license_no') or doc_profile.get('license_no','')
-            pdf_data = generate_doctor_pdf(patient_data, result, confidence, name, email, pred_time, extra=saved_extra)
+            if not saved_extra.get('doctor_name'):
+                saved_extra['doctor_name']  = selected_report.get('doctor_name', doctors.get(doctor_email,{}).get('name',''))
+                saved_extra['doctor_email'] = doctor_email
+            pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=saved_extra)
             _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
 
 
