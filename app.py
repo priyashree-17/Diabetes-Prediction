@@ -218,6 +218,32 @@ button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
     display: none !important; width: 0 !important; overflow: hidden !important;
 }}
 
+/* Hide Streamlit's text fallback such as keyboard_double_arrow_* on sidebar controls */
+button[data-testid="baseButton-headerNoPadding"],
+button[data-testid="baseButton-header"],
+[data-testid="stSidebarCollapsedControl"] button {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-indent: -9999px !important;
+    overflow: hidden !important;
+}
+button[data-testid="baseButton-headerNoPadding"] svg,
+button[data-testid="baseButton-header"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {
+    text-indent: 0 !important;
+    font-size: 18px !important;
+    display: block !important;
+}
+button[data-testid="baseButton-headerNoPadding"]::before,
+button[data-testid="baseButton-header"]::before,
+[data-testid="stSidebarCollapsedControl"] button::before {
+    content: "☰";
+    text-indent: 0 !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    color: #C4B5FD !important;
+}
+
 /* ── Hamburger / sidebar collapse button ── */
 button[data-testid="baseButton-headerNoPadding"],
 button[data-testid="baseButton-header"] {{
@@ -325,17 +351,19 @@ section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} 
 }}
 .sb-brand {{ font-size: 20px; font-weight: 800; color: {'#C4B5FD' if DARK else '#4C1D95'} !important; font-family: 'Sora', sans-serif !important; }}
 .sb-profile {{
-    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 18px 18px;
     border-bottom: 1px solid {'rgba(167,139,250,0.28)' if DARK else 'rgba(139,92,246,0.28)'};
     background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(139,92,246,0.15)'};
+    text-align: center;
 }}
 .sb-avatar {{
-    width: 44px; height: 44px; border-radius: 12px; background: {GRAD_PRIMARY};
+    width: 72px; height: 72px; border-radius: 50%; background: {GRAD_PRIMARY};
     color: white !important; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 16px; font-family: 'Sora', sans-serif !important;
-    flex-shrink: 0; box-shadow: 0 4px 12px rgba(109,40,217,0.25);
+    font-weight: 800; font-size: 22px; font-family: 'Sora', sans-serif !important;
+    flex-shrink: 0; box-shadow: 0 6px 18px rgba(109,40,217,0.30);
+    border: 3px solid {'rgba(255,255,255,0.24)' if DARK else 'rgba(255,255,255,0.78)'};
 }}
-.sb-info {{ display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }}
+.sb-info {{ display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; overflow: hidden; width: 100%; }}
 .sb-name {{
     font-size: 14px; font-weight: 700; color: {'#E2D9F3' if DARK else '#3B0764'} !important;
     font-family: 'Sora', sans-serif !important;
@@ -425,25 +453,29 @@ section[data-testid="stSidebar"] .stButton>button * {{ color: {'#E2D9F3' if DARK
     position: relative; overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease;
 }}
 .feature-card:hover {{ transform: translateY(-8px); box-shadow: 0 24px 56px rgba(0,0,0,0.25); }}
-.feature-blue {{ background: linear-gradient(145deg, #6D28D9 0%, #7C3AED 50%, #8B5CF6 100%) !important; }}
-.feature-green {{ background: linear-gradient(145deg, #7C3AED 0%, #8B5CF6 50%, #A855F7 100%) !important; }}
-.feature-purple {{ background: linear-gradient(145deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%) !important; }}
+.feature-blue {{ background: linear-gradient(145deg, #DFF3FF 0%, #BFE8FB 100%) !important; }}
+.feature-green {{ background: linear-gradient(145deg, #DCFCE7 0%, #BBF7D0 100%) !important; }}
+.feature-purple {{ background: linear-gradient(145deg, #FEF9C3 0%, #FDE68A 100%) !important; }}
 .pill {{ display: inline-flex; border-radius: 999px; padding: 6px 16px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 28px; border: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }}
-.pill-blue {{ background: rgba(99,102,241,0.22) !important; color: #A5B4FC !important; }}
-.pill-green {{ background: rgba(139,92,246,0.22) !important; color: #C4B5FD !important; }}
-.pill-purple {{ background: rgba(236,72,153,0.22) !important; color: #F9A8D4 !important; }}
+.pill-blue {{ background: rgba(255,255,255,0.55) !important; color: #0F2A44 !important; }}
+.pill-green {{ background: rgba(255,255,255,0.55) !important; color: #064E3B !important; }}
+.pill-purple {{ background: rgba(255,255,255,0.55) !important; color: #713F12 !important; }}
 .icon-box {{ width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 20px; }}
-.icon-blue {{ background: rgba(99,102,241,0.18) !important; }} .icon-green {{ background: rgba(139,92,246,0.18) !important; }} .icon-purple {{ background: rgba(236,72,153,0.18) !important; }}
-.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: #ffffff !important; }}
-.feature-text {{ font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.72) !important; }}
+.icon-blue {{ background: rgba(255,255,255,0.28) !important; }} .icon-green {{ background: rgba(255,255,255,0.28) !important; }} .icon-purple {{ background: rgba(255,255,255,0.28) !important; }}
+.feature-title {{ font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 14px; color: #0F2A44 !important; }}
+.feature-text {{ font-size: 16px; line-height: 1.6; color: #475569 !important; }}
+.feature-green .feature-title {{ color: #065F46 !important; }}
+.feature-green .feature-text {{ color: #166534 !important; }}
+.feature-purple .feature-title {{ color: #713F12 !important; }}
+.feature-purple .feature-text {{ color: #854D0E !important; }}
 
 /* Steps */
 .steps-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }}
-.step-card {{ border: none; border-radius: 20px; padding: 32px 22px; text-align: center; background: {'rgba(255,255,255,0.07)' if DARK else 'rgba(255,255,255,0.75)'} !important; position: relative; overflow: hidden; transition: transform 0.2s ease; backdrop-filter: blur(10px); box-shadow: 0 4px 24px rgba(0,0,0,0.12); }}
-.step-card:hover {{ transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.20); }}
-.step-num {{ font-family: 'Sora', sans-serif; font-size: 40px; font-weight: 900; background: {GRAD_PRIMARY}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }}
-.step-title {{ font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 10px; color: {TEXT} !important; }}
-.step-text {{ font-size: 15px; line-height: 1.55; color: {MUTED} !important; }}
+.step-card {{ border: 1px solid #A7D8F0; border-radius: 20px; padding: 32px 22px; text-align: center; background: #DFF3FF !important; position: relative; overflow: hidden; transition: transform 0.2s ease; box-shadow: 0 4px 24px rgba(15,42,68,0.08); }}
+.step-card:hover {{ transform: translateY(-4px); box-shadow: 0 12px 36px rgba(15,42,68,0.14); }}
+.step-num {{ font-family: 'Sora', sans-serif; font-size: 40px; font-weight: 900; color: #0284C7 !important; -webkit-text-fill-color: #0284C7 !important; margin-bottom: 12px; }}
+.step-title {{ font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 10px; color: #0F2A44 !important; }}
+.step-text {{ font-size: 15px; line-height: 1.55; color: #64748B !important; }}
 
 /* CTA */
 .bottom-cta {{ max-width: 860px; margin: 0 auto 80px; text-align: center; border-radius: 28px; padding: 60px; background: {GRAD_HERO}; position: relative; overflow: hidden; box-shadow: 0 20px 60px rgba(109,40,217,0.40); }}
@@ -887,7 +919,7 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
 
     chart_img = create_pdf_chart_image(patient_data)
     gauge_img = create_risk_gauge_image(confidence, high)
-    chart_h   = 150
+    chart_h   = 130
     chart_w   = int((W - 72) * 0.62)
     gauge_w   = int((W - 72) * 0.34)
 
@@ -902,7 +934,7 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     pdf.setFont('Helvetica-Bold',8); setc(C_SLATE)
     pdf.drawCentredString(gx+gauge_w/2, y-chart_h+6, 'Confidence Gauge')
 
-    y -= chart_h + 18
+    y -= chart_h + 14
 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 6 — HEALTH ACTION PLAN
@@ -911,23 +943,28 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     y -= 14
 
     suggestions = get_suggestions(patient_data)
-    plan_h = max(90, len(suggestions) * 22 + 20)
+    # Compact box so the disclaimer stays in a separate clean footer area.
+    plan_h = max(64, len(suggestions) * 18 + 14)
+    min_footer_gap = 62
+    if y - plan_h < min_footer_gap:
+        plan_h = max(58, y - min_footer_gap)
     rect_fill(30, y-plan_h, W-60, plan_h, rgb('#F0FDFA'), rgb('#99F6E4'), radius=12)
-    yy = y - 18
+    yy = y - 17
     for i, s in enumerate(suggestions, 1):
         s_clean = ''.join(c for c in s if ord(c)<65536 and not (0x1F000<=ord(c)<=0x1FFFF))
-        setc(C_TEAL); pdf.circle(48, yy+3, 7, fill=True, stroke=False)
-        setc(C_WHITE); pdf.setFont('Helvetica-Bold',7); pdf.drawCentredString(48, yy+1, str(i))
-        setc(C_SLATE); pdf.setFont('Helvetica',9); pdf.drawString(62, yy, s_clean.strip())
-        yy -= 22
+        setc(C_TEAL); pdf.circle(50, yy+3, 7, fill=True, stroke=False)
+        setc(C_WHITE); pdf.setFont('Helvetica-Bold',7); pdf.drawCentredString(50, yy+1, str(i))
+        setc(C_SLATE); pdf.setFont('Helvetica',8.5); pdf.drawString(66, yy, s_clean.strip())
+        yy -= 18
 
     # ════════════════════════════════════════════════════════════════════════
-    # FOOTER
+    # FOOTER — separate from action-plan card
     # ════════════════════════════════════════════════════════════════════════
-    setstroke(C_LINE); pdf.setLineWidth(0.6); pdf.line(30, 38, W-30, 38)
+    footer_top = 48
+    setstroke(C_LINE); pdf.setLineWidth(0.6); pdf.line(30, footer_top, W-30, footer_top)
     pdf.setFont('Helvetica-Oblique', 7); setc(C_MUTED)
-    pdf.drawCentredString(W/2, 26, 'Disclaimer: This report is for educational and screening purposes only — not a medical diagnosis.')
-    pdf.drawCentredString(W/2, 14, 'Please consult a qualified healthcare professional before making any medical decisions.')
+    pdf.drawCentredString(W/2, 34, 'Disclaimer: This report is for educational and screening purposes only — not a medical diagnosis.')
+    pdf.drawCentredString(W/2, 21, 'Please consult a qualified healthcare professional before making any medical decisions.')
 
     pdf.save()
     return buffer.getvalue()
@@ -989,7 +1026,7 @@ def dashboard_sidebar():
     elif st.session_state.user_type == 'doctor' and email in doctors:
         profile_pic = doctors[email].get('profile_pic')
     if profile_pic:
-        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:44px;height:44px;border-radius:12px;object-fit:cover;display:block;flex-shrink:0;">'
+        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" class="sb-avatar" style="object-fit:cover;display:block;">'
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
 
@@ -999,11 +1036,11 @@ def dashboard_sidebar():
     <div class="sb-brand">GlucoTrack</div>
 </div>
 <div class="sb-profile">
-    {avatar_html}
     <div class="sb-info">
         <div class="sb-name">{name if name else "Loading..."}</div>
         <div class="sb-role">{role}</div>
     </div>
+    {avatar_html}
 </div>
 ''', unsafe_allow_html=True)
 
@@ -1108,6 +1145,13 @@ def landing_page():
 def auth_page():
     st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#C4B5FD 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
+    if st.query_params.get('forgot_password') == '1':
+        st.session_state.auth_mode = 'forgot_password'
+        st.session_state.fp_step = 1
+        try:
+            del st.query_params['forgot_password']
+        except Exception:
+            pass
     if st.button('← Back to Home', key='auth_back_home', type='secondary'):
         st.session_state.started = False; st.session_state.page = 'home'; st.rerun()
 
@@ -1118,13 +1162,13 @@ def auth_page():
             with st.container(border=True):
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
-                # Forgot password link
-                _, col_fp = st.columns([2, 1])
-                with col_fp:
-                    if st.button('Forgot password?', key='goto_forgot', type='secondary', use_container_width=True):
-                        st.session_state.auth_mode = 'forgot_password'
-                        st.session_state.fp_step = 1
-                        st.rerun()
+                # Forgot password link — styled as text link, not a button
+                st.markdown(f'''
+<div style="text-align:right;margin:-6px 2px 10px 0;">
+  <a href="?forgot_password=1" target="_self"
+     style="color:{BLUE};font-weight:700;font-size:14px;text-decoration:none;">Forgot password?</a>
+</div>
+''', unsafe_allow_html=True)
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
