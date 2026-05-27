@@ -101,7 +101,7 @@ if _migrated:
 defaults = {
     'started': False,
     'page': 'home',
-    'auth_mode': 'signin',
+    'auth_mode': 'signin',   # signin | signup | forgot_password
     'signup_step': 1,
     'logged_in': False,
     'user_type': None,
@@ -704,102 +704,217 @@ def create_risk_gauge_image(confidence, is_high):
 
 
 def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
-    """extra = {'phone','gender','age','address','doctor_name','doctor_email'} (all optional)"""
+    """Clean two-section PDF: patient/doctor info + full clinical report."""
     if extra is None: extra = {}
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
-    navy=(0.04,0.09,0.16); royal=(0.05,0.64,0.91); teal=(0.05,0.58,0.53)
-    slate=(0.06,0.09,0.16); muted=(0.29,0.40,0.55); soft=(0.94,0.97,1.00); line=(0.78,0.86,0.94)
+    W, H = A4
+    # ── Colour palette ──────────────────────────────────────────────────────
+    C_NAVY   = (0.06,0.09,0.20)
+    C_ROYAL  = (0.24,0.47,0.98)
+    C_TEAL   = (0.05,0.58,0.53)
+    C_SLATE  = (0.10,0.14,0.24)
+    C_MUTED  = (0.38,0.44,0.58)
+    C_SOFT   = (0.96,0.97,1.00)
+    C_LINE   = (0.82,0.86,0.96)
+    C_WHITE  = (1,1,1)
     high = 'High' in result
-    def rgb(h): h=h.lstrip('#'); return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
-    def setc(c): pdf.setFillColorRGB(*c)
-    def stroke(c): pdf.setStrokeColorRGB(*c)
-    def rr(x,y,w,h,fill,border=None,r=14,sw=0.8):
-        if border is None: border=line
-        setc(fill); stroke(border); pdf.setLineWidth(sw); pdf.roundRect(x,y,w,h,r,fill=True,stroke=True)
-    def label_value(x,y,label,value):
-        pdf.setFont('Helvetica',8); setc(muted); pdf.drawString(x,y+14,label)
-        pdf.setFont('Helvetica-Bold',11); setc(slate); pdf.drawRightString(x+205,y+14,str(value))
-    setc((1,1,1)); pdf.rect(0,0,width,height,fill=True,stroke=False)
-    setc(navy); pdf.rect(0,height-128,width,128,fill=True,stroke=False)
-    setc(royal); pdf.roundRect(38,height-90,50,50,12,fill=True,stroke=False)
-    cx,cy=63,height-65; setc((1,1,1)); stroke((1,1,1)); pdf.setLineWidth(2.2)
-    pdf.circle(cx,cy-7,7,fill=True,stroke=False); setc(royal); pdf.circle(cx,cy-7,3.5,fill=True,stroke=False)
-    setc((1,1,1)); pdf.setStrokeColorRGB(1,1,1); pdf.setLineWidth(2.4); pdf.setLineCap(1)
-    pdf.bezier(cx-7,cy-1,cx-14,cy+4,cx-14,cy+12,cx-9,cy+16)
-    pdf.bezier(cx+7,cy-1,cx+14,cy+4,cx+14,cy+12,cx+9,cy+16)
-    pdf.line(cx-9,cy+16,cx+9,cy+16); pdf.setFillColorRGB(1,1,1)
-    pdf.circle(cx-9,cy+18,2.2,fill=True,stroke=False); pdf.circle(cx+9,cy+18,2.2,fill=True,stroke=False)
-    pdf.setFont('Helvetica-Bold',23); pdf.drawString(108,height-52,'GlucoTrack Clinical Report')
-    pdf.setFont('Helvetica',10); setc((0.6,0.75,0.92))
-    pdf.drawString(108,height-72,'Diabetes Risk Assessment  |  Health Analytics  |  Action Plan')
-    pdf.setFont('Helvetica',9); pdf.drawString(108,height-91,f'Generated: {pred_time}')
-    chip_fill=rgb('#FEE2E2') if high else rgb('#D1FAE5'); chip_text=rgb('#B91C1C') if high else rgb('#047857')
-    rr(width-185,height-88,140,32,chip_fill,chip_fill,r=16,sw=0)
-    pdf.setFont('Helvetica-Bold',10); setc(chip_text)
-    pdf.drawCentredString(width-115,height-67,'HIGH RISK' if high else 'LOW RISK')
 
-    # ── Patient information block (expanded) ────────────────────────────────
-    y=height-155; rr(38,y-108,width-76,108,soft,line,r=16)
-    pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(56,y-20,'Patient Information')
-    pdf.setFont('Helvetica',9); setc(muted)
-    pdf.drawString(56, y-38, f'Name: {name}');           pdf.drawString(56, y-54, f'Email: {email}')
-    pdf.drawString(56, y-70, f'Age: {extra.get("age", patient_data.get("Age","N/A"))} yrs   Gender: {extra.get("gender","N/A")}')
-    pdf.drawString(56, y-86, f'Phone: {extra.get("phone","N/A")}')
-    pdf.drawString(300,y-38, f'Address: {extra.get("address","N/A")}')
-    # Doctor info (right column) if available
+    def rgb(h):
+        h = h.lstrip('#')
+        return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
+
+    def setc(c):   pdf.setFillColorRGB(*c)
+    def setstroke(c): pdf.setStrokeColorRGB(*c)
+
+    def rect_fill(x,y,w,h,fill,stroke_c=None,radius=10,lw=0.7):
+        if stroke_c is None: stroke_c = C_LINE
+        setc(fill); setstroke(stroke_c); pdf.setLineWidth(lw)
+        pdf.roundRect(x,y,w,h,radius,fill=True,stroke=True)
+
+    def section_title(x,y,text):
+        pdf.setFont('Helvetica-Bold',11); setc(C_SLATE)
+        pdf.drawString(x,y,text)
+        setstroke(C_ROYAL); pdf.setLineWidth(1.5)
+        pdf.line(x,y-4,x+len(text)*6.2,y-4)
+
+    def field_row(x,y,label,value,lw=90):
+        pdf.setFont('Helvetica',8); setc(C_MUTED); pdf.drawString(x,y,label)
+        pdf.setFont('Helvetica-Bold',9); setc(C_SLATE); pdf.drawString(x+lw,y,str(value) if value else '—')
+
+    # ════════════════════════════════════════════════════════════════════════
+    # HEADER BANNER
+    # ════════════════════════════════════════════════════════════════════════
+    setc(C_NAVY); pdf.rect(0,H-90,W,90,fill=True,stroke=False)
+    # Logo box
+    setc(C_ROYAL); pdf.roundRect(30,H-72,44,44,8,fill=True,stroke=False)
+    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(42,H-50,'🩺')
+    # Title
+    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(86,H-46,'GlucoTrack  Clinical Report')
+    pdf.setFont('Helvetica',9); setc((0.65,0.78,0.95))
+    pdf.drawString(86,H-62,'Diabetes Risk Assessment  ·  Health Analytics  ·  Action Plan')
+    pdf.drawString(86,H-76,f'Generated: {pred_time}')
+    # Risk badge
+    badge_bg  = rgb('#FEE2E2') if high else rgb('#D1FAE5')
+    badge_txt = rgb('#991B1B') if high else rgb('#065F46')
+    rect_fill(W-148,H-72,118,28,badge_bg,badge_bg,radius=14,lw=0)
+    pdf.setFont('Helvetica-Bold',10); setc(badge_txt)
+    pdf.drawCentredString(W-89,H-54,'⚠ HIGH RISK' if high else '✓ LOW RISK')
+
+    y = H - 110   # cursor below banner
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SECTION 1 — PATIENT & DOCTOR INFORMATION
+    # ════════════════════════════════════════════════════════════════════════
+    section_title(30, y, 'Patient & Doctor Information')
+    y -= 14
+
+    # Patient info card (left half)
+    p_age     = extra.get('age', patient_data.get('Age','N/A'))
+    p_gender  = extra.get('gender','N/A')
+    p_phone   = extra.get('phone','N/A')
+    p_address = extra.get('address','N/A')
     doc_name  = extra.get('doctor_name','')
-    doc_email = extra.get('doctor_email','')
-    if doc_name or doc_email:
-        pdf.setFont('Helvetica-Bold',10); setc(slate); pdf.drawString(300,y-58,'Assessed By')
-        pdf.setFont('Helvetica',9); setc(muted)
-        pdf.drawString(300,y-74, f'Dr. {doc_name}');   pdf.drawString(300,y-90, doc_email)
+    doc_email_val = extra.get('doctor_email','')
 
-    # ── Risk result block ────────────────────────────────────────────────────
-    y -= 128
-    risk_bg=rgb('#FEF2F2') if high else rgb('#ECFDF5')
-    risk_border=rgb('#FCA5A5') if high else rgb('#6EE7B7')
-    risk_text=rgb('#B91C1C') if high else rgb('#047857')
-    rr(38,y-78,width-76,78,risk_bg,risk_border,r=16,sw=1.2)
-    pdf.setFont('Helvetica-Bold',15); setc(risk_text); pdf.drawString(56,y-30,result)
-    pdf.setFont('Helvetica',9.5); setc(muted); pdf.drawString(56,y-50,'Assessment based on clinical parameters')
-    pdf.setFont('Helvetica-Bold',13); setc(risk_text); pdf.drawRightString(width-54,y-34,f'{confidence}%')
-    pdf.setFont('Helvetica',8.5); setc(muted); pdf.drawRightString(width-54,y-50,'confidence')
+    card_h = 108 if (doc_name or doc_email_val) else 80
+    half   = (W - 72) / 2
 
-    y-=112; pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(38,y,'Quick Health Summary')
-    y-=48
-    summary=[('Glucose',f"{patient_data['Glucose']} mg/dL",'#0EA5E9'),('BMI',f"{patient_data['BMI']}",'#0D9488'),('Blood Pressure',f"{patient_data['BloodPressure']} mmHg",'#F97316'),('Age',f"{patient_data['Age']} years",'#6366F1')]
-    card_w=(width-96)/4
-    for i,(title,value,color_hex) in enumerate(summary):
-        x=38+i*(card_w+8); rr(x,y-60,card_w,60,(1,1,1),line,r=13)
-        setc(rgb(color_hex)); pdf.roundRect(x+12,y-24,8,24,4,fill=True,stroke=False)
-        pdf.setFont('Helvetica',8); setc(muted); pdf.drawString(x+26,y-19,title)
-        pdf.setFont('Helvetica-Bold',14); setc(slate); pdf.drawString(x+26,y-42,value)
-    y-=92; pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(38,y,'Clinical Measurements')
-    y-=20; items=list(patient_data.items()); col_w=(width-96)/2; row_h=29
-    for idx,(key,value) in enumerate(items):
-        col=idx%2; row=idx//2; x=38+col*(col_w+20); yy=y-row*row_h
-        rr(x,yy-23,col_w,23,(1,1,1),line,r=7,sw=0.5); label_value(x+10,yy-27,nice_label(key),value)
-    y-=142; pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(38,y,'Health Analytics')
-    rr(38,y-188,328,173,(1,1,1),line,r=16); rr(380,y-188,width-418,173,(1,1,1),line,r=16)
-    chart_img=create_pdf_chart_image(patient_data)
-    pdf.drawImage(ImageReader(chart_img),48,y-178,width=308,height=143,preserveAspectRatio=True,mask='auto')
-    gauge_img=create_risk_gauge_image(confidence,high)
-    pdf.drawImage(ImageReader(gauge_img),395,y-175,width=163,height=128,preserveAspectRatio=True,mask='auto')
-    pdf.setFont('Helvetica-Bold',9); setc(slate); pdf.drawCentredString(466,y-168,'Risk Confidence Gauge')
-    y-=222; rr(38,y-102,width-76,102,rgb('#F0FDFA'),rgb('#99F6E4'),r=16)
-    pdf.setFont('Helvetica-Bold',12); setc(slate); pdf.drawString(56,y-24,'Recommended Health Action Plan')
-    pdf.setFont('Helvetica',9.5); setc((0.10,0.18,0.28)); yy=y-46
-    for i,s in enumerate(get_suggestions(patient_data),start=1):
-        s_clean=''.join(c for c in s if ord(c)<65536 and not (0x1F000<=ord(c)<=0x1FFFF))
-        setc(teal); pdf.circle(62,yy+3,6,fill=True,stroke=False)
-        setc((1,1,1)); pdf.setFont('Helvetica-Bold',7); pdf.drawCentredString(62,yy+1,str(i))
-        setc((0.10,0.18,0.28)); pdf.setFont('Helvetica',9.5); pdf.drawString(76,yy,s_clean.strip()); yy-=20
-    stroke(line); pdf.line(38,46,width-38,46)
-    pdf.setFont('Helvetica-Oblique',7.5); setc((0.44,0.50,0.58))
-    pdf.drawCentredString(width/2,32,'Disclaimer: This report is for educational and screening purposes only - not a medical diagnosis.')
-    pdf.drawCentredString(width/2,20,'Please consult a qualified healthcare professional before making any medical decisions.')
+    rect_fill(30, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
+    pdf.setFont('Helvetica-Bold',9); setc(C_ROYAL)
+    pdf.drawString(42, y-14, 'PATIENT')
+    field_row(42, y-28, 'Name:',    name)
+    field_row(42, y-42, 'Email:',   email)
+    field_row(42, y-56, 'Age / Gender:', f'{p_age} yrs  ·  {p_gender}')
+    field_row(42, y-70, 'Phone:',   p_phone)
+    if card_h > 80:
+        field_row(42, y-84, 'Address:', p_address)
+
+    # Doctor info card (right half) — only if doctor details present
+    rx = 30 + half + 12
+    if doc_name or doc_email_val:
+        rect_fill(rx, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
+        pdf.setFont('Helvetica-Bold',9); setc(C_TEAL)
+        pdf.drawString(rx+12, y-14, 'ASSESSED BY')
+        field_row(rx+12, y-28, 'Doctor:',  f'Dr. {doc_name}')
+        field_row(rx+12, y-42, 'Email:',   doc_email_val)
+        field_row(rx+12, y-56, 'Date:',    pred_time.split(' ')[0] if ' ' in pred_time else pred_time)
+
+    y -= card_h + 18
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SECTION 2 — RISK RESULT
+    # ════════════════════════════════════════════════════════════════════════
+    section_title(30, y, 'Risk Assessment Result')
+    y -= 14
+
+    risk_bg  = rgb('#FEF2F2') if high else rgb('#ECFDF5')
+    risk_bdr = rgb('#FCA5A5') if high else rgb('#6EE7B7')
+    risk_txt = rgb('#991B1B') if high else rgb('#065F46')
+    rect_fill(30, y-54, W-60, 54, risk_bg, risk_bdr, radius=12, lw=1.2)
+    pdf.setFont('Helvetica-Bold',16); setc(risk_txt)
+    pdf.drawString(48, y-24, result)
+    pdf.setFont('Helvetica',9); setc(C_MUTED)
+    pdf.drawString(48, y-42, 'Based on 8 clinical parameters via ML model')
+    pdf.setFont('Helvetica-Bold',20); setc(risk_txt)
+    pdf.drawRightString(W-48, y-22, f'{confidence}%')
+    pdf.setFont('Helvetica',8); setc(C_MUTED)
+    pdf.drawRightString(W-48, y-38, 'confidence score')
+
+    y -= 72
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SECTION 3 — QUICK HEALTH SUMMARY (4 cards in a row)
+    # ════════════════════════════════════════════════════════════════════════
+    section_title(30, y, 'Quick Health Summary')
+    y -= 14
+
+    summary = [
+        ('Glucose',        f"{patient_data.get('Glucose','N/A')} mg/dL", '#0EA5E9'),
+        ('BMI',            f"{patient_data.get('BMI','N/A')}",            '#0D9488'),
+        ('Blood Pressure', f"{patient_data.get('BloodPressure','N/A')} mmHg", '#F97316'),
+        ('Age',            f"{patient_data.get('Age','N/A')} yrs",        '#6366F1'),
+    ]
+    cw = (W - 72) / 4
+    for i, (title, value, color_hex) in enumerate(summary):
+        cx = 30 + i * (cw + 4)
+        rect_fill(cx, y-52, cw, 52, C_WHITE, C_LINE, radius=10)
+        setc(rgb(color_hex)); pdf.roundRect(cx+10,y-16,6,20,3,fill=True,stroke=False)
+        pdf.setFont('Helvetica',7.5); setc(C_MUTED); pdf.drawString(cx+22,y-12,title)
+        pdf.setFont('Helvetica-Bold',12); setc(C_SLATE); pdf.drawString(cx+22,y-36,value)
+
+    y -= 70
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SECTION 4 — CLINICAL MEASUREMENTS (2-column grid)
+    # ════════════════════════════════════════════════════════════════════════
+    section_title(30, y, 'Clinical Measurements')
+    y -= 14
+
+    items  = list(patient_data.items())
+    col_w  = (W - 72) / 2
+    row_h  = 26
+    for idx, (key, value) in enumerate(items):
+        col = idx % 2; row = idx // 2
+        x   = 30 + col * (col_w + 12)
+        yy  = y - row * row_h
+        rect_fill(x, yy-20, col_w, 20, C_WHITE, C_LINE, radius=6, lw=0.5)
+        pdf.setFont('Helvetica',8); setc(C_MUTED); pdf.drawString(x+10, yy-13, nice_label(key))
+        pdf.setFont('Helvetica-Bold',9); setc(C_SLATE); pdf.drawRightString(x+col_w-10, yy-13, str(value))
+
+    rows_used = (len(items) + 1) // 2
+    y -= rows_used * row_h + 18
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SECTION 5 — HEALTH ANALYTICS (chart + gauge side by side)
+    # ════════════════════════════════════════════════════════════════════════
+    section_title(30, y, 'Health Analytics')
+    y -= 14
+
+    chart_img = create_pdf_chart_image(patient_data)
+    gauge_img = create_risk_gauge_image(confidence, high)
+    chart_h   = 150
+    chart_w   = int((W - 72) * 0.62)
+    gauge_w   = int((W - 72) * 0.34)
+
+    rect_fill(30, y-chart_h, chart_w, chart_h, C_WHITE, C_LINE, radius=10)
+    pdf.drawImage(ImageReader(chart_img), 36, y-chart_h+6, width=chart_w-12, height=chart_h-12,
+                  preserveAspectRatio=True, mask='auto')
+
+    rect_fill(30+chart_w+12, y-chart_h, gauge_w, chart_h, C_WHITE, C_LINE, radius=10)
+    gx = 30+chart_w+12
+    pdf.drawImage(ImageReader(gauge_img), gx+6, y-chart_h+14, width=gauge_w-12, height=chart_h-28,
+                  preserveAspectRatio=True, mask='auto')
+    pdf.setFont('Helvetica-Bold',8); setc(C_SLATE)
+    pdf.drawCentredString(gx+gauge_w/2, y-chart_h+6, 'Confidence Gauge')
+
+    y -= chart_h + 18
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SECTION 6 — HEALTH ACTION PLAN
+    # ════════════════════════════════════════════════════════════════════════
+    section_title(30, y, 'Recommended Health Action Plan')
+    y -= 14
+
+    suggestions = get_suggestions(patient_data)
+    plan_h = max(90, len(suggestions) * 22 + 20)
+    rect_fill(30, y-plan_h, W-60, plan_h, rgb('#F0FDFA'), rgb('#99F6E4'), radius=12)
+    yy = y - 18
+    for i, s in enumerate(suggestions, 1):
+        s_clean = ''.join(c for c in s if ord(c)<65536 and not (0x1F000<=ord(c)<=0x1FFFF))
+        setc(C_TEAL); pdf.circle(48, yy+3, 7, fill=True, stroke=False)
+        setc(C_WHITE); pdf.setFont('Helvetica-Bold',7); pdf.drawCentredString(48, yy+1, str(i))
+        setc(C_SLATE); pdf.setFont('Helvetica',9); pdf.drawString(62, yy, s_clean.strip())
+        yy -= 22
+
+    # ════════════════════════════════════════════════════════════════════════
+    # FOOTER
+    # ════════════════════════════════════════════════════════════════════════
+    setstroke(C_LINE); pdf.setLineWidth(0.6); pdf.line(30, 38, W-30, 38)
+    pdf.setFont('Helvetica-Oblique', 7); setc(C_MUTED)
+    pdf.drawCentredString(W/2, 26, 'Disclaimer: This report is for educational and screening purposes only — not a medical diagnosis.')
+    pdf.drawCentredString(W/2, 14, 'Please consult a qualified healthcare professional before making any medical decisions.')
+
     pdf.save()
     return buffer.getvalue()
 
@@ -872,29 +987,38 @@ def dashboard_sidebar():
 
     if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
 
-    # ── Theme toggle switch ──────────────────────────────────────────────────
+    # ── Theme toggle ─────────────────────────────────────────────────────────
     is_dark = st.session_state.dark_mode
+    knob_pos  = '24px' if is_dark else '2px'
+    track_bg  = 'linear-gradient(90deg,#6D28D9,#A855F7)' if is_dark else 'linear-gradient(90deg,#A5B4FC,#DDD6FE)'
+    lbl_color = '#C4B5FD' if is_dark else '#4C1D95'
+    lbl_text  = '🌙 Dark Mode' if is_dark else '☀️ Light Mode'
+    knob_icon = '🌙' if is_dark else '☀️'
     st.sidebar.markdown(f'''
 <style>
-.theme-toggle-row{{display:flex;align-items:center;justify-content:space-between;
-    padding:10px 14px;border-radius:14px;margin:4px 0 2px 0;
-    background:{'rgba(109,40,217,0.18)' if is_dark else 'rgba(165,180,252,0.25)'};
-    border:1px solid {'rgba(167,139,250,0.28)' if is_dark else 'rgba(139,92,246,0.30)'}}}
-.theme-label{{font-size:13px;font-weight:700;color:{'#C4B5FD' if is_dark else '#4C1D95'};font-family:"DM Sans",sans-serif}}
-.toggle-track{{width:48px;height:26px;border-radius:13px;
-    background:{'linear-gradient(90deg,#6D28D9,#A855F7)' if is_dark else 'linear-gradient(90deg,#A5B4FC,#DDD6FE)'};
-    display:flex;align-items:center;padding:3px;box-shadow:inset 0 1px 4px rgba(0,0,0,0.15);cursor:pointer}}
-.toggle-knob{{width:20px;height:20px;border-radius:50%;background:white;
-    box-shadow:0 2px 6px rgba(0,0,0,0.25);margin-left:{'22px' if is_dark else '0px'};
-    display:flex;align-items:center;justify-content:center;font-size:11px}}
+section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"]#theme_toggle_btn {{
+    background: transparent !important; border: none !important;
+    padding: 0 !important; height: auto !important; box-shadow: none !important;
+}}
 </style>
-<div class="theme-toggle-row">
-  <span class="theme-label">{'🌙 Dark Mode' if is_dark else '☀️ Light Mode'}</span>
-  <div class="toggle-track"><div class="toggle-knob">{'🌙' if is_dark else '☀️'}</div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;
+     padding:10px 4px 6px 4px;margin:2px 0 4px;">
+  <span style="font-size:13px;font-weight:700;color:{lbl_color};font-family:'DM Sans',sans-serif;">{lbl_text}</span>
+  <div style="position:relative;width:50px;height:28px;border-radius:14px;
+       background:{track_bg};box-shadow:inset 0 1px 4px rgba(0,0,0,0.18);">
+    <div style="position:absolute;top:4px;left:{knob_pos};width:20px;height:20px;
+         border-radius:50%;background:white;box-shadow:0 2px 6px rgba(0,0,0,0.28);
+         display:flex;align-items:center;justify-content:center;font-size:11px;
+         transition:left 0.25s ease;">{knob_icon}</div>
+  </div>
 </div>''', unsafe_allow_html=True)
-    if st.sidebar.button('🌙 Dark' if not is_dark else '☀️ Light', key='theme_toggle_btn',
-                         use_container_width=True):
+    if st.sidebar.button(lbl_text, key='theme_toggle_btn', use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
+    st.sidebar.markdown(f'''<style>
+div[data-testid="stSidebar"] div.stButton:has(button[kind="secondary"]) {{
+    margin-top: -44px !important; opacity: 0 !important; pointer-events: auto !important;
+}}
+</style>''', unsafe_allow_html=True)
 
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']; labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -995,6 +1119,14 @@ def auth_page():
             with st.container(border=True):
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
+                # Forgot password link
+                st.markdown(f'<div style="text-align:right;margin:-6px 0 10px;"><span style="font-size:12px;color:{GRAD1};font-weight:600;cursor:pointer;" onclick="">Forgot password?</span></div>', unsafe_allow_html=True)
+                col_fp, _ = st.columns([1,2])
+                with col_fp:
+                    if st.button('🔑 Forgot Password?', key='goto_forgot', use_container_width=True):
+                        st.session_state.auth_mode = 'forgot_password'
+                        st.session_state.fp_step = 1
+                        st.rerun()
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
@@ -1014,7 +1146,85 @@ def auth_page():
                 if st.button('✨ Create a free account →', type='secondary', use_container_width=True, key='to_signup'):
                     st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
                 st.markdown(f'<p style="text-align:center;color:{MUTED};margin-top:20px;">🔒 Your health data is private and never shared.</p>', unsafe_allow_html=True)
-    else:
+
+    elif st.session_state.auth_mode == 'forgot_password':
+        st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">🩺</div><div>GlucoTrack</div></div><h1>Reset Password 🔑</h1><p>Enter your registered email to reset your password</p></div>', unsafe_allow_html=True)
+        c1, col_card, c3 = st.columns([1, 1.8, 1])
+        with col_card:
+            with st.container(border=True):
+                fp_step = st.session_state.get('fp_step', 1)
+
+                if fp_step == 1:
+                    # Step 1: enter email
+                    st.markdown(f'<div style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:{TEXT};margin-bottom:14px;">Step 1 — Verify your email</div>', unsafe_allow_html=True)
+                    fp_email = st.text_input('📧 Registered Email', placeholder='you@example.com', key='fp_email')
+                    st.write('')
+                    if st.button('Continue →', type='primary', use_container_width=True, key='fp_continue'):
+                        fp_email_val = fp_email.strip().lower()
+                        if fp_email_val in users:
+                            st.session_state.fp_email_val = fp_email_val
+                            st.session_state.fp_account_type = 'patient'
+                            st.session_state.fp_step = 2; st.rerun()
+                        elif fp_email_val in doctors:
+                            st.session_state.fp_email_val = fp_email_val
+                            st.session_state.fp_account_type = 'doctor'
+                            st.session_state.fp_step = 2; st.rerun()
+                        else:
+                            st.error('❌ No account found with this email address.')
+
+                elif fp_step == 2:
+                    # Step 2: verify identity via phone (patients) or licence no (doctors)
+                    fp_email_val   = st.session_state.get('fp_email_val','')
+                    fp_account_type = st.session_state.get('fp_account_type','patient')
+                    st.markdown(f'<div style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:{TEXT};margin-bottom:6px;">Step 2 — Verify your identity</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="font-size:13px;color:{MUTED};margin-bottom:14px;">Account: <b>{fp_email_val}</b></div>', unsafe_allow_html=True)
+                    if fp_account_type == 'doctor':
+                        verify_val = st.text_input('🪪 Registered Licence Number', placeholder='Your licence no.', key='fp_verify')
+                        hint = 'licence number'
+                        stored = doctors.get(fp_email_val,{}).get('license_no','')
+                    else:
+                        verify_val = st.text_input('📞 Registered Phone Number', placeholder='+91 98765 43210', key='fp_verify')
+                        hint = 'phone number'
+                        stored = users.get(fp_email_val,{}).get('phone','')
+                    st.write('')
+                    if st.button('Verify →', type='primary', use_container_width=True, key='fp_verify_btn'):
+                        if verify_val.strip() == stored.strip():
+                            st.session_state.fp_step = 3; st.rerun()
+                        else:
+                            st.error(f'❌ {hint.capitalize()} does not match our records.')
+
+                elif fp_step == 3:
+                    # Step 3: set new password
+                    fp_email_val   = st.session_state.get('fp_email_val','')
+                    fp_account_type = st.session_state.get('fp_account_type','patient')
+                    st.markdown(f'<div style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:{TEXT};margin-bottom:6px;">Step 3 — Set new password</div>', unsafe_allow_html=True)
+                    new_pw  = st.text_input('🔒 New Password', type='password', placeholder='Min 6 characters', key='fp_new_pw')
+                    conf_pw = st.text_input('🔒 Confirm Password', type='password', placeholder='Repeat new password', key='fp_conf_pw')
+                    st.write('')
+                    if st.button('Reset Password ✓', type='primary', use_container_width=True, key='fp_reset_btn'):
+                        if len(new_pw) < 6:
+                            st.error('❌ Password must be at least 6 characters.')
+                        elif new_pw != conf_pw:
+                            st.error('❌ Passwords do not match.')
+                        else:
+                            if fp_account_type == 'doctor':
+                                doctors[fp_email_val]['password'] = new_pw
+                                save_json(DOCTORS_FILE, doctors)
+                            else:
+                                users[fp_email_val]['password'] = new_pw
+                                save_json(USERS_FILE, users)
+                            st.success('✅ Password reset successfully! Please sign in.')
+                            for k in ['fp_step','fp_email_val','fp_account_type']:
+                                st.session_state.pop(k, None)
+                            st.session_state.auth_mode = 'signin'
+                            st.rerun()
+
+                st.markdown(f'<div style="text-align:center;margin-top:18px;"></div>', unsafe_allow_html=True)
+                if st.button('← Back to Sign In', key='fp_back', use_container_width=True):
+                    for k in ['fp_step','fp_email_val','fp_account_type']:
+                        st.session_state.pop(k, None)
+                    st.session_state.auth_mode = 'signin'; st.rerun()
+    elif st.session_state.auth_mode == 'signup':
         if st.session_state.signup_step == 1:
             st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">🩺</div><div>GlucoTrack</div></div><h1>Create your account 🎉</h1><p>Step 1 of 2 — Personal Details</p><div style="height:6px;background:{GRAD_PRIMARY};border-radius:8px;max-width:560px;margin:28px auto 0;width:50%;"></div></div>', unsafe_allow_html=True)
             c1, col_card, c3 = st.columns([1, 1.8, 1])
