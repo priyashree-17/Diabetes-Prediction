@@ -209,41 +209,29 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
 /* ── Sidebar toggle ── */
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"] {{ display: none !important; }}
-
-/* ── Hamburger open-sidebar button (inside the sidebar) ── */
 button[data-testid="baseButton-headerNoPadding"],
 button[data-testid="baseButton-header"] {{
     visibility: visible !important; opacity: 1 !important; display: flex !important;
-    background: {'rgba(109,40,217,0.25)' if DARK else 'rgba(139,92,246,0.18)'} !important;
-    border-radius: 10px !important; border: none !important;
-    color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-}}
-button[data-testid="baseButton-headerNoPadding"] svg,
-button[data-testid="baseButton-header"] svg {{
-    fill: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    stroke: {'#C4B5FD' if DARK else '#4C1D95'} !important;
 }}
 button[data-testid="baseButton-headerNoPadding"] > span:not(:has(svg)),
 button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
     display: none !important; width: 0 !important; overflow: hidden !important;
 }}
 
-/* ── Hamburger collapsed-sidebar button (outside the sidebar) ── */
+/* ── Hamburger / collapse button ── */
 [data-testid="stSidebarCollapsedControl"] {{
     visibility: visible !important; display: flex !important; opacity: 1 !important;
-    background: {'rgba(15,30,60,0.95)' if DARK else 'rgba(165,180,252,0.90)'} !important;
+    background: {'rgba(15,30,60,0.95)' if DARK else '#4C1D95'} !important;
     border-radius: 0 12px 12px 0 !important;
-    box-shadow: 4px 0 16px rgba(0,0,0,0.20) !important;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.30) !important;
     padding: 8px 6px !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button {{
     background: transparent !important; border: none !important;
-    visibility: visible !important; opacity: 1 !important;
+    color: #C4B5FD !important;
 }}
 [data-testid="stSidebarCollapsedControl"] svg {{
-    fill: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    stroke: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    visibility: visible !important; opacity: 1 !important;
+    fill: #C4B5FD !important; stroke: #C4B5FD !important;
 }}
 
 /* ── Sidebar: remove top gap ── */
@@ -999,41 +987,38 @@ def dashboard_sidebar():
 
     if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
 
-    if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
-
-    # ── Theme toggle (working checkbox styled as toggle) ──────────────────
-    is_dark   = st.session_state.dark_mode
-    lbl_color = '#C4B5FD' if is_dark else '#4C1D95'
+    # ── Theme toggle ─────────────────────────────────────────────────────────
+    is_dark = st.session_state.dark_mode
+    knob_pos  = '24px' if is_dark else '2px'
     track_bg  = 'linear-gradient(90deg,#6D28D9,#A855F7)' if is_dark else 'linear-gradient(90deg,#A5B4FC,#DDD6FE)'
-    knob_pos  = '26px' if is_dark else '2px'
-    icon      = '🌙' if is_dark else '☀️'
-    lbl_text  = 'Dark Mode' if is_dark else 'Light Mode'
-    st.sidebar.markdown(f'''<style>
-/* hide default checkbox widget, keep it clickable */
-div[data-testid="stSidebar"] div.stCheckbox {{
-    position: relative; height: 44px; margin: 2px 0 6px 0;
-}}
-div[data-testid="stSidebar"] div.stCheckbox label {{
-    position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2;
-}}
-div[data-testid="stSidebar"] div.stCheckbox > div:first-child {{
-    display: none !important;
+    lbl_color = '#C4B5FD' if is_dark else '#4C1D95'
+    lbl_text  = '🌙 Dark Mode' if is_dark else '☀️ Light Mode'
+    knob_icon = '🌙' if is_dark else '☀️'
+    st.sidebar.markdown(f'''
+<style>
+section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"]#theme_toggle_btn {{
+    background: transparent !important; border: none !important;
+    padding: 0 !important; height: auto !important; box-shadow: none !important;
 }}
 </style>
 <div style="display:flex;align-items:center;justify-content:space-between;
-     padding:8px 4px;margin:2px 0;">
-  <span style="font-size:13px;font-weight:700;color:{lbl_color};font-family:'DM Sans',sans-serif;">
-    {icon} {lbl_text}
-  </span>
-  <div style="position:relative;width:50px;height:26px;border-radius:13px;
-       background:{track_bg};box-shadow:inset 0 1px 3px rgba(0,0,0,0.18);cursor:pointer;">
-    <div style="position:absolute;top:3px;left:{knob_pos};width:20px;height:20px;
-         border-radius:50%;background:white;box-shadow:0 2px 5px rgba(0,0,0,0.25);"></div>
+     padding:10px 4px 6px 4px;margin:2px 0 4px;">
+  <span style="font-size:13px;font-weight:700;color:{lbl_color};font-family:'DM Sans',sans-serif;">{lbl_text}</span>
+  <div style="position:relative;width:50px;height:28px;border-radius:14px;
+       background:{track_bg};box-shadow:inset 0 1px 4px rgba(0,0,0,0.18);">
+    <div style="position:absolute;top:4px;left:{knob_pos};width:20px;height:20px;
+         border-radius:50%;background:white;box-shadow:0 2px 6px rgba(0,0,0,0.28);
+         display:flex;align-items:center;justify-content:center;font-size:11px;
+         transition:left 0.25s ease;">{knob_icon}</div>
   </div>
 </div>''', unsafe_allow_html=True)
-    toggle = st.sidebar.checkbox('theme', value=is_dark, key='theme_chk', label_visibility='collapsed')
-    if toggle != is_dark:
-        st.session_state.dark_mode = toggle; st.rerun()
+    if st.sidebar.button(lbl_text, key='theme_toggle_btn', use_container_width=True):
+        st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
+    st.sidebar.markdown(f'''<style>
+div[data-testid="stSidebar"] div.stButton:has(button[kind="secondary"]) {{
+    margin-top: -44px !important; opacity: 0 !important; pointer-events: auto !important;
+}}
+</style>''', unsafe_allow_html=True)
 
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']; labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -1134,28 +1119,14 @@ def auth_page():
             with st.container(border=True):
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
-                # Forgot password — plain text link aligned right, no button style
-                col_blank, col_fp_link = st.columns([2, 1])
-                with col_fp_link:
-                    if st.button('Forgot password?', key='goto_forgot'):
+                # Forgot password link
+                st.markdown(f'<div style="text-align:right;margin:-6px 0 10px;"><span style="font-size:12px;color:{GRAD1};font-weight:600;cursor:pointer;" onclick="">Forgot password?</span></div>', unsafe_allow_html=True)
+                col_fp, _ = st.columns([1,2])
+                with col_fp:
+                    if st.button('🔑 Forgot Password?', key='goto_forgot', use_container_width=True):
                         st.session_state.auth_mode = 'forgot_password'
                         st.session_state.fp_step = 1
                         st.rerun()
-                st.sidebar.markdown('') if False else None  # noop
-                st.markdown(f'''<style>
-button[data-testid="baseButton-secondary"][kind="secondary"]:has(+ *) {{}}
-div.stButton:has(button[key="goto_forgot"]) button {{
-    background: none !important; border: none !important; padding: 0 !important;
-    color: {GRAD1} !important; font-size: 12px !important; font-weight: 600 !important;
-    box-shadow: none !important; text-decoration: underline !important;
-    height: auto !important; min-height: unset !important;
-    justify-content: flex-end !important; width: auto !important;
-}}
-div.stButton:has(button[key="goto_forgot"]) button:hover {{
-    color: {GRAD2} !important; background: none !important;
-}}
-div.stButton:has(button[key="goto_forgot"]) {{ text-align: right; margin-top: -4px; margin-bottom: 8px; }}
-</style>''', unsafe_allow_html=True)
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
