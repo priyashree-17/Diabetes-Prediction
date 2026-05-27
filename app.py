@@ -218,20 +218,21 @@ button[data-testid="baseButton-header"] > span:not(:has(svg)) {{
     display: none !important; width: 0 !important; overflow: hidden !important;
 }}
 
-/* ── Hamburger / collapse button ── */
-[data-testid="stSidebarCollapsedControl"] {{
-    visibility: visible !important; display: flex !important; opacity: 1 !important;
+/* ── Hamburger / sidebar collapse button ── */
+button[data-testid="baseButton-headerNoPadding"],
+button[data-testid="baseButton-header"] {{
+    visibility: visible !important; opacity: 1 !important; display: inline-flex !important;
+    align-items: center !important; justify-content: center !important;
     background: {'rgba(15,30,60,0.95)' if DARK else '#4C1D95'} !important;
-    border-radius: 0 12px 12px 0 !important;
-    box-shadow: 4px 0 16px rgba(0,0,0,0.30) !important;
-    padding: 8px 6px !important;
-}}
-[data-testid="stSidebarCollapsedControl"] button {{
-    background: transparent !important; border: none !important;
+    border-radius: 12px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.22) !important;
     color: #C4B5FD !important;
 }}
-[data-testid="stSidebarCollapsedControl"] svg {{
+button[data-testid="baseButton-headerNoPadding"] svg,
+button[data-testid="baseButton-header"] svg {{
     fill: #C4B5FD !important; stroke: #C4B5FD !important;
+}}
+[data-testid="stSidebarCollapsedControl"] {{
+    visibility: visible !important; display: flex !important; opacity: 1 !important;
 }}
 
 /* ── Sidebar: remove top gap ── */
@@ -246,8 +247,6 @@ section[data-testid="stSidebar"] .block-container {{
 }}
 section[data-testid="stSidebar"] > div:first-child > div:first-child {{
     padding-top: 0 !important; margin-top: 0 !important;
-    font-size: 0 !important; color: transparent !important;
-    line-height: 0 !important; overflow: hidden !important; max-height: 0 !important;
 }}
 
 /* Header cleanup */
@@ -544,6 +543,7 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
 .hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
 .page-sub, .section-sub, .step-text, .auth-title p, .param-label {{ color: {MUTED} !important; }}
 .stDataFrame, .stDataFrame *, [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] * {{ color: {TEXT} !important; font-weight: 600 !important; }}
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"], section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] * {{ color: {'#E2D9F3' if DARK else '#4C1D95'} !important; }}
 
 @media(max-width:900px) {{
     .feature-grid, .steps-grid {{ grid-template-columns: 1fr; }}
@@ -703,8 +703,8 @@ def create_risk_gauge_image(confidence, is_high):
     return img
 
 
-def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
-    """Clean two-section PDF: patient/doctor info + full clinical report."""
+def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=None, report_type='patient'):
+    """Clean PDF report. report_type='patient' keeps patient-only details; report_type='doctor' adds doctor details."""
     if extra is None: extra = {}
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
@@ -719,6 +719,7 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     C_LINE   = (0.82,0.86,0.96)
     C_WHITE  = (1,1,1)
     high = 'High' in result
+    is_doctor_report = report_type == 'doctor' or bool(extra.get('doctor_email') or extra.get('doctor_name'))
 
     def rgb(h):
         h = h.lstrip('#')
@@ -748,57 +749,70 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     setc(C_NAVY); pdf.rect(0,H-90,W,90,fill=True,stroke=False)
     # Logo box
     setc(C_ROYAL); pdf.roundRect(30,H-72,44,44,8,fill=True,stroke=False)
-    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(42,H-50,'🩺')
+    pdf.setFont('Helvetica-Bold',18); setc(C_WHITE); pdf.drawString(43,H-50,'G')
     # Title
-    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(86,H-46,'GlucoTrack  Clinical Report')
+    report_title = 'GlucoTrack Doctor Clinical Report' if is_doctor_report else 'GlucoTrack Patient Health Report'
+    report_subtitle = 'Doctor-generated diabetes risk assessment with patient and doctor details' if is_doctor_report else 'Personal diabetes risk assessment and health action plan'
+    pdf.setFont('Helvetica-Bold',20); setc(C_WHITE); pdf.drawString(86,H-46,report_title)
     pdf.setFont('Helvetica',9); setc((0.65,0.78,0.95))
-    pdf.drawString(86,H-62,'Diabetes Risk Assessment  ·  Health Analytics  ·  Action Plan')
+    pdf.drawString(86,H-62,report_subtitle)
     pdf.drawString(86,H-76,f'Generated: {pred_time}')
     # Risk badge
     badge_bg  = rgb('#FEE2E2') if high else rgb('#D1FAE5')
     badge_txt = rgb('#991B1B') if high else rgb('#065F46')
     rect_fill(W-148,H-72,118,28,badge_bg,badge_bg,radius=14,lw=0)
     pdf.setFont('Helvetica-Bold',10); setc(badge_txt)
-    pdf.drawCentredString(W-89,H-54,'⚠ HIGH RISK' if high else '✓ LOW RISK')
+    pdf.drawCentredString(W-89,H-54,'HIGH RISK' if high else 'LOW RISK')
 
     y = H - 110   # cursor below banner
 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 1 — PATIENT & DOCTOR INFORMATION
     # ════════════════════════════════════════════════════════════════════════
-    section_title(30, y, 'Patient & Doctor Information')
+    section_title(30, y, 'Patient Information' if not is_doctor_report else 'Patient & Doctor Information')
     y -= 14
 
-    # Patient info card (left half)
     p_age     = extra.get('age', patient_data.get('Age','N/A'))
     p_gender  = extra.get('gender','N/A')
     p_phone   = extra.get('phone','N/A')
     p_address = extra.get('address','N/A')
+
     doc_name  = extra.get('doctor_name','')
     doc_email_val = extra.get('doctor_email','')
+    doc_phone = extra.get('doctor_phone','N/A')
+    doc_spec  = extra.get('doctor_specialization','N/A')
+    doc_hosp  = extra.get('doctor_hospital','N/A')
+    doc_lic   = extra.get('doctor_license_no','N/A')
 
-    card_h = 108 if (doc_name or doc_email_val) else 80
-    half   = (W - 72) / 2
+    if is_doctor_report:
+        card_h = 124
+        half = (W - 72) / 2
+        rect_fill(30, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
+        pdf.setFont('Helvetica-Bold',9); setc(C_ROYAL); pdf.drawString(42, y-14, 'PATIENT')
+        field_row(42, y-30, 'Name:', name)
+        field_row(42, y-45, 'Email:', email)
+        field_row(42, y-60, 'Age / Gender:', f'{p_age} yrs  -  {p_gender}')
+        field_row(42, y-75, 'Phone:', p_phone)
+        field_row(42, y-90, 'Address:', p_address)
 
-    rect_fill(30, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
-    pdf.setFont('Helvetica-Bold',9); setc(C_ROYAL)
-    pdf.drawString(42, y-14, 'PATIENT')
-    field_row(42, y-28, 'Name:',    name)
-    field_row(42, y-42, 'Email:',   email)
-    field_row(42, y-56, 'Age / Gender:', f'{p_age} yrs  ·  {p_gender}')
-    field_row(42, y-70, 'Phone:',   p_phone)
-    if card_h > 80:
-        field_row(42, y-84, 'Address:', p_address)
-
-    # Doctor info card (right half) — only if doctor details present
-    rx = 30 + half + 12
-    if doc_name or doc_email_val:
+        rx = 30 + half + 12
         rect_fill(rx, y-card_h, half, card_h, C_SOFT, C_LINE, radius=10)
-        pdf.setFont('Helvetica-Bold',9); setc(C_TEAL)
-        pdf.drawString(rx+12, y-14, 'ASSESSED BY')
-        field_row(rx+12, y-28, 'Doctor:',  f'Dr. {doc_name}')
-        field_row(rx+12, y-42, 'Email:',   doc_email_val)
-        field_row(rx+12, y-56, 'Date:',    pred_time.split(' ')[0] if ' ' in pred_time else pred_time)
+        pdf.setFont('Helvetica-Bold',9); setc(C_TEAL); pdf.drawString(rx+12, y-14, 'DOCTOR')
+        field_row(rx+12, y-30, 'Name:', f'Dr. {doc_name}' if doc_name and not str(doc_name).lower().startswith('dr') else doc_name)
+        field_row(rx+12, y-45, 'Email:', doc_email_val)
+        field_row(rx+12, y-60, 'Phone:', doc_phone)
+        field_row(rx+12, y-75, 'Specialization:', doc_spec)
+        field_row(rx+12, y-90, 'Hospital:', doc_hosp)
+        field_row(rx+12, y-105, 'License No.:', doc_lic)
+    else:
+        card_h = 96
+        rect_fill(30, y-card_h, W-60, card_h, C_SOFT, C_LINE, radius=10)
+        pdf.setFont('Helvetica-Bold',9); setc(C_ROYAL); pdf.drawString(42, y-14, 'PATIENT')
+        field_row(42, y-30, 'Name:', name, lw=95)
+        field_row(42, y-45, 'Email:', email, lw=95)
+        field_row(42, y-60, 'Age / Gender:', f'{p_age} yrs  -  {p_gender}', lw=95)
+        field_row(42, y-75, 'Phone:', p_phone, lw=95)
+        field_row(300, y-75, 'Address:', p_address, lw=70)
 
     y -= card_h + 18
 
@@ -919,6 +933,14 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     return buffer.getvalue()
 
 
+
+def generate_user_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
+    return generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra or {}, report_type='patient')
+
+
+def generate_doctor_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
+    return generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra or {}, report_type='doctor')
+
 def page_header(icon, title, subtitle):
     """Pure st.markdown page header — no components.html, no iframe overlap."""
     st.markdown(f'''
@@ -989,36 +1011,13 @@ def dashboard_sidebar():
 
     # ── Theme toggle ─────────────────────────────────────────────────────────
     is_dark = st.session_state.dark_mode
-    knob_pos  = '24px' if is_dark else '2px'
-    track_bg  = 'linear-gradient(90deg,#6D28D9,#A855F7)' if is_dark else 'linear-gradient(90deg,#A5B4FC,#DDD6FE)'
-    lbl_color = '#C4B5FD' if is_dark else '#4C1D95'
-    lbl_text  = '🌙 Dark Mode' if is_dark else '☀️ Light Mode'
-    knob_icon = '🌙' if is_dark else '☀️'
-    st.sidebar.markdown(f'''
-<style>
-section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"]#theme_toggle_btn {{
-    background: transparent !important; border: none !important;
-    padding: 0 !important; height: auto !important; box-shadow: none !important;
-}}
-</style>
-<div style="display:flex;align-items:center;justify-content:space-between;
-     padding:10px 4px 6px 4px;margin:2px 0 4px;">
-  <span style="font-size:13px;font-weight:700;color:{lbl_color};font-family:'DM Sans',sans-serif;">{lbl_text}</span>
-  <div style="position:relative;width:50px;height:28px;border-radius:14px;
-       background:{track_bg};box-shadow:inset 0 1px 4px rgba(0,0,0,0.18);">
-    <div style="position:absolute;top:4px;left:{knob_pos};width:20px;height:20px;
-         border-radius:50%;background:white;box-shadow:0 2px 6px rgba(0,0,0,0.28);
-         display:flex;align-items:center;justify-content:center;font-size:11px;
-         transition:left 0.25s ease;">{knob_icon}</div>
-  </div>
-</div>''', unsafe_allow_html=True)
-    if st.sidebar.button(lbl_text, key='theme_toggle_btn', use_container_width=True):
-        st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
-    st.sidebar.markdown(f'''<style>
-div[data-testid="stSidebar"] div.stButton:has(button[kind="secondary"]) {{
-    margin-top: -44px !important; opacity: 0 !important; pointer-events: auto !important;
-}}
-</style>''', unsafe_allow_html=True)
+    theme_new_value = st.sidebar.toggle(
+        '🌙 Dark Mode' if is_dark else '☀️ Light Mode',
+        value=is_dark
+    )
+    if theme_new_value != st.session_state.dark_mode:
+        st.session_state.dark_mode = theme_new_value
+        st.rerun()
 
     if st.session_state.user_type == 'patient':
         options = ['prediction', 'dashboard']; labels = ['🩺 Predict Risk', '📊 Health Dashboard']
@@ -1120,10 +1119,9 @@ def auth_page():
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
                 # Forgot password link
-                st.markdown(f'<div style="text-align:right;margin:-6px 0 10px;"><span style="font-size:12px;color:{GRAD1};font-weight:600;cursor:pointer;" onclick="">Forgot password?</span></div>', unsafe_allow_html=True)
-                col_fp, _ = st.columns([1,2])
+                _, col_fp = st.columns([2, 1])
                 with col_fp:
-                    if st.button('🔑 Forgot Password?', key='goto_forgot', use_container_width=True):
+                    if st.button('Forgot password?', key='goto_forgot', type='secondary', use_container_width=True):
                         st.session_state.auth_mode = 'forgot_password'
                         st.session_state.fp_step = 1
                         st.rerun()
@@ -1462,13 +1460,18 @@ def prediction_page():
 
         # Build extra info dict for PDF
         if st.session_state.user_type == 'doctor':
+            doc_profile = doctors.get(st.session_state.current_user_email, {})
             extra_info = {
                 'phone':        st.session_state.get('doc_patient_phone',''),
                 'gender':       st.session_state.get('doc_patient_gender_val',''),
                 'age':          st.session_state.get('doc_patient_age_val', age),
                 'address':      st.session_state.get('doc_patient_address_val',''),
-                'doctor_name':  st.session_state.current_user_name,
+                'doctor_name':  doc_profile.get('name', st.session_state.current_user_name),
                 'doctor_email': st.session_state.current_user_email,
+                'doctor_phone': doc_profile.get('phone',''),
+                'doctor_specialization': doc_profile.get('specialization',''),
+                'doctor_hospital': doc_profile.get('hospital',''),
+                'doctor_license_no': doc_profile.get('license_no',''),
             }
         else:
             u = users.get(st.session_state.current_user_email, {})
@@ -1479,7 +1482,7 @@ def prediction_page():
                 'address': u.get('address',''),
             }
 
-        pdf = generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra_info)
+        pdf = generate_doctor_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra_info) if st.session_state.user_type == 'doctor' else generate_user_pdf(patient_data, result, confidence, name, email, pred_time, extra=extra_info)
         st.session_state.patient_data = patient_data; st.session_state.prediction_result = result
         st.session_state.confidence = confidence; st.session_state.prediction_time = pred_time
         st.session_state.pdf_bytes = pdf; st.session_state.prediction_done = True
@@ -1748,10 +1751,14 @@ def doctor_page():
 
             st.write('')
             saved_extra = selected_report.get('extra', {})
-            if not saved_extra.get('doctor_name'):
-                saved_extra['doctor_name']  = selected_report.get('doctor_name', doctors.get(doctor_email,{}).get('name',''))
-                saved_extra['doctor_email'] = doctor_email
-            pdf_data = generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=saved_extra)
+            doc_profile = doctors.get(doctor_email,{})
+            saved_extra['doctor_name'] = saved_extra.get('doctor_name') or selected_report.get('doctor_name') or doc_profile.get('name','')
+            saved_extra['doctor_email'] = saved_extra.get('doctor_email') or doctor_email
+            saved_extra['doctor_phone'] = saved_extra.get('doctor_phone') or doc_profile.get('phone','')
+            saved_extra['doctor_specialization'] = saved_extra.get('doctor_specialization') or doc_profile.get('specialization','')
+            saved_extra['doctor_hospital'] = saved_extra.get('doctor_hospital') or doc_profile.get('hospital','')
+            saved_extra['doctor_license_no'] = saved_extra.get('doctor_license_no') or doc_profile.get('license_no','')
+            pdf_data = generate_doctor_pdf(patient_data, result, confidence, name, email, pred_time, extra=saved_extra)
             _render_whatsapp_share(phone_key=f'doctor_{selected_idx}', pdf_bytes=pdf_data, patient_name=name, result=result, confidence=confidence, pred_time=pred_time, patient_data=patient_data, selected_idx=selected_idx)
 
 
