@@ -357,53 +357,100 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     border: 1.5px solid {BORDER} !important; border-radius: 14px !important; min-height: 52px !important;
 }}
 
-/* ── Number input +/- buttons ── */
+/* ── Number input +/- buttons: clean professional +/- controls ── */
 [data-testid="stNumberInput"] {{
     position: relative !important;
+}}
+[data-testid="stNumberInput"] input {{
+    padding-right: 82px !important;
+    appearance: textfield !important;
+    -moz-appearance: textfield !important;
+}}
+[data-testid="stNumberInput"] input::-webkit-outer-spin-button,
+[data-testid="stNumberInput"] input::-webkit-inner-spin-button {{
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+    display: none !important;
 }}
 [data-testid="stNumberInput"] div[data-baseweb="input"] {{
     background: {INPUT} !important;
     border: 1.5px solid {BORDER} !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     overflow: hidden !important;
+    box-shadow: {'0 8px 22px rgba(0,0,0,0.20)' if DARK else '0 8px 20px rgba(109,40,217,0.08)'} !important;
 }}
-/* The step buttons container */
+[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within {{
+    border-color: {GRAD1} !important;
+    box-shadow: 0 0 0 3px {GRAD1}26 !important;
+}}
 [data-testid="stNumberInput"] button {{
-    background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(109,40,217,0.10)'} !important;
+    background: {'linear-gradient(180deg, rgba(129,140,248,0.24), rgba(244,114,182,0.18))' if DARK else 'linear-gradient(180deg, rgba(109,40,217,0.12), rgba(236,72,153,0.10))'} !important;
     border: none !important;
-    border-left: 1.5px solid {BORDER} !important;
-    color: {TEXT} !important;
-    width: 36px !important;
-    min-width: 36px !important;
-    height: 100% !important;
+    border-left: 1px solid {BORDER} !important;
+    color: transparent !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 52px !important;
+    padding: 0 !important;
+    margin: 0 !important;
     cursor: pointer !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: background 0.15s ease !important;
     flex-shrink: 0 !important;
     border-radius: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: all 0.18s ease !important;
 }}
 [data-testid="stNumberInput"] button:hover {{
-    background: {'rgba(109,40,217,0.38)' if DARK else 'rgba(109,40,217,0.22)'} !important;
+    background: {GRAD_PRIMARY} !important;
+    transform: none !important;
 }}
-/* Make the + and - symbols clearly visible in both modes */
+[data-testid="stNumberInput"] button:active {{
+    transform: scale(0.96) !important;
+}}
+[data-testid="stNumberInput"] button *,
 [data-testid="stNumberInput"] button span,
 [data-testid="stNumberInput"] button p,
 [data-testid="stNumberInput"] button svg {{
-    color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    fill: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    stroke: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    font-size: 18px !important;
-    font-weight: 700 !important;
-    -webkit-text-fill-color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    width: auto !important;
-    height: auto !important;
-    position: static !important;
-    overflow: visible !important;
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    font-size: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
 }}
+[data-testid="stNumberInput"] button::before {{
+    color: {'#EDE9FE' if DARK else '#4C1D95'} !important;
+    -webkit-text-fill-color: {'#EDE9FE' if DARK else '#4C1D95'} !important;
+    font-family: 'Sora', Arial, sans-serif !important;
+    font-size: 21px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    display: block !important;
+    opacity: 1 !important;
+}}
+[data-testid="stNumberInput"] button:hover::before {{
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}}
+[data-testid="stNumberInput"] button:first-of-type::before {{ content: "−" !important; }}
+[data-testid="stNumberInput"] button:last-of-type::before {{ content: "+" !important; }}
+[data-testid="stNumberInput"] button[aria-label*="decrement" i]::before,
+[data-testid="stNumberInput"] button[aria-label*="decrease" i]::before,
+[data-testid="stNumberInput"] button[aria-label*="minus" i]::before {{ content: "−" !important; }}
+[data-testid="stNumberInput"] button[aria-label*="increment" i]::before,
+[data-testid="stNumberInput"] button[aria-label*="increase" i]::before,
+[data-testid="stNumberInput"] button[aria-label*="plus" i]::before {{ content: "+" !important; }}
+/* Hide browser/extension keyboard helper overlays that duplicate inside inputs */
+[data-testid="stNumberInput"] [data-testid*="InputInstructions"],
+[data-testid="stNumberInput"] [class*="input-instructions"],
+[data-testid="stNumberInput"] [class*="keyboard"] {{
+    display: none !important;
+    visibility: hidden !important;
+}}
+
 
 /* Cards */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
@@ -456,24 +503,44 @@ section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} 
 }}
 .sb-brand {{ font-size: 20px; font-weight: 800; color: {'#C4B5FD' if DARK else '#4C1D95'} !important; font-family: 'Sora', sans-serif !important; }}
 .sb-profile {{
-    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; padding: 20px 16px 18px;
     border-bottom: 1px solid {'rgba(167,139,250,0.28)' if DARK else 'rgba(139,92,246,0.28)'};
-    background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(139,92,246,0.15)'};
+    background: {'linear-gradient(180deg, rgba(109,40,217,0.26), rgba(236,72,153,0.10))' if DARK else 'linear-gradient(180deg, rgba(255,255,255,0.34), rgba(139,92,246,0.14))'};
+    text-align: center;
+}}
+.sb-avatar, .sb-avatar-img {{
+    width: 76px; height: 76px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border: 3px solid rgba(255,255,255,0.78);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.26), 0 0 0 5px {'rgba(129,140,248,0.18)' if DARK else 'rgba(109,40,217,0.14)'};
 }}
 .sb-avatar {{
-    width: 46px; height: 46px; border-radius: 50%; background: {GRAD_PRIMARY};
-    color: white !important; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 16px; font-family: 'Sora', sans-serif !important;
-    flex-shrink: 0; border: 2px solid rgba(255,255,255,0.65);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    background: {GRAD_PRIMARY};
+    color: white !important;
+    font-weight: 900; font-size: 24px; font-family: 'Sora', sans-serif !important;
 }}
-.sb-info {{ display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }}
+.sb-avatar-img {{
+    object-fit: cover;
+    background: {CARD};
+}}
+.sb-info {{ display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; min-width: 0; overflow: hidden; }}
 .sb-name {{
-    font-size: 14px; font-weight: 700; color: {'#E2D9F3' if DARK else '#3B0764'} !important;
+    max-width: 100%;
+    font-size: 15px; font-weight: 800; color: {'#F8F7FF' if DARK else '#3B0764'} !important;
     font-family: 'Sora', sans-serif !important;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;
 }}
-.sb-role {{ font-size: 12px; font-weight: 600; color: {'#F9A8D4' if DARK else '#6D28D9'} !important; line-height: 1.3; white-space: nowrap; }}
+.sb-role {{
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 5px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 800;
+    color: {'#FCE7F3' if DARK else '#5B21B6'} !important;
+    background: {'rgba(244,114,182,0.20)' if DARK else 'rgba(255,255,255,0.42)'};
+    border: 1px solid {'rgba(244,114,182,0.28)' if DARK else 'rgba(109,40,217,0.18)'};
+    line-height: 1.2; white-space: nowrap;
+}}
+
 
 div[data-testid="stRadio"] {{ padding: 14px 8px 0 !important; }}
 div[data-testid="stRadio"] label {{
@@ -1110,12 +1177,7 @@ def dashboard_sidebar():
         profile_pic = doctors[email].get('profile_pic')
 
     if profile_pic:
-        avatar_html = f'''
-        <img src="data:image/png;base64,{profile_pic}"
-        style="width:46px;height:46px;border-radius:50%;object-fit:cover;
-        display:block;flex-shrink:0;border:2px solid rgba(255,255,255,0.65);
-        box-shadow:0 4px 12px rgba(0,0,0,0.25);">
-        '''
+        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" class="sb-avatar-img" alt="Profile photo">'
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
 
