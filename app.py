@@ -210,7 +210,17 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"] {{ display: none !important; }}
 
-/* ── "Open sidebar" tab (shown when sidebar is collapsed) ── */
+/* ══════════════════════════════════════════════════════════════
+   SIDEBAR TOGGLE  —  pure CSS, no JS, no fonts, no SVG files
+   Strategy:
+     1. Make button a styled pill / square with overflow:hidden
+     2. font-size:0 on the button silences ALL text children
+        (including the Material Icons span "keyboard_double_←")
+     3. button::before injects the visible icon via Unicode +
+        a safe system font, at an explicit font-size
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Open pill (sidebar collapsed) ── */
 [data-testid="stSidebarCollapsedControl"] {{
     visibility: visible !important;
     display: flex !important;
@@ -218,40 +228,63 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     background: {'rgba(30,20,60,0.96)' if DARK else '#4C1D95'} !important;
     border-radius: 0 14px 14px 0 !important;
     box-shadow: 4px 0 18px rgba(76,29,149,0.50) !important;
-    width: 34px !important;
-    height: 54px !important;
+    width: 32px !important;
+    height: 52px !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
-    transition: width 0.18s ease !important;
     overflow: hidden !important;
+    transition: width 0.18s ease, box-shadow 0.18s ease !important;
+    cursor: pointer !important;
 }}
 [data-testid="stSidebarCollapsedControl"]:hover {{
-    width: 40px !important;
+    width: 38px !important;
+    box-shadow: 6px 0 22px rgba(76,29,149,0.70) !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button {{
+    position: relative !important;
     background: transparent !important;
     border: none !important;
-    width: 34px !important;
-    height: 54px !important;
+    width: 100% !important;
+    height: 100% !important;
     padding: 0 !important;
+    margin: 0 !important;
     cursor: pointer !important;
+    font-size: 0 !important;          /* silences ALL text children */
+    color: transparent !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    overflow: hidden !important;
 }}
-/* Kill the Material Icons text node */
-[data-testid="stSidebarCollapsedControl"] button > * {{
-    display: none !important;
+/* Silence every descendant text node too */
+[data-testid="stSidebarCollapsedControl"] button * {{
+    font-size: 0 !important;
+    color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
 }}
-/* SVG injected by JS gets display:flex */
-[data-testid="stSidebarCollapsedControl"] button > svg.gt-icon {{
+/* Inject »» arrow via ::before — system font, no Material Icons */
+[data-testid="stSidebarCollapsedControl"] button::before {{
+    content: "\00BB" !important;     /* » */
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    color: #C4B5FD !important;
+    line-height: 1 !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
     display: block !important;
 }}
 
-/* ── "Close sidebar" button (inside the open sidebar) ── */
+/* ── Close button (inside open sidebar) ── */
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
+    position: relative !important;
     visibility: visible !important;
     display: flex !important;
     align-items: center !important;
@@ -263,6 +296,8 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
     height: 40px !important;
     padding: 0 !important;
     cursor: pointer !important;
+    font-size: 0 !important;          /* silences ALL text children */
+    color: transparent !important;
     overflow: hidden !important;
     transition: background 0.18s ease !important;
     flex-shrink: 0 !important;
@@ -271,16 +306,32 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
     background: {'rgba(109,40,217,0.50)' if DARK else 'rgba(109,40,217,0.32)'} !important;
 }}
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] > *,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"] > * {{
-    display: none !important;
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] * {{
+    font-size: 0 !important;
+    color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
 }}
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] > svg.gt-icon,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"] > svg.gt-icon {{
+/* Inject «« arrow via ::before */
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before {{
+    content: "\00AB" !important;     /* « */
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    line-height: 1 !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
     display: block !important;
 }}
 
-/* hide any stray header-level toggle outside sidebar */
+/* Hide any toggle that leaks into the main header area */
 header button[data-testid="baseButton-headerNoPadding"],
 header button[data-testid="baseButton-header"] {{
     display: none !important;
@@ -326,6 +377,54 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     border: 1.5px solid {BORDER} !important; border-radius: 14px !important; min-height: 52px !important;
 }}
 
+/* ── Number input +/- buttons ── */
+[data-testid="stNumberInput"] {{
+    position: relative !important;
+}}
+[data-testid="stNumberInput"] div[data-baseweb="input"] {{
+    background: {INPUT} !important;
+    border: 1.5px solid {BORDER} !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}}
+/* The step buttons container */
+[data-testid="stNumberInput"] button {{
+    background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(109,40,217,0.10)'} !important;
+    border: none !important;
+    border-left: 1.5px solid {BORDER} !important;
+    color: {TEXT} !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 100% !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.15s ease !important;
+    flex-shrink: 0 !important;
+    border-radius: 0 !important;
+}}
+[data-testid="stNumberInput"] button:hover {{
+    background: {'rgba(109,40,217,0.38)' if DARK else 'rgba(109,40,217,0.22)'} !important;
+}}
+/* Make the + and - symbols clearly visible in both modes */
+[data-testid="stNumberInput"] button span,
+[data-testid="stNumberInput"] button p,
+[data-testid="stNumberInput"] button svg {{
+    color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    fill: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    stroke: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    -webkit-text-fill-color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    width: auto !important;
+    height: auto !important;
+    position: static !important;
+    overflow: visible !important;
+}}
+
 /* Cards */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
     background: {'rgba(15,30,60,0.88)' if DARK else 'rgba(255,255,255,0.92)'} !important;
@@ -353,7 +452,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {{
     font-family: 'DM Sans', sans-serif !important; transition: all 0.2s ease !important;
 }}
 .stButton>button[kind="secondary"]:hover {{ background: {BORDER}44 !important; transform: translateY(-1px) !important; }}
-button * {{ color: white !important; }}
+.stButton>button[kind="primary"] *, .stDownloadButton>button *, .stFormSubmitButton>button * {{ color: white !important; }}
 .stButton>button[kind="secondary"] * {{ color: {TEXT} !important; }}
 
 /* Sidebar */
@@ -604,41 +703,7 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
 '''
 st.markdown(css, unsafe_allow_html=True)
 
-# ── Sidebar toggle icon injector ────────────────────────────────────────────
-# st.markdown strips <script> tags. components.html() runs in a real iframe
-# with access to window.parent.document — the only reliable way to patch
-# Streamlit's sidebar buttons which live in the parent DOM.
-_ICON_COLOR_OPEN  = '#C4B5FD'
-_ICON_COLOR_CLOSE = '#C4B5FD' if DARK else '#4C1D95'
-components.html(f"""
-<script>
-(function() {{
-  var OPEN = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{_ICON_COLOR_OPEN}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
-  var CLOSE = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{_ICON_COLOR_CLOSE}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>';
-
-  function patch() {{
-    var doc = window.parent.document;
-
-    // Open button (collapsed control — pill on left edge)
-    var openWrap = doc.querySelector('[data-testid="stSidebarCollapsedControl"]');
-    if (openWrap) {{
-      var btn = openWrap.querySelector('button');
-      if (btn && !btn.querySelector('svg')) {{ btn.innerHTML = OPEN; }}
-    }}
-
-    // Close button (inside open sidebar)
-    var sidebar = doc.querySelector('section[data-testid="stSidebar"]');
-    if (sidebar) {{
-      var closeBtn = sidebar.querySelector('button[data-testid="baseButton-headerNoPadding"], button[data-testid="baseButton-header"]');
-      if (closeBtn && !closeBtn.querySelector('svg')) {{ closeBtn.innerHTML = CLOSE; }}
-    }}
-  }}
-
-  patch();
-  new MutationObserver(patch).observe(window.parent.document.body, {{childList:true, subtree:true}});
-}})();
-</script>
-""", height=0, scrolling=False)
+# Sidebar icons handled entirely by CSS (font-size:0 + ::before Unicode)
 
 
 def initials(name):
@@ -1920,6 +1985,17 @@ def profile_page():
 
 
 # ===== ROUTER =====
+# Intercept ?forgot_password=1 BEFORE the `started` check.
+# The href link causes a full reload which resets `started` to False;
+# without this, the router hits landing_page() and stops before auth_page().
+if st.query_params.get('forgot_password') == '1':
+    st.query_params.clear()
+    st.session_state.started   = True
+    st.session_state.page      = 'auth'
+    st.session_state.auth_mode = 'forgot_password'
+    st.session_state.fp_step   = 1
+    st.rerun()
+
 if not st.session_state.started:
     landing_page(); st.stop()
 
