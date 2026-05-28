@@ -808,7 +808,7 @@ button[data-testid="baseButton-header"] * {{
 [data-testid="stFileUploaderDropzone"] button::before,
 [data-testid="stFileUploader"] button::before,
 [data-testid="stFileUploaderDropzoneInput"] + div button::before {
-    content: none !important;
+    content: "" !important;
     display: none !important;
 }
 
