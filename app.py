@@ -775,103 +775,17 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
     .hero-title {{ font-size: 52px; letter-spacing: -2px; }}
 }}
 
-/* ── Fix Streamlit sidebar keyboard_double_arrow text ── */
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"],
+/* Clean sidebar toggle */
 button[data-testid="baseButton-headerNoPadding"],
 button[data-testid="baseButton-header"] {{
-    font-size: 0 !important;
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-    overflow: hidden !important;
-    background: rgba(109,40,217,0.16) !important;
-    border: 1px solid rgba(109,40,217,0.28) !important;
-    border-radius: 12px !important;
-    width: 42px !important;
-    height: 42px !important;
-    min-width: 42px !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    position: relative !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }}
 
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"] *,
-button[data-testid="baseButton-headerNoPadding"] *,
-button[data-testid="baseButton-header"] * {{
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    font-size: 0 !important;
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-}}
-
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before,
-button[data-testid="baseButton-headerNoPadding"]::before,
-button[data-testid="baseButton-header"]::before {{
-    content: "‹" !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    font-size: 34px !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-    color: #4C1D95 !important;
-    -webkit-text-fill-color: #4C1D95 !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-}}
-
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover,
-button[data-testid="baseButton-headerNoPadding"]:hover,
-button[data-testid="baseButton-header"]:hover {{
-    background: linear-gradient(135deg, #818CF8, #F472B6) !important;
-}}
-
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover::before,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover::before,
-button[data-testid="baseButton-headerNoPadding"]:hover::before,
-button[data-testid="baseButton-header"]:hover::before {{
-    color: #FFFFFF !important;
-    -webkit-text-fill-color: #FFFFFF !important;
-}}
-
-/* collapsed sidebar open control */
-[data-testid="stSidebarCollapsedControl"] {{
-    font-size: 0 !important;
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-    overflow: hidden !important;
-}}
-
-[data-testid="stSidebarCollapsedControl"] *,
-[data-testid="stSidebarCollapsedControl"] button *,
-[data-testid="stSidebarCollapsedControl"] span,
-[data-testid="stSidebarCollapsedControl"] svg {{
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    font-size: 0 !important;
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-}}
-
-[data-testid="stSidebarCollapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"] button::before {{
-    content: "›" !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    font-size: 34px !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-    color: #DDD6FE !important;
-    -webkit-text-fill-color: #DDD6FE !important;
-    font-family: Arial, Helvetica, sans-serif !important;
+button[data-testid="baseButton-headerNoPadding"] span,
+button[data-testid="baseButton-header"] span {{
+    color: #5B21B6 !important;
 }}
 
 </style>
