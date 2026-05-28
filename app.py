@@ -1357,7 +1357,7 @@ def landing_page():
     st.markdown(f'''
 <section class="hero-section">
     <div class="hero-card">
-        <div class="hero-badge">🧬 AI-POWERED HEALTH PLATFORM</div>
+        <div class="hero-badge"> AI-POWERED HEALTH PLATFORM</div>
         <h1 class="hero-title">GlucoTrack</h1>
         <p class="hero-sub">Predict diabetes risk in seconds using Machine Learning.<br>Understand your health. Take action early. Live better.</p>
         <div style="position:relative;z-index:2;display:flex;justify-content:center;gap:14px;margin-top:8px;">
@@ -1379,7 +1379,7 @@ def landing_page():
 
     st.markdown(f'''
 <section id="features" class="section" style="padding-top:48px;">
-    <h2 class="section-title">✨ What GlucoTrack Does</h2>
+    <h2 class="section-title"> What GlucoTrack Does</h2>
     <p class="section-sub">Three powerful features to monitor, predict, and improve your health</p>
     <div class="feature-grid">
         <div class="feature-card feature-blue"><div class="pill pill-blue">🧠 MACHINE LEARNING</div><div class="icon-box icon-blue">🔬</div><div class="feature-title">AI-Powered Risk Prediction</div><div class="feature-text">Our trained ML model analyzes 8 clinical parameters — Glucose, BMI, Insulin, Blood Pressure, Age, Pregnancies, Skin Thickness, and DPF — to compute your diabetes risk with a confidence score.</div></div>
@@ -1388,7 +1388,7 @@ def landing_page():
     </div>
 </section>
 <section id="how-it-works" class="section">
-    <h2 class="section-title">🔄 How It Works</h2>
+    <h2 class="section-title"> How It Works</h2>
     <p class="section-sub">Get your diabetes risk assessment in 4 simple steps</p>
     <div class="steps-grid">
         <div class="step-card"><div class="step-num">01</div><div class="step-title">🔐 Create Account</div><div class="step-text">Sign up free with your name and email address in under a minute</div></div>
@@ -1408,7 +1408,7 @@ def landing_page():
 
     c1, c2, c3 = st.columns([1.8, 1.5, 1.8])
     with c2:
-        if st.button('🚀 Create Free Account →', key='bottom_signup_btn', type='primary', use_container_width=True):
+        if st.button(' Create Account →', key='bottom_signup_btn', type='primary', use_container_width=True):
             st.session_state.started = True; st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
 
     st.markdown(f'<div style="text-align:center;margin:16px 0 0;color:{MUTED};font-size:14px;">✅ Free forever &nbsp;·&nbsp; 🔒 Private &amp; secure &nbsp;·&nbsp; ⚡ Results in seconds</div>', unsafe_allow_html=True)
@@ -1426,8 +1426,8 @@ def auth_page():
         c1, col_card, c3 = st.columns([1, 1.8, 1])
         with col_card:
             with st.container(border=True):
-                email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
-                password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
+                email = st.text_input(' Email address', placeholder='you@example.com', key='signin_email')
+                password = st.text_input(' Password', type='password', placeholder='Your password', key='signin_password')
                 # Forgot password — single right-aligned link only, no button shown
                 # We use a query_param navigation, same as the original href approach
                 st.markdown(f'''
@@ -1456,12 +1456,12 @@ def auth_page():
                                 save_json(USERS_FILE, users)
                                 st.success('✅ Demo account reset! Use user@gmail.com / user@123'); st.rerun()
                 st.markdown(f'<div style="text-align:center;margin:18px 0;color:{MUTED};">— or —</div>', unsafe_allow_html=True)
-                if st.button('✨ Create a free account →', type='secondary', use_container_width=True, key='to_signup'):
+                if st.button(' Create account →', type='secondary', use_container_width=True, key='to_signup'):
                     st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 1; st.rerun()
                 st.markdown(f'<p style="text-align:center;color:{MUTED};margin-top:20px;">🔒 Your health data is private and never shared.</p>', unsafe_allow_html=True)
 
     elif st.session_state.auth_mode == 'forgot_password':
-        st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">🩺</div><div>GlucoTrack</div></div><h1>Reset Password 🔑</h1><p>Enter your registered email to reset your password</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">🩺</div><div>GlucoTrack</div></div><h1>Reset Password </h1><p>Enter your registered email to reset your password</p></div>', unsafe_allow_html=True)
         c1, col_card, c3 = st.columns([1, 1.8, 1])
         with col_card:
             with st.container(border=True):
@@ -1470,7 +1470,7 @@ def auth_page():
                 if fp_step == 1:
                     # Step 1: enter email
                     st.markdown(f'<div style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:{TEXT};margin-bottom:14px;">Step 1 — Verify your email</div>', unsafe_allow_html=True)
-                    fp_email = st.text_input('📧 Registered Email', placeholder='you@example.com', key='fp_email')
+                    fp_email = st.text_input(' Registered Email', placeholder='you@example.com', key='fp_email')
                     st.write('')
                     if st.button('Continue →', type='primary', use_container_width=True, key='fp_continue'):
                         fp_email_val = fp_email.strip().lower()
@@ -1492,11 +1492,11 @@ def auth_page():
                     st.markdown(f'<div style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:{TEXT};margin-bottom:6px;">Step 2 — Verify your identity</div>', unsafe_allow_html=True)
                     st.markdown(f'<div style="font-size:13px;color:{MUTED};margin-bottom:14px;">Account: <b>{fp_email_val}</b></div>', unsafe_allow_html=True)
                     if fp_account_type == 'doctor':
-                        verify_val = st.text_input('🪪 Registered Licence Number', placeholder='Your licence no.', key='fp_verify')
+                        verify_val = st.text_input(' Registered Licence Number', placeholder='Your licence no.', key='fp_verify')
                         hint = 'licence number'
                         stored = doctors.get(fp_email_val,{}).get('license_no','')
                     else:
-                        verify_val = st.text_input('📞 Registered Phone Number', placeholder='+91 98765 43210', key='fp_verify')
+                        verify_val = st.text_input(' Registered Phone Number', placeholder='+91 98765 43210', key='fp_verify')
                         hint = 'phone number'
                         stored = users.get(fp_email_val,{}).get('phone','')
                     st.write('')
@@ -1511,8 +1511,8 @@ def auth_page():
                     fp_email_val   = st.session_state.get('fp_email_val','')
                     fp_account_type = st.session_state.get('fp_account_type','patient')
                     st.markdown(f'<div style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:{TEXT};margin-bottom:6px;">Step 3 — Set new password</div>', unsafe_allow_html=True)
-                    new_pw  = st.text_input('🔒 New Password', type='password', placeholder='Min 6 characters', key='fp_new_pw')
-                    conf_pw = st.text_input('🔒 Confirm Password', type='password', placeholder='Repeat new password', key='fp_conf_pw')
+                    new_pw  = st.text_input(' New Password', type='password', placeholder='Min 6 characters', key='fp_new_pw')
+                    conf_pw = st.text_input(' Confirm Password', type='password', placeholder='Repeat new password', key='fp_conf_pw')
                     st.write('')
                     if st.button('Reset Password ✓', type='primary', use_container_width=True, key='fp_reset_btn'):
                         if len(new_pw) < 6:
@@ -1543,13 +1543,13 @@ def auth_page():
             c1, col_card, c3 = st.columns([1, 1.8, 1])
             with col_card:
                 with st.container(border=True):
-                    full_name = st.text_input('👤 Full Name *', placeholder='John Doe', key='reg_name')
-                    email = st.text_input('📧 Email Address *', placeholder='you@example.com', key='reg_email')
-                    phone = st.text_input('📞 Phone Number *', placeholder='+91 98765 43210', key='reg_phone')
+                    full_name = st.text_input(' Full Name *', placeholder='John Doe', key='reg_name')
+                    email = st.text_input('Email Address *', placeholder='you@example.com', key='reg_email')
+                    phone = st.text_input(' Phone Number *', placeholder='+91 98765 43210', key='reg_phone')
                     c_a, c_b = st.columns(2)
-                    with c_a: age = st.number_input('🎂 Age *', 1, 100, 25, key='reg_age')
+                    with c_a: age = st.number_input(' Age *', 1, 100, 25, key='reg_age')
                     with c_b: gender = st.selectbox('⚧ Gender', ['Select', 'Female', 'Male', 'Other'], key='reg_gender')
-                    address = st.text_area('🏠 Address', placeholder='Your address (optional)', key='reg_address')
+                    address = st.text_area(' Address', placeholder='Your address (optional)', key='reg_address')
                     if st.button('Continue →', type='primary', use_container_width=True, key='reg_continue'):
                         email_clean = email.strip().lower()
                         if not full_name or not email_clean or not phone: st.error('⚠️ Please fill all required fields.')
@@ -1598,15 +1598,15 @@ def create_profile_page():
     with col_card:
         with st.container(border=True):
             role = st.radio('I am a', ['🧑 Patient', '👨‍⚕️ Doctor'], horizontal=True)
-            name = st.text_input('👤 Full Name', value=st.session_state.signup_name)
-            email = st.text_input('📧 Email', value=st.session_state.signup_email, disabled=True)
+            name = st.text_input(' Full Name', value=st.session_state.signup_name)
+            email = st.text_input(' Email', value=st.session_state.signup_email, disabled=True)
             if '🧑' in role:
-                phone = st.text_input('📞 Phone', value=st.session_state.signup_phone)
-                age = st.number_input('🎂 Age', 1, 100, int(st.session_state.signup_age))
-                gender = st.selectbox('⚧ Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(st.session_state.signup_gender) if st.session_state.signup_gender in ['Female', 'Male', 'Other'] else 0)
-                address = st.text_area('🏠 Address', value=st.session_state.signup_address)
-                uploaded_photo = st.file_uploader('📸 Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='patient_photo')
-                if st.button('✅ Create Patient Profile', type='primary', use_container_width=True):
+                phone = st.text_input(' Phone', value=st.session_state.signup_phone)
+                age = st.number_input(' Age', 1, 100, int(st.session_state.signup_age))
+                gender = st.selectbox(' Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(st.session_state.signup_gender) if st.session_state.signup_gender in ['Female', 'Male', 'Other'] else 0)
+                address = st.text_area(' Address', value=st.session_state.signup_address)
+                uploaded_photo = st.file_uploader(' Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='patient_photo')
+                if st.button(' Create Patient Profile', type='primary', use_container_width=True):
                     base64_photo = None
                     if uploaded_photo: base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
                     users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True, 'profile_pic': base64_photo}
@@ -1615,11 +1615,11 @@ def create_profile_page():
                     if ok: st.rerun()
                     else: st.error(msg)
             else:
-                phone = st.text_input('📞 Phone', value=st.session_state.signup_phone)
-                specialization = st.text_input('🔬 Specialization', placeholder='Endocrinology')
-                hospital = st.text_input('🏥 Hospital / Clinic')
-                license_no = st.text_input('📋 Medical License No.')
-                uploaded_photo = st.file_uploader('📸 Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='doctor_photo')
+                phone = st.text_input(' Phone', value=st.session_state.signup_phone)
+                specialization = st.text_input(' Specialization', placeholder='Endocrinology')
+                hospital = st.text_input(' Hospital / Clinic')
+                license_no = st.text_input(' Medical License No.')
+                uploaded_photo = st.file_uploader(' Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='doctor_photo')
                 if st.button('✅ Create Doctor Profile', type='primary', use_container_width=True):
                     base64_photo = None
                     if uploaded_photo: base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
@@ -1668,15 +1668,15 @@ def prediction_page():
             with st.container(border=True):
                 c1, c2 = st.columns(2)
                 with c1:
-                    doc_patient_name    = st.text_input('👤 Patient Full Name *', placeholder='e.g. Ramesh Kumar',         key='doc_patient_name',    value=st.session_state.get('doc_patient_name',''))
-                    doc_patient_age     = st.number_input('🎂 Age *', 1, 120, int(st.session_state.get('doc_patient_age_val', 30)), key='doc_patient_age_num')
-                    doc_patient_gender  = st.selectbox('⚧ Gender *', ['Male','Female','Other'],
+                    doc_patient_name    = st.text_input(' Patient Full Name *', placeholder='e.g. Ramesh Kumar',         key='doc_patient_name',    value=st.session_state.get('doc_patient_name',''))
+                    doc_patient_age     = st.number_input('Age *', 1, 120, int(st.session_state.get('doc_patient_age_val', 30)), key='doc_patient_age_num')
+                    doc_patient_gender  = st.selectbox(' Gender *', ['Male','Female','Other'],
                                                         index=['Male','Female','Other'].index(st.session_state.get('doc_patient_gender_val','Male')),
                                                         key='doc_patient_gender_sel')
                 with c2:
-                    doc_patient_email   = st.text_input('📧 Email *', placeholder='patient@example.com',                  key='doc_patient_email',   value=st.session_state.get('doc_patient_email',''))
-                    doc_patient_phone   = st.text_input('📞 Contact Number *', placeholder='+91 98765 43210',             key='doc_patient_phone',   value=st.session_state.get('doc_patient_phone',''))
-                    doc_patient_address = st.text_input('🏠 Address', placeholder='123, Main St, City',                   key='doc_patient_address', value=st.session_state.get('doc_patient_address',''))
+                    doc_patient_email   = st.text_input(' Email *', placeholder='patient@example.com',                  key='doc_patient_email',   value=st.session_state.get('doc_patient_email',''))
+                    doc_patient_phone   = st.text_input(' Contact Number *', placeholder='+91 98765 43210',             key='doc_patient_phone',   value=st.session_state.get('doc_patient_phone',''))
+                    doc_patient_address = st.text_input(' Address', placeholder='123, Main St, City',                   key='doc_patient_address', value=st.session_state.get('doc_patient_address',''))
 
             if st.button('Proceed to Clinical Assessment →', type='primary', use_container_width=True):
                 p_name  = st.session_state.get('doc_patient_name','').strip()
@@ -1723,18 +1723,18 @@ def prediction_page():
         st.markdown('<div class="card-heading"><div class="badge-num">1</div>Clinical Health Parameters</div>', unsafe_allow_html=True)
         c_left, c_right = st.columns(2)
         with c_left:
-            st.markdown(f'<p style="color:{MUTED};font-size:13px;margin-bottom:12px;">🔵 Metabolic Indicators</p>', unsafe_allow_html=True)
-            preg = st.number_input('🤰 Pregnancies', 0, 20, 1, help='Number of times pregnant')
-            glucose = st.number_input('🩸 Glucose (mg/dL)', 50, 250, 120, help='Plasma glucose concentration (2hr OGTT)')
-            insulin = st.number_input('💉 Insulin (μU/mL)', 0, 400, 100, help='2-Hour serum insulin. Normal: 16-166 μU/mL')
-            dpf = st.number_input('🧬 Diabetes Pedigree', 0.0, 3.0, 0.5, help='Diabetes pedigree function — family history score')
+            st.markdown(f'<p style="color:{MUTED};font-size:13px;margin-bottom:12px;"> Metabolic Indicators</p>', unsafe_allow_html=True)
+            preg = st.number_input(' Pregnancies', 0, 20, 1, help='Number of times pregnant')
+            glucose = st.number_input(' Glucose (mg/dL)', 50, 250, 120, help='Plasma glucose concentration (2hr OGTT)')
+            insulin = st.number_input(' Insulin (μU/mL)', 0, 400, 100, help='2-Hour serum insulin. Normal: 16-166 μU/mL')
+            dpf = st.number_input(' Diabetes Pedigree', 0.0, 3.0, 0.5, help='Diabetes pedigree function — family history score')
         with c_right:
-            st.markdown(f'<p style="color:{MUTED};font-size:13px;margin-bottom:12px;">🟢 Physical Indicators</p>', unsafe_allow_html=True)
-            bp = st.number_input('💓 Blood Pressure (mmHg)', 30, 140, 70, help='Diastolic blood pressure. Normal: 60-80 mmHg')
-            skin = st.number_input('📏 Skin Thickness (mm)', 0, 100, 20, help='Triceps skin fold thickness')
-            bmi = st.number_input('⚖️ BMI', 10.0, 70.0, 25.0, help='Body Mass Index. Normal: 18.5-24.9')
+            st.markdown(f'<p style="color:{MUTED};font-size:13px;margin-bottom:12px;"> Physical Indicators</p>', unsafe_allow_html=True)
+            bp = st.number_input(' Blood Pressure (mmHg)', 30, 140, 70, help='Diastolic blood pressure. Normal: 60-80 mmHg')
+            skin = st.number_input(' Skin Thickness (mm)', 0, 100, 20, help='Triceps skin fold thickness')
+            bmi = st.number_input(' BMI', 10.0, 70.0, 25.0, help='Body Mass Index. Normal: 18.5-24.9')
             default_age = int(users.get(st.session_state.current_user_email, {}).get('age', 30)) if st.session_state.user_type == 'patient' else 35
-            age = st.number_input('🎂 Age (years)', 1, 100, default_age)
+            age = st.number_input(' Age (years)', 1, 100, default_age)
 
     # Pure st.markdown reference cards — no components.html
     st.markdown(f'''
@@ -1986,7 +1986,7 @@ def doctor_page():
     tab_dir, tab_detail = st.tabs(['📋 Patient Reports Directory', '🔍 Detailed Patient Analysis'])
     with tab_dir:
         st.subheader('My Patient Reports')
-        if not my_reports: st.info('📭 No patient reports available yet.')
+        if not my_reports: st.info(' No patient reports available yet.')
         else:
             report_data = []
             for idx, r in enumerate(my_reports):
@@ -1995,7 +1995,7 @@ def doctor_page():
             st.dataframe(pd.DataFrame(report_data).drop(columns=['ID']), use_container_width=True)
 
     with tab_detail:
-        if not my_reports: st.info('📭 No patient reports available.')
+        if not my_reports: st.info(' No patient reports available.')
         else:
             report_options = [f"{r.get('name')} ({r.get('time')}) — {r.get('result')}" for r in my_reports]
             selected_idx = st.selectbox('🔍 Select Patient Report:', range(len(my_reports)), format_func=lambda x: report_options[x])
@@ -2017,16 +2017,16 @@ def doctor_page():
 
             st.markdown(f'''
 <div style="background:{CARD};border:1px solid {BORDER};padding:24px;border-radius:20px;margin-bottom:20px;">
-    <h3 style="margin-top:0;font-family:Sora,sans-serif;color:{TEXT};">👤 Patient Profile: {name}</h3>
+    <h3 style="margin-top:0;font-family:Sora,sans-serif;color:{TEXT};"> Patient Profile: {name}</h3>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;font-size:14px;color:{TEXT};">
-        <div><b>📧 Email:</b><br>{email}</div>
-        <div><b>📞 Phone:</b><br>{s_phone or 'N/A'}</div>
-        <div><b>🎂 Age:</b><br>{s_age}</div>
-        <div><b>⚧ Gender:</b><br>{s_gender or 'N/A'}</div>
+        <div><b> Email:</b><br>{email}</div>
+        <div><b> Phone:</b><br>{s_phone or 'N/A'}</div>
+        <div><b> Age:</b><br>{s_age}</div>
+        <div><b> Gender:</b><br>{s_gender or 'N/A'}</div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:14px;font-size:14px;color:{TEXT};">
-        <div><b>🏠 Address:</b><br>{s_address}</div>
-        <div><b>👨‍⚕️ Assessed By:</b><br>Dr. {s_doc_name} &nbsp;·&nbsp; {s_doc_email}</div>
+        <div><b> Address:</b><br>{s_address}</div>
+        <div><b> Assessed By:</b><br>Dr. {s_doc_name} &nbsp;·&nbsp; {s_doc_email}</div>
     </div>
     <div class="{"result-high" if is_high_d else "result-low"}" style="padding:14px;">
         {"⚠️" if is_high_d else "✅"} <b>Assessment:</b> {result} &nbsp;·&nbsp; {confidence}% Confidence
@@ -2035,7 +2035,7 @@ def doctor_page():
 ''', unsafe_allow_html=True)
 
             st.subheader('📋 Clinical Health Parameters')
-            param_labels = {'Pregnancies': '🤰 Pregnancies', 'Glucose': '🩸 Glucose (mg/dL)', 'BloodPressure': '💓 Blood Pressure (mmHg)', 'SkinThickness': '📏 Skin Thickness (mm)', 'Insulin': '💉 Insulin (μU/mL)', 'BMI': '⚖️ BMI (kg/m²)', 'DiabetesPedigreeFunction': '🧬 Diabetes Pedigree', 'Age': '🎂 Age (years)'}
+            param_labels = {'Pregnancies': ' Pregnancies', 'Glucose': ' Glucose (mg/dL)', 'BloodPressure': ' Blood Pressure (mmHg)', 'SkinThickness': ' Skin Thickness (mm)', 'Insulin': ' Insulin (μU/mL)', 'BMI': ' BMI (kg/m²)', 'DiabetesPedigreeFunction': ' Diabetes Pedigree', 'Age': ' Age (years)'}
             cols = st.columns(4)
             for i, (key, label) in enumerate(param_labels.items()):
                 with cols[i % 4]:
@@ -2115,13 +2115,13 @@ def profile_page():
     with st.container(border=True):
         if utype == 'patient':
             user = users[email]
-            name = st.text_input('👤 Name', value=user.get('name', ''))
-            phone = st.text_input('📞 Phone', value=user.get('phone', ''))
-            age = st.number_input('🎂 Age', 1, 100, int(user.get('age', 25)))
-            gender = st.selectbox('⚧ Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(user.get('gender', 'Female')) if user.get('gender') in ['Female', 'Male', 'Other'] else 0)
-            address = st.text_area('🏠 Address', value=user.get('address', ''))
-            uploaded_photo = st.file_uploader('📸 Change Profile Photo', type=['png', 'jpg', 'jpeg'], key='edit_patient_photo')
-            if st.button('💾 Save Profile', type='primary', use_container_width=True):
+            name = st.text_input(' Name', value=user.get('name', ''))
+            phone = st.text_input(' Phone', value=user.get('phone', ''))
+            age = st.number_input(' Age', 1, 100, int(user.get('age', 25)))
+            gender = st.selectbox(' Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(user.get('gender', 'Female')) if user.get('gender') in ['Female', 'Male', 'Other'] else 0)
+            address = st.text_area(' Address', value=user.get('address', ''))
+            uploaded_photo = st.file_uploader(' Change Profile Photo', type=['png', 'jpg', 'jpeg'], key='edit_patient_photo')
+            if st.button(' Save Profile', type='primary', use_container_width=True):
                 update_data = {'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address}
                 if uploaded_photo: update_data['profile_pic'] = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
                 users[email].update(update_data); save_json(USERS_FILE, users)
@@ -2129,13 +2129,13 @@ def profile_page():
                 add_audit('Profile Updated', email, 'Patient profile updated'); st.success('✅ Profile updated!'); st.rerun()
         elif utype == 'doctor':
             doctor = doctors[email]
-            name = st.text_input('👤 Name', value=doctor.get('name', ''))
-            phone = st.text_input('📞 Phone', value=doctor.get('phone', ''))
+            name = st.text_input(' Name', value=doctor.get('name', ''))
+            phone = st.text_input(' Phone', value=doctor.get('phone', ''))
             specialization = st.text_input('🔬 Specialization', value=doctor.get('specialization', ''))
-            hospital = st.text_input('🏥 Hospital', value=doctor.get('hospital', ''))
-            license_no = st.text_input('📋 License No.', value=doctor.get('license_no', ''))
-            uploaded_photo = st.file_uploader('📸 Change Profile Photo', type=['png', 'jpg', 'jpeg'], key='edit_doctor_photo')
-            if st.button('💾 Save Profile', type='primary', use_container_width=True):
+            hospital = st.text_input(' Hospital', value=doctor.get('hospital', ''))
+            license_no = st.text_input(' License No.', value=doctor.get('license_no', ''))
+            uploaded_photo = st.file_uploader(' Change Profile Photo', type=['png', 'jpg', 'jpeg'], key='edit_doctor_photo')
+            if st.button(' Save Profile', type='primary', use_container_width=True):
                 update_data = {'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no}
                 if uploaded_photo: update_data['profile_pic'] = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
                 doctors[email].update(update_data); save_json(DOCTORS_FILE, doctors)
