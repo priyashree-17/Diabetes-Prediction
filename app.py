@@ -779,7 +779,7 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"],
 button[data-testid="baseButton-headerNoPadding"],
-button[data-testid="baseButton-header"] {
+button[data-testid="baseButton-header"] {{
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
@@ -795,24 +795,24 @@ button[data-testid="baseButton-header"] {
     align-items: center !important;
     justify-content: center !important;
     position: relative !important;
-}
+}}
 
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"] *,
 button[data-testid="baseButton-headerNoPadding"] *,
-button[data-testid="baseButton-header"] * {
+button[data-testid="baseButton-header"] * {{
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
-}
+}}
 
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before,
 button[data-testid="baseButton-headerNoPadding"]::before,
-button[data-testid="baseButton-header"]::before {
+button[data-testid="baseButton-header"]::before {{
     content: "‹" !important;
     display: block !important;
     visibility: visible !important;
@@ -823,45 +823,45 @@ button[data-testid="baseButton-header"]::before {
     color: #4C1D95 !important;
     -webkit-text-fill-color: #4C1D95 !important;
     font-family: Arial, Helvetica, sans-serif !important;
-}
+}}
 
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover,
 button[data-testid="baseButton-headerNoPadding"]:hover,
-button[data-testid="baseButton-header"]:hover {
+button[data-testid="baseButton-header"]:hover {{
     background: linear-gradient(135deg, #818CF8, #F472B6) !important;
-}
+}}
 
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover::before,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover::before,
 button[data-testid="baseButton-headerNoPadding"]:hover::before,
-button[data-testid="baseButton-header"]:hover::before {
+button[data-testid="baseButton-header"]:hover::before {{
     color: #FFFFFF !important;
     -webkit-text-fill-color: #FFFFFF !important;
-}
+}}
 
 /* collapsed sidebar open control */
-[data-testid="stSidebarCollapsedControl"] {
+[data-testid="stSidebarCollapsedControl"] {{
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
     overflow: hidden !important;
-}
+}}
 
 [data-testid="stSidebarCollapsedControl"] *,
 [data-testid="stSidebarCollapsedControl"] button *,
 [data-testid="stSidebarCollapsedControl"] span,
-[data-testid="stSidebarCollapsedControl"] svg {
+[data-testid="stSidebarCollapsedControl"] svg {{
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
-}
+}}
 
 [data-testid="stSidebarCollapsedControl"]::before,
-[data-testid="stSidebarCollapsedControl"] button::before {
+[data-testid="stSidebarCollapsedControl"] button::before {{
     content: "›" !important;
     display: block !important;
     visibility: visible !important;
@@ -872,7 +872,7 @@ button[data-testid="baseButton-header"]:hover::before {
     color: #DDD6FE !important;
     -webkit-text-fill-color: #DDD6FE !important;
     font-family: Arial, Helvetica, sans-serif !important;
-}
+}}
 
 </style>
 '''
