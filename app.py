@@ -214,8 +214,8 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
    SIDEBAR TOGGLE  —  pure CSS, no JS, no fonts, no SVG files
    Strategy:
      1. Make button a styled pill / square with overflow:hidden
-     2. font-size:0 on the button silences ALL text children
-        (including the Material Icons span "keyboard_double_←")
+     2. font-size:0 on the button + text-indent trick silence ALL
+        text children (including Material Icons "keyboard_double_arrow_left/right")
      3. button::before injects the visible icon via Unicode +
         a safe system font, at an explicit font-size
    ══════════════════════════════════════════════════════════════ */
@@ -250,21 +250,28 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     padding: 0 !important;
     margin: 0 !important;
     cursor: pointer !important;
-    font-size: 0 !important;          /* silences ALL text children */
+    font-size: 0 !important;
     color: transparent !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     overflow: hidden !important;
+    text-indent: -9999px !important;
 }}
-/* Silence every descendant text node too */
-[data-testid="stSidebarCollapsedControl"] button * {{
+/* Silence every descendant — covers span[class*="material"], svg, and plain text nodes */
+[data-testid="stSidebarCollapsedControl"] button *,
+[data-testid="stSidebarCollapsedControl"] button span,
+[data-testid="stSidebarCollapsedControl"] button svg {{
     font-size: 0 !important;
     color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
     width: 0 !important;
     height: 0 !important;
     overflow: hidden !important;
     position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    text-indent: -9999px !important;
 }}
 /* Inject »» arrow via ::before — system font, no Material Icons */
 [data-testid="stSidebarCollapsedControl"] button::before {{
@@ -273,12 +280,15 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     font-weight: 900 !important;
     font-family: Arial, Helvetica, sans-serif !important;
     color: #C4B5FD !important;
+    -webkit-text-fill-color: #C4B5FD !important;
     line-height: 1 !important;
     position: static !important;
     width: auto !important;
     height: auto !important;
     overflow: visible !important;
     display: block !important;
+    text-indent: 0 !important;
+    opacity: 1 !important;
 }}
 
 /* ── Close button (inside open sidebar) ── */
@@ -296,15 +306,33 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
     height: 40px !important;
     padding: 0 !important;
     cursor: pointer !important;
-    font-size: 0 !important;          /* silences ALL text children */
+    font-size: 0 !important;
     color: transparent !important;
     overflow: hidden !important;
     transition: background 0.18s ease !important;
     flex-shrink: 0 !important;
+    text-indent: -9999px !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
     background: {'rgba(109,40,217,0.50)' if DARK else 'rgba(109,40,217,0.32)'} !important;
+}}
+/* Silence Material Icons span inside close button */
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] *,
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] span,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] span,
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] svg,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
+    opacity: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    text-indent: -9999px !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"] * {{
@@ -323,12 +351,15 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before
     font-weight: 900 !important;
     font-family: Arial, Helvetica, sans-serif !important;
     color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    -webkit-text-fill-color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     line-height: 1 !important;
     position: static !important;
     width: auto !important;
     height: auto !important;
     overflow: visible !important;
     display: block !important;
+    text-indent: 0 !important;
+    opacity: 1 !important;
 }}
 
 /* Hide any toggle that leaks into the main header area */
