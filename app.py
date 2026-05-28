@@ -488,7 +488,7 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
 /* Fix file uploader button ghost text */
 [data-testid="stFileUploaderDropzone"] button::before,
 [data-testid="stFileUploaderDropzone"] button::after {{
-    content: none !important;
+    content: "" !important;
 }}
 
 /* Cards */
