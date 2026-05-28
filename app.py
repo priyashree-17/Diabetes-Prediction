@@ -1148,46 +1148,44 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, 
     # ════════════════════════════════════════════════════════════════════════
 
     suggestions = get_suggestions(patient_data)
-    plan_h = max(96, len(suggestions) * 24 + 26)
-    footer_y = 55
-    reserved_footer_space = 120
+    footer_y = 45
 
-    # Move the whole action plan to a new page BEFORE drawing it if it would touch the footer.
-    if y - plan_h < reserved_footer_space:
-        pdf.showPage()
-        setc(C_NAVY)
-        pdf.rect(0, H-70, W, 70, fill=True, stroke=False)
-        pdf.setFont('Helvetica-Bold', 16)
-        setc(C_WHITE)
-        pdf.drawString(30, H-42, 'GlucoTrack Clinical Report')
-        pdf.setFont('Helvetica', 8)
-        setc((0.65, 0.78, 0.95))
-        pdf.drawString(30, H-56, f'Generated: {pred_time}')
-        y = H - 100
+    # Always place the action plan on a fresh page so footer never overlaps it.
+    pdf.showPage()
+
+    # Fresh page header
+    setc(C_NAVY)
+    pdf.rect(0, H-70, W, 70, fill=True, stroke=False)
+    pdf.setFont('Helvetica-Bold', 16)
+    setc(C_WHITE)
+    pdf.drawString(30, H-42, 'GlucoTrack Clinical Report')
+    pdf.setFont('Helvetica', 8)
+    setc((0.65, 0.78, 0.95))
+    pdf.drawString(30, H-56, f'Generated: {pred_time}')
+
+    y = H - 105
 
     section_title(30, y, 'Recommended Health Action Plan')
-    y -= 18
+    y -= 22
 
+    plan_h = max(110, len(suggestions) * 30 + 34)
     rect_fill(30, y-plan_h, W-60, plan_h, rgb('#F0FDFA'), rgb('#99F6E4'), radius=12)
-    yy = y - 24
+
+    yy = y - 28
     for i, s in enumerate(suggestions, 1):
         s_clean = ''.join(c for c in s if ord(c)<65536 and not (0x1F000<=ord(c)<=0x1FFFF)).strip()
         setc(C_TEAL)
-        pdf.circle(48, yy+4, 7, fill=True, stroke=False)
+        pdf.circle(50, yy+4, 8, fill=True, stroke=False)
         setc(C_WHITE)
-        pdf.setFont('Helvetica-Bold', 7)
-        pdf.drawCentredString(48, yy+2, str(i))
+        pdf.setFont('Helvetica-Bold', 7.5)
+        pdf.drawCentredString(50, yy+1.5, str(i))
+
         setc(C_SLATE)
-        pdf.setFont('Helvetica', 9)
-        pdf.drawString(62, yy, s_clean)
-        yy -= 24
+        pdf.setFont('Helvetica', 9.5)
+        pdf.drawString(68, yy, s_clean)
+        yy -= 30
 
-    y = y - plan_h - 18
-
-    # ════════════════════════════════════════════════════════════════════════
-    # FOOTER
-    # ════════════════════════════════════════════════════════════════════════
-
+    # Footer on same fresh page, far below the action plan
     setstroke(C_LINE)
     pdf.setLineWidth(0.6)
     pdf.line(30, footer_y, W-30, footer_y)
