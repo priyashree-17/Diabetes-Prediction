@@ -401,15 +401,21 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     padding-right: 88px !important;
     min-height: 54px !important;
     box-shadow: none !important;
-    appearance: textfield !important;
+    appearance: none !important;
     -moz-appearance: textfield !important;
+    -webkit-appearance: none !important;
 }}
 
 [data-testid="stNumberInput"] input::-webkit-outer-spin-button,
 [data-testid="stNumberInput"] input::-webkit-inner-spin-button {{
     -webkit-appearance: none !important;
+    appearance: none !important;
     margin: 0 !important;
     display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }}
 
 /* Style only the real stepper buttons inside the input box */
@@ -794,6 +800,20 @@ button[data-testid="baseButton-header"] * {{
     -webkit-text-fill-color: transparent !important;
 }}
 </style>
+<script>
+(function() {{
+  function fixNumberInputs() {{
+    document.querySelectorAll('[data-testid="stNumberInput"] input').forEach(function(el) {{
+      if (el.dataset.fixedDouble) return;
+      el.dataset.fixedDouble = '1';
+      el.addEventListener('wheel', function(e) {{ e.preventDefault(); }}, {{ passive: false }});
+    }});
+  }}
+  var obs = new MutationObserver(fixNumberInputs);
+  obs.observe(document.body, {{ subtree: true, childList: true }});
+  fixNumberInputs();
+}})();
+</script>
 '''
 st.markdown(css, unsafe_allow_html=True)
 
