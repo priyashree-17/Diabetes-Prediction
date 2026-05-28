@@ -367,12 +367,13 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     border-radius: 14px !important;
     overflow: hidden !important;
 }}
-/* The step buttons container */
-[data-testid="stNumberInput"] button {{
+/* Step buttons — scoped tightly to number input only */
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"],
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] {{
     background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(109,40,217,0.10)'} !important;
     border: none !important;
     border-left: 1.5px solid {BORDER} !important;
-    color: {TEXT} !important;
+    color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     width: 36px !important;
     min-width: 36px !important;
     height: 100% !important;
@@ -383,24 +384,30 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     transition: background 0.15s ease !important;
     flex-shrink: 0 !important;
     border-radius: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: static !important;
 }}
-[data-testid="stNumberInput"] button:hover {{
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"]:hover,
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"]:hover {{
     background: {'rgba(109,40,217,0.38)' if DARK else 'rgba(109,40,217,0.22)'} !important;
 }}
-/* Make the + and - symbols clearly visible in both modes */
-[data-testid="stNumberInput"] button span,
-[data-testid="stNumberInput"] button p,
-[data-testid="stNumberInput"] button svg {{
+/* Make SVG icons inside +/- buttons visible */
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"] svg,
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] svg,
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"] span,
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] span,
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"] *,
+[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] * {{
     color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     fill: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     stroke: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    font-size: 18px !important;
-    font-weight: 700 !important;
     -webkit-text-fill-color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     opacity: 1 !important;
     visibility: visible !important;
-    width: auto !important;
-    height: auto !important;
+    display: block !important;
+    width: 18px !important;
+    height: 18px !important;
     position: static !important;
     overflow: visible !important;
 }}
