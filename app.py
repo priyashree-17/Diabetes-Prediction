@@ -1240,11 +1240,11 @@ def public_header():
     with col_nav:
         st.markdown(f'''
 <div style="display:flex;gap:28px;margin-top:14px;">
-    <a href="#features" class="nav-link" target="_self">✨ Features</a>
-    <a href="#how-it-works" class="nav-link" target="_self">🔄 How It Works</a>
+    <a href="#features" class="nav-link" target="_self"> Features</a>
+    <a href="#how-it-works" class="nav-link" target="_self"> How It Works</a>
 </div>''', unsafe_allow_html=True)
     with col_theme:
-        theme_label = '☀️ Light' if st.session_state.dark_mode else '🌙 Dark'
+        theme_label = ' Light' if st.session_state.dark_mode else ' Dark'
         if st.button(theme_label, key='pub_theme_toggle', type='secondary', use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
     with col_signin:
@@ -1292,7 +1292,7 @@ def dashboard_sidebar():
 </div>
 ''', unsafe_allow_html=True)
 
-    if st.sidebar.button('✏️ Edit Profile', use_container_width=True):
+    if st.sidebar.button(' Edit Profile', use_container_width=True):
         st.session_state.page = 'profile'
         st.rerun()
 
@@ -1358,10 +1358,10 @@ def landing_page():
 <section class="hero-section">
     <div class="hero-card">
         <div class="hero-badge"> AI-POWERED HEALTH PLATFORM</div>
-        <h1 class="hero-title">GlucoTrack</h1>
+        <h1 class="hero-title">Welcome To GlucoTrack !</h1>
         <p class="hero-sub">Predict diabetes risk in seconds using Machine Learning.<br>Understand your health. Take action early. Live better.</p>
         <div style="position:relative;z-index:2;display:flex;justify-content:center;gap:14px;margin-top:8px;">
-            <a href="?hero_clicked=1" style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,0.22);color:white !important;text-decoration:none;border-radius:14px;padding:15px 44px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;cursor:pointer;border:2px solid rgba(255,255,255,0.40);backdrop-filter:blur(8px);">🚀 Get Started Free</a>
+            <a href="?hero_clicked=1" style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,0.22);color:white !important;text-decoration:none;border-radius:14px;padding:15px 44px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;cursor:pointer;border:2px solid rgba(255,255,255,0.40);backdrop-filter:blur(8px);"> Get Started </a>
         </div>
         <div class="hero-stats">
             <div class="hero-stat"><div class="hero-stat-num">95%+</div><div class="hero-stat-label">Model Accuracy</div></div>
