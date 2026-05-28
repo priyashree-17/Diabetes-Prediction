@@ -1121,8 +1121,26 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 5 — HEALTH ANALYTICS (chart + gauge side by side)
     # ════════════════════════════════════════════════════════════════════════
+
+    # Move analytics section to a fresh second page
+    pdf.showPage()
+
+    # Page header
+    setc(C_NAVY)
+    pdf.rect(0, H-70, W, 70, fill=True, stroke=False)
+
+    pdf.setFont('Helvetica-Bold', 16)
+    setc(C_WHITE)
+    pdf.drawString(30, H-42, 'GlucoTrack Clinical Report')
+
+    pdf.setFont('Helvetica', 8)
+    setc((0.65, 0.78, 0.95))
+    pdf.drawString(30, H-56, f'Generated: {pred_time}')
+
+    y = H - 105
+
     section_title(30, y, 'Health Analytics')
-    y -= 14
+    y -= 18
 
     chart_img = create_pdf_chart_image(patient_data)
     gauge_img = create_risk_gauge_image(confidence, high)
