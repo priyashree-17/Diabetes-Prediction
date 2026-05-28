@@ -1146,28 +1146,14 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 6 — HEALTH ACTION PLAN
     # ════════════════════════════════════════════════════════════════════════
-    section_title(30, y, 'Recommended Health Action Plan')
-    y -= 14
 
     suggestions = get_suggestions(patient_data)
-    plan_h = max(90, len(suggestions) * 22 + 20)
-    rect_fill(30, y-plan_h, W-60, plan_h, rgb('#F0FDFA'), rgb('#99F6E4'), radius=12)
-    yy = y - 18
-    for i, s in enumerate(suggestions, 1):
-        s_clean = ''.join(c for c in s if ord(c)<65536 and not (0x1F000<=ord(c)<=0x1FFFF))
-        setc(C_TEAL); pdf.circle(48, yy+3, 7, fill=True, stroke=False)
-        setc(C_WHITE); pdf.setFont('Helvetica-Bold',7); pdf.drawCentredString(48, yy+1, str(i))
-        setc(C_SLATE); pdf.setFont('Helvetica',9); pdf.drawString(62, yy, s_clean.strip())
-        yy -= 22
-
-    # ════════════════════════════════════════════════════════════════════════
-    # FOOTER
-    # ════════════════════════════════════════════════════════════════════════
-
+    plan_h = max(96, len(suggestions) * 24 + 26)
     footer_y = 55
+    reserved_footer_space = 120
 
-    # If the action plan reaches the footer area, move footer to a fresh page.
-    if y - plan_h < 90:
+    # Move the whole action plan to a new page BEFORE drawing it if it would touch the footer.
+    if y - plan_h < reserved_footer_space:
         pdf.showPage()
         setc(C_NAVY)
         pdf.rect(0, H-70, W, 70, fill=True, stroke=False)
@@ -1177,6 +1163,30 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, 
         pdf.setFont('Helvetica', 8)
         setc((0.65, 0.78, 0.95))
         pdf.drawString(30, H-56, f'Generated: {pred_time}')
+        y = H - 100
+
+    section_title(30, y, 'Recommended Health Action Plan')
+    y -= 18
+
+    rect_fill(30, y-plan_h, W-60, plan_h, rgb('#F0FDFA'), rgb('#99F6E4'), radius=12)
+    yy = y - 24
+    for i, s in enumerate(suggestions, 1):
+        s_clean = ''.join(c for c in s if ord(c)<65536 and not (0x1F000<=ord(c)<=0x1FFFF)).strip()
+        setc(C_TEAL)
+        pdf.circle(48, yy+4, 7, fill=True, stroke=False)
+        setc(C_WHITE)
+        pdf.setFont('Helvetica-Bold', 7)
+        pdf.drawCentredString(48, yy+2, str(i))
+        setc(C_SLATE)
+        pdf.setFont('Helvetica', 9)
+        pdf.drawString(62, yy, s_clean)
+        yy -= 24
+
+    y = y - plan_h - 18
+
+    # ════════════════════════════════════════════════════════════════════════
+    # FOOTER
+    # ════════════════════════════════════════════════════════════════════════
 
     setstroke(C_LINE)
     pdf.setLineWidth(0.6)
