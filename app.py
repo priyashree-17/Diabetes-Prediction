@@ -210,38 +210,7 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"] {{ display: none !important; }}
 
-/* ══════════════════════════════════════════════════════════════
-   SIDEBAR TOGGLE — hide "keyboard_double_arrow" icon text,
-   replace with clean Unicode arrows via ::before pseudo-element.
-   Key insight: Material Icons renders via a <span> with a ligature
-   font. We override the font-family on those spans to a font that
-   has no ligatures, making the text invisible, then draw our own
-   icon with ::before.
-   ══════════════════════════════════════════════════════════════ */
-
-/* Override Material Icons font so ligature text doesn't render */
-@font-face {{
-    font-family: 'Material Icons';
-    src: local('Arial');
-    unicode-range: U+E000-F8FF;
-}}
-@font-face {{
-    font-family: 'Material Icons Outlined';
-    src: local('Arial');
-    unicode-range: U+E000-F8FF;
-}}
-@font-face {{
-    font-family: 'Material Icons Round';
-    src: local('Arial');
-    unicode-range: U+E000-F8FF;
-}}
-@font-face {{
-    font-family: 'Material Symbols Rounded';
-    src: local('Arial');
-    unicode-range: U+E000-F8FF;
-}}
-
-/* ── Open pill (sidebar collapsed) ── */
+/* Sidebar collapse / expand arrow fix */
 [data-testid="stSidebarCollapsedControl"] {{
     visibility: visible !important;
     display: flex !important;
@@ -249,13 +218,12 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     background: {'rgba(30,20,60,0.96)' if DARK else '#4C1D95'} !important;
     border-radius: 0 14px 14px 0 !important;
     box-shadow: 4px 0 18px rgba(76,29,149,0.50) !important;
-    width: 32px !important;
-    height: 52px !important;
+    width: 34px !important;
+    height: 54px !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
     overflow: hidden !important;
-    transition: width 0.18s ease, box-shadow 0.18s ease !important;
     cursor: pointer !important;
 }}
 [data-testid="stSidebarCollapsedControl"]:hover {{
@@ -263,84 +231,91 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     box-shadow: 6px 0 22px rgba(76,29,149,0.70) !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button {{
-    position: relative !important;
+    font-size: 0 !important;
+    color: transparent !important;
     background: transparent !important;
     border: none !important;
     width: 100% !important;
     height: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
-    cursor: pointer !important;
+    position: relative !important;
     overflow: hidden !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 }}
-/* Hide all children of the toggle button */
-[data-testid="stSidebarCollapsedControl"] button > * {{
+[data-testid="stSidebarCollapsedControl"] button *,
+[data-testid="stSidebarCollapsedControl"] button span,
+[data-testid="stSidebarCollapsedControl"] button svg {{
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
 }}
-/* Inject » arrow via ::before */
 [data-testid="stSidebarCollapsedControl"] button::before {{
-    content: "\00BB" !important;
-    font-size: 22px !important;
+    content: "»" !important;
+    font-size: 26px !important;
     font-weight: 900 !important;
+    color: #DDD6FE !important;
+    -webkit-text-fill-color: #DDD6FE !important;
     font-family: Arial, Helvetica, sans-serif !important;
-    color: #C4B5FD !important;
-    -webkit-text-fill-color: #C4B5FD !important;
     line-height: 1 !important;
     display: block !important;
     opacity: 1 !important;
-    position: static !important;
 }}
 
-/* ── Close button (inside open sidebar) ── */
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
-    position: relative !important;
-    visibility: visible !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    font-size: 0 !important;
+    color: transparent !important;
     background: {'rgba(109,40,217,0.28)' if DARK else 'rgba(109,40,217,0.15)'} !important;
     border: 1.5px solid {'rgba(196,181,253,0.40)' if DARK else 'rgba(109,40,217,0.35)'} !important;
     border-radius: 12px !important;
     width: 40px !important;
     height: 40px !important;
     padding: 0 !important;
-    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     overflow: hidden !important;
-    transition: background 0.18s ease !important;
-    flex-shrink: 0 !important;
+    position: relative !important;
+    cursor: pointer !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
     background: {'rgba(109,40,217,0.50)' if DARK else 'rgba(109,40,217,0.32)'} !important;
 }}
-/* Hide all children of close button */
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] > *,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"] > * {{
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] *,
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] span,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] span,
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] svg,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
 }}
-/* Inject « arrow via ::before */
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before {{
-    content: "\00AB" !important;
-    font-size: 22px !important;
+    content: "«" !important;
+    font-size: 26px !important;
     font-weight: 900 !important;
+    color: {'#DDD6FE' if DARK else '#4C1D95'} !important;
+    -webkit-text-fill-color: {'#DDD6FE' if DARK else '#4C1D95'} !important;
     font-family: Arial, Helvetica, sans-serif !important;
-    color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
-    -webkit-text-fill-color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     line-height: 1 !important;
     display: block !important;
     opacity: 1 !important;
-    position: static !important;
 }}
-/* Hide any toggle that leaks into the main header area */
 header button[data-testid="baseButton-headerNoPadding"],
 header button[data-testid="baseButton-header"] {{
     display: none !important;
 }}
+
 
 /* ── Sidebar: remove top gap ── */
 section[data-testid="stSidebar"] > div:first-child {{
@@ -486,10 +461,11 @@ section[data-testid="stSidebar"] * {{ color: {'#E2D9F3' if DARK else '#3B0764'} 
     background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(139,92,246,0.15)'};
 }}
 .sb-avatar {{
-    width: 44px; height: 44px; border-radius: 12px; background: {GRAD_PRIMARY};
+    width: 46px; height: 46px; border-radius: 50%; background: {GRAD_PRIMARY};
     color: white !important; display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 16px; font-family: 'Sora', sans-serif !important;
-    flex-shrink: 0; box-shadow: 0 4px 12px rgba(109,40,217,0.25);
+    flex-shrink: 0; border: 2px solid rgba(255,255,255,0.65);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }}
 .sb-info {{ display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }}
 .sb-name {{
@@ -1114,17 +1090,32 @@ def public_header():
 
 
 def dashboard_sidebar():
-    if not st.session_state.started or not st.session_state.logged_in: return
-    name = st.session_state.current_user_name; email = st.session_state.current_user_email
-    role = {'patient': '🧑 Patient', 'doctor': '👨‍⚕️ Doctor', 'admin': '🛡️ Admin'}.get(st.session_state.user_type, 'User')
+    if not st.session_state.started or not st.session_state.logged_in:
+        return
+
+    name = st.session_state.current_user_name
+    email = st.session_state.current_user_email
+    role = {
+        'patient': '🧑 Patient',
+        'doctor': '👨‍⚕️ Doctor',
+        'admin': '🛡️ Admin'
+    }.get(st.session_state.user_type, 'User')
+
     init = initials(name)
+
     profile_pic = None
     if st.session_state.user_type == 'patient' and email in users:
         profile_pic = users[email].get('profile_pic')
     elif st.session_state.user_type == 'doctor' and email in doctors:
         profile_pic = doctors[email].get('profile_pic')
+
     if profile_pic:
-        avatar_html = f'<img src="data:image/png;base64,{profile_pic}" style="width:44px;height:44px;border-radius:12px;object-fit:cover;display:block;flex-shrink:0;">'
+        avatar_html = f'''
+        <img src="data:image/png;base64,{profile_pic}"
+        style="width:46px;height:46px;border-radius:50%;object-fit:cover;
+        display:block;flex-shrink:0;border:2px solid rgba(255,255,255,0.65);
+        box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+        '''
     else:
         avatar_html = f'<div class="sb-avatar">{init}</div>'
 
@@ -1136,68 +1127,70 @@ def dashboard_sidebar():
 <div class="sb-profile">
     {avatar_html}
     <div class="sb-info">
-        <div class="sb-name">{name if name else "Loading..."}</div>
+        <div class="sb-name">{name if name else "User"}</div>
         <div class="sb-role">{role}</div>
     </div>
 </div>
 ''', unsafe_allow_html=True)
 
-    if st.sidebar.button('✏️ Edit Profile', use_container_width=True): st.session_state.page = 'profile'; st.rerun()
+    if st.sidebar.button('✏️ Edit Profile', use_container_width=True):
+        st.session_state.page = 'profile'
+        st.rerun()
 
-    # ── Theme toggle ─────────────────────────────────────────────────────────
-    is_dark = st.session_state.dark_mode
-    knob_pos  = '24px' if is_dark else '2px'
-    track_bg  = 'linear-gradient(90deg,#6D28D9,#A855F7)' if is_dark else 'linear-gradient(90deg,#A5B4FC,#DDD6FE)'
-    lbl_color = '#C4B5FD' if is_dark else '#4C1D95'
-    lbl_text  = '🌙 Dark Mode' if is_dark else '☀️ Light Mode'
-    knob_icon = '🌙' if is_dark else '☀️'
-    st.sidebar.markdown(f'''
-<style>
-section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"]#theme_toggle_btn {{
-    background: transparent !important; border: none !important;
-    padding: 0 !important; height: auto !important; box-shadow: none !important;
-}}
-</style>
-<div style="display:flex;align-items:center;justify-content:space-between;
-     padding:10px 4px 6px 4px;margin:2px 0 4px;">
-  <span style="font-size:13px;font-weight:700;color:{lbl_color};font-family:'DM Sans',sans-serif;">{lbl_text}</span>
-  <div style="position:relative;width:50px;height:28px;border-radius:14px;
-       background:{track_bg};box-shadow:inset 0 1px 4px rgba(0,0,0,0.18);">
-    <div style="position:absolute;top:4px;left:{knob_pos};width:20px;height:20px;
-         border-radius:50%;background:white;box-shadow:0 2px 6px rgba(0,0,0,0.28);
-         display:flex;align-items:center;justify-content:center;font-size:11px;
-         transition:left 0.25s ease;">{knob_icon}</div>
-  </div>
-</div>''', unsafe_allow_html=True)
-    if st.sidebar.button(lbl_text, key='theme_toggle_btn', use_container_width=True):
-        st.session_state.dark_mode = not st.session_state.dark_mode; st.rerun()
-    st.sidebar.markdown(f'''<style>
-div[data-testid="stSidebar"] div.stButton:has(button[kind="secondary"]) {{
-    margin-top: -44px !important; opacity: 0 !important; pointer-events: auto !important;
-}}
-</style>''', unsafe_allow_html=True)
+    st.sidebar.markdown('<div style="padding:10px 8px 4px;">', unsafe_allow_html=True)
+    new_dark = st.sidebar.toggle(
+        '🌙 Dark Mode' if st.session_state.dark_mode else '☀️ Light Mode',
+        value=st.session_state.dark_mode,
+        key='sidebar_dark_toggle'
+    )
+    if new_dark != st.session_state.dark_mode:
+        st.session_state.dark_mode = new_dark
+        st.rerun()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.user_type == 'patient':
-        options = ['prediction', 'dashboard']; labels = ['🩺 Predict Risk', '📊 Health Dashboard']
+        options = ['prediction', 'dashboard']
+        labels = ['🩺 Predict Risk', '📊 Health Dashboard']
     elif st.session_state.user_type == 'doctor':
-        options = ['prediction', 'doctor', 'dashboard']; labels = ['🩺 Predict Risk', '👨‍⚕️ Patient Data', '📊 Health Dashboard']
+        options = ['prediction', 'doctor', 'dashboard']
+        labels = ['🩺 Predict Risk', '👨‍⚕️ Patient Data', '📊 Health Dashboard']
     else:
-        options = ['admin']; labels = ['🛡️ Admin Panel']
+        options = ['admin']
+        labels = ['🛡️ Admin Panel']
 
     if st.session_state.page not in options and st.session_state.page != 'profile':
         st.session_state.page = options[0]
+
     if st.session_state.page != 'profile':
         idx = options.index(st.session_state.page) if st.session_state.page in options else 0
         selected_label = st.sidebar.radio('', labels, index=idx, label_visibility='collapsed')
         selected_page = options[labels.index(selected_label)]
-        if selected_page != st.session_state.page: st.session_state.page = selected_page; st.rerun()
+        if selected_page != st.session_state.page:
+            st.session_state.page = selected_page
+            st.rerun()
 
-    st.sidebar.markdown(f'<div style="height:120px;"></div><div style="padding:0 8px 4px;"><div style="height:1px;background:{GRAD_PRIMARY};border-radius:99px;opacity:0.4;margin-bottom:14px;"></div></div>', unsafe_allow_html=True)
+    st.sidebar.markdown(
+        f'''
+        <div style="height:120px;"></div>
+        <div style="padding:0 8px 4px;">
+            <div style="height:1px;background:{GRAD_PRIMARY};border-radius:99px;opacity:0.4;margin-bottom:14px;"></div>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
+
     if st.sidebar.button('↪ Sign Out', use_container_width=True):
         add_audit('Logout', st.session_state.current_user_email, 'User logged out')
-        for key in ['logged_in','user_type','current_user_name','current_user_email','prediction_done','patient_data','prediction_result','confidence','prediction_time','pdf_bytes']:
+        for key in [
+            'logged_in', 'user_type', 'current_user_name', 'current_user_email',
+            'prediction_done', 'patient_data', 'prediction_result',
+            'confidence', 'prediction_time', 'pdf_bytes'
+        ]:
             st.session_state[key] = defaults[key]
-        st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
+        st.session_state.page = 'auth'
+        st.session_state.auth_mode = 'signin'
+        st.rerun()
+
 
 
 def landing_page():
