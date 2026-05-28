@@ -775,17 +775,37 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
     .hero-title {{ font-size: 52px; letter-spacing: -2px; }}
 }}
 
-/* Clean sidebar toggle */
+/* Hide keyboard_double_arrow text completely */
+button[kind="header"],
 button[data-testid="baseButton-headerNoPadding"],
 button[data-testid="baseButton-header"] {{
+    font-size: 0 !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }}
 
-button[data-testid="baseButton-headerNoPadding"] span,
-button[data-testid="baseButton-header"] span {{
+/* Hide all inner text/icons */
+button[kind="header"] *,
+button[data-testid="baseButton-headerNoPadding"] *,
+button[data-testid="baseButton-header"] * {{
+    font-size: 0 !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}}
+
+/* Show clean menu icon */
+button[kind="header"]::after,
+button[data-testid="baseButton-headerNoPadding"]::after,
+button[data-testid="baseButton-header"]::after {{
+    content: "☰" !important;
+    font-size: 22px !important;
     color: #5B21B6 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }}
 
 </style>
