@@ -485,6 +485,11 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
 [data-testid="stNumberInput"] div[data-baseweb="input"] button:last-of-type::before {{
     content: "+" !important;
 }}
+/* Fix file uploader button ghost text */
+[data-testid="stFileUploaderDropzone"] button::before,
+[data-testid="stFileUploaderDropzone"] button::after {{
+    content: none !important;
+}}
 
 /* Cards */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
@@ -799,6 +804,37 @@ button[data-testid="baseButton-header"] * {{
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
 }}
+/* ── Fix file uploader button double-text overlap ── */
+[data-testid="stFileUploaderDropzone"] button::before,
+[data-testid="stFileUploader"] button::before,
+[data-testid="stFileUploaderDropzoneInput"] + div button::before {
+    content: none !important;
+    display: none !important;
+}
+
+[data-testid="stFileUploaderDropzone"] button,
+[data-testid="stFileUploader"] button {
+    font-size: 14px !important;
+    color: {TEXT} !important;
+    -webkit-text-fill-color: {TEXT} !important;
+    background: transparent !important;
+    border: 1px solid {BORDER} !important;
+    border-radius: 8px !important;
+    padding: 6px 16px !important;
+    min-height: unset !important;
+    box-shadow: none !important;
+    width: auto !important;
+}
+
+[data-testid="stFileUploaderDropzone"] button * ,
+[data-testid="stFileUploader"] button * {
+    font-size: 14px !important;
+    color: {TEXT} !important;
+    -webkit-text-fill-color: {TEXT} !important;
+    display: inline !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
 </style>
 <script>
 (function() {{
