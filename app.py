@@ -9,6 +9,7 @@ import tempfile
 import time
 import webbrowser
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 
 import pandas as pd
@@ -775,19 +776,16 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
     .hero-title {{ font-size: 52px; letter-spacing: -2px; }}
 }}
 
-/* Hide keyboard_double_arrow text completely */
+/* Hide sidebar toggle text safely */
 button[kind="header"],
 button[data-testid="baseButton-headerNoPadding"],
 button[data-testid="baseButton-header"] {{
-    font-size: 0 !important;
     color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
+    font-size: 0 !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }}
-
-/* Hide all inner text/icons */
 button[kind="header"] *,
 button[data-testid="baseButton-headerNoPadding"] *,
 button[data-testid="baseButton-header"] * {{
@@ -795,19 +793,6 @@ button[data-testid="baseButton-header"] * {{
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
 }}
-
-/* Show clean menu icon */
-button[kind="header"]::after,
-button[data-testid="baseButton-headerNoPadding"]::after,
-button[data-testid="baseButton-header"]::after {{
-    content: "☰" !important;
-    font-size: 22px !important;
-    color: #5B21B6 !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}}
-
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
@@ -836,6 +821,12 @@ def password_strength(password):
     if score == 2: return 'Fair', '#F97316', 50, hints
     if score == 3: return 'Good', '#EAB308', 75, hints
     return 'Strong', '#22C55E', 100, hints
+
+
+
+def current_report_datetime():
+    """Current India date and time for PDF reports."""
+    return datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d-%m-%Y %I:%M %p")
 
 
 def reset_prediction_state():
@@ -964,9 +955,10 @@ def create_risk_gauge_image(confidence, is_high):
     return img
 
 
-def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra=None):
+def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, extra=None):
     """Clean two-section PDF: patient/doctor info + full clinical report."""
     if extra is None: extra = {}
+    pred_time = current_report_datetime()
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     W, H = A4
@@ -1171,10 +1163,29 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time, extra
     # ════════════════════════════════════════════════════════════════════════
     # FOOTER
     # ════════════════════════════════════════════════════════════════════════
-    setstroke(C_LINE); pdf.setLineWidth(0.6); pdf.line(30, 38, W-30, 38)
-    pdf.setFont('Helvetica-Oblique', 7); setc(C_MUTED)
-    pdf.drawCentredString(W/2, 26, 'Disclaimer: This report is for educational and screening purposes only — not a medical diagnosis.')
-    pdf.drawCentredString(W/2, 14, 'Please consult a qualified healthcare professional before making any medical decisions.')
+
+    footer_y = 55
+
+    # If the action plan reaches the footer area, move footer to a fresh page.
+    if y - plan_h < 90:
+        pdf.showPage()
+        setc(C_NAVY)
+        pdf.rect(0, H-70, W, 70, fill=True, stroke=False)
+        pdf.setFont('Helvetica-Bold', 16)
+        setc(C_WHITE)
+        pdf.drawString(30, H-42, 'GlucoTrack Clinical Report')
+        pdf.setFont('Helvetica', 8)
+        setc((0.65, 0.78, 0.95))
+        pdf.drawString(30, H-56, f'Generated: {pred_time}')
+
+    setstroke(C_LINE)
+    pdf.setLineWidth(0.6)
+    pdf.line(30, footer_y, W-30, footer_y)
+
+    pdf.setFont('Helvetica-Oblique', 7)
+    setc(C_MUTED)
+    pdf.drawCentredString(W/2, footer_y - 14, 'Disclaimer: This report is for educational and screening purposes only — not a medical diagnosis.')
+    pdf.drawCentredString(W/2, footer_y - 28, 'Please consult a qualified healthcare professional before making any medical decisions.')
 
     pdf.save()
     return buffer.getvalue()
