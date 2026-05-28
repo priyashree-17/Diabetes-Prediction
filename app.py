@@ -357,40 +357,69 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     border: 1.5px solid {BORDER} !important; border-radius: 14px !important; min-height: 52px !important;
 }}
 
-/* ── Number input +/- buttons: clean professional +/- controls ── */
+/* ── Number input +/- buttons: clean professional controls ── */
 [data-testid="stNumberInput"] {{
     position: relative !important;
 }}
+
+/* Hide the tooltip/help button that was becoming an extra top + */
+[data-testid="stNumberInput"] label button,
+[data-testid="stNumberInput"] [data-testid="stTooltipHoverTarget"],
+[data-testid="stNumberInput"] [data-testid="stTooltipIcon"] {{
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}}
+
+/* Input box */
+[data-testid="stNumberInput"] div[data-baseweb="input"] {{
+    background: {INPUT} !important;
+    border: 1.5px solid {BORDER} !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    min-height: 54px !important;
+    box-shadow: {'0 8px 22px rgba(0,0,0,0.20)' if DARK else '0 8px 20px rgba(109,40,217,0.08)'} !important;
+}}
+
+[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within {{
+    border-color: {GRAD1} !important;
+    box-shadow: 0 0 0 3px {GRAD1}26 !important;
+}}
+
 [data-testid="stNumberInput"] input {{
-    padding-right: 82px !important;
+    border: none !important;
+    background: transparent !important;
+    color: {TEXT} !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    padding-left: 16px !important;
+    padding-right: 88px !important;
+    min-height: 54px !important;
+    box-shadow: none !important;
     appearance: textfield !important;
     -moz-appearance: textfield !important;
 }}
+
 [data-testid="stNumberInput"] input::-webkit-outer-spin-button,
 [data-testid="stNumberInput"] input::-webkit-inner-spin-button {{
     -webkit-appearance: none !important;
     margin: 0 !important;
     display: none !important;
 }}
-[data-testid="stNumberInput"] div[data-baseweb="input"] {{
-    background: {INPUT} !important;
-    border: 1.5px solid {BORDER} !important;
-    border-radius: 16px !important;
-    overflow: hidden !important;
-    box-shadow: {'0 8px 22px rgba(0,0,0,0.20)' if DARK else '0 8px 20px rgba(109,40,217,0.08)'} !important;
-}}
-[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within {{
-    border-color: {GRAD1} !important;
-    box-shadow: 0 0 0 3px {GRAD1}26 !important;
-}}
-[data-testid="stNumberInput"] button {{
+
+/* Style only the real stepper buttons inside the input box */
+[data-testid="stNumberInput"] div[data-baseweb="input"] button {{
     background: {'linear-gradient(180deg, rgba(129,140,248,0.24), rgba(244,114,182,0.18))' if DARK else 'linear-gradient(180deg, rgba(109,40,217,0.12), rgba(236,72,153,0.10))'} !important;
     border: none !important;
     border-left: 1px solid {BORDER} !important;
     color: transparent !important;
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 52px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 54px !important;
     padding: 0 !important;
     margin: 0 !important;
     cursor: pointer !important;
@@ -402,18 +431,22 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     position: relative !important;
     overflow: hidden !important;
     transition: all 0.18s ease !important;
+    box-shadow: none !important;
 }}
-[data-testid="stNumberInput"] button:hover {{
+
+[data-testid="stNumberInput"] div[data-baseweb="input"] button:hover {{
     background: {GRAD_PRIMARY} !important;
-    transform: none !important;
 }}
-[data-testid="stNumberInput"] button:active {{
-    transform: scale(0.96) !important;
+
+[data-testid="stNumberInput"] div[data-baseweb="input"] button:focus {{
+    outline: none !important;
+    box-shadow: none !important;
 }}
-[data-testid="stNumberInput"] button *,
-[data-testid="stNumberInput"] button span,
-[data-testid="stNumberInput"] button p,
-[data-testid="stNumberInput"] button svg {{
+
+[data-testid="stNumberInput"] div[data-baseweb="input"] button *,
+[data-testid="stNumberInput"] div[data-baseweb="input"] button span,
+[data-testid="stNumberInput"] div[data-baseweb="input"] button p,
+[data-testid="stNumberInput"] div[data-baseweb="input"] button svg {{
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -421,36 +454,30 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     width: 0 !important;
     height: 0 !important;
 }}
-[data-testid="stNumberInput"] button::before {{
+
+[data-testid="stNumberInput"] div[data-baseweb="input"] button::before {{
     color: {'#EDE9FE' if DARK else '#4C1D95'} !important;
     -webkit-text-fill-color: {'#EDE9FE' if DARK else '#4C1D95'} !important;
     font-family: 'Sora', Arial, sans-serif !important;
-    font-size: 21px !important;
+    font-size: 22px !important;
     font-weight: 900 !important;
     line-height: 1 !important;
     display: block !important;
     opacity: 1 !important;
 }}
-[data-testid="stNumberInput"] button:hover::before {{
+
+[data-testid="stNumberInput"] div[data-baseweb="input"] button:hover::before {{
     color: #FFFFFF !important;
     -webkit-text-fill-color: #FFFFFF !important;
 }}
-[data-testid="stNumberInput"] button:first-of-type::before {{ content: "−" !important; }}
-[data-testid="stNumberInput"] button:last-of-type::before {{ content: "+" !important; }}
-[data-testid="stNumberInput"] button[aria-label*="decrement" i]::before,
-[data-testid="stNumberInput"] button[aria-label*="decrease" i]::before,
-[data-testid="stNumberInput"] button[aria-label*="minus" i]::before {{ content: "−" !important; }}
-[data-testid="stNumberInput"] button[aria-label*="increment" i]::before,
-[data-testid="stNumberInput"] button[aria-label*="increase" i]::before,
-[data-testid="stNumberInput"] button[aria-label*="plus" i]::before {{ content: "+" !important; }}
-/* Hide browser/extension keyboard helper overlays that duplicate inside inputs */
-[data-testid="stNumberInput"] [data-testid*="InputInstructions"],
-[data-testid="stNumberInput"] [class*="input-instructions"],
-[data-testid="stNumberInput"] [class*="keyboard"] {{
-    display: none !important;
-    visibility: hidden !important;
+
+[data-testid="stNumberInput"] div[data-baseweb="input"] button:first-of-type::before {{
+    content: "−" !important;
 }}
 
+[data-testid="stNumberInput"] div[data-baseweb="input"] button:last-of-type::before {{
+    content: "+" !important;
+}}
 
 /* Cards */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
