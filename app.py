@@ -1064,17 +1064,17 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, 
     risk_bg  = rgb('#FEF2F2') if high else rgb('#ECFDF5')
     risk_bdr = rgb('#FCA5A5') if high else rgb('#6EE7B7')
     risk_txt = rgb('#991B1B') if high else rgb('#065F46')
-    rect_fill(30, y-54, W-60, 54, risk_bg, risk_bdr, radius=12, lw=1.2)
+    rect_fill(30, y-70, W-60, 70, risk_bg, risk_bdr, radius=14, lw=1.2)
     pdf.setFont('Helvetica-Bold',16); setc(risk_txt)
-    pdf.drawString(48, y-24, result)
+    pdf.drawString(48, y-30, result)
     pdf.setFont('Helvetica',9); setc(C_MUTED)
-    pdf.drawString(48, y-42, 'Based on 8 clinical parameters via ML model')
+    pdf.drawString(48, y-52, 'Based on 8 clinical parameters via ML model')
     pdf.setFont('Helvetica-Bold',20); setc(risk_txt)
-    pdf.drawRightString(W-48, y-22, f'{confidence}%')
+    pdf.drawRightString(W-48, y-28, f'{confidence}%')
     pdf.setFont('Helvetica',8); setc(C_MUTED)
-    pdf.drawRightString(W-48, y-38, 'confidence score')
+    pdf.drawRightString(W-48, y-48, 'confidence score')
 
-    y -= 72
+    y -= 92
 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 3 — QUICK HEALTH SUMMARY (4 cards in a row)
@@ -1091,12 +1091,12 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, 
     cw = (W - 72) / 4
     for i, (title, value, color_hex) in enumerate(summary):
         cx = 30 + i * (cw + 4)
-        rect_fill(cx, y-52, cw, 52, C_WHITE, C_LINE, radius=10)
-        setc(rgb(color_hex)); pdf.roundRect(cx+10,y-16,6,20,3,fill=True,stroke=False)
-        pdf.setFont('Helvetica',7.5); setc(C_MUTED); pdf.drawString(cx+22,y-12,title)
-        pdf.setFont('Helvetica-Bold',12); setc(C_SLATE); pdf.drawString(cx+22,y-36,value)
+        rect_fill(cx, y-72, cw, 72, C_WHITE, C_LINE, radius=12)
+        setc(rgb(color_hex)); pdf.roundRect(cx+10,y-22,6,30,3,fill=True,stroke=False)
+        pdf.setFont('Helvetica',8); setc(C_MUTED); pdf.drawString(cx+22,y-20,title)
+        pdf.setFont('Helvetica-Bold',13); setc(C_SLATE); pdf.drawString(cx+22,y-50,value)
 
-    y -= 70
+    y -= 94
 
     # ════════════════════════════════════════════════════════════════════════
     # SECTION 4 — CLINICAL MEASUREMENTS (2-column grid)
@@ -1106,17 +1106,25 @@ def generate_pdf(patient_data, result, confidence, name, email, pred_time=None, 
 
     items  = list(patient_data.items())
     col_w  = (W - 72) / 2
-    row_h  = 26
+    row_h  = 40
     for idx, (key, value) in enumerate(items):
         col = idx % 2; row = idx // 2
         x   = 30 + col * (col_w + 12)
         yy  = y - row * row_h
-        rect_fill(x, yy-20, col_w, 20, C_WHITE, C_LINE, radius=6, lw=0.5)
-        pdf.setFont('Helvetica',8); setc(C_MUTED); pdf.drawString(x+10, yy-13, nice_label(key))
-        pdf.setFont('Helvetica-Bold',9); setc(C_SLATE); pdf.drawRightString(x+col_w-10, yy-13, str(value))
+        rect_fill(x, yy-32, col_w, 32, C_WHITE, C_LINE, radius=8, lw=0.5)
+        pdf.setFont('Helvetica',8.5); setc(C_MUTED); pdf.drawString(x+12, yy-21, nice_label(key))
+        pdf.setFont('Helvetica-Bold',9.5); setc(C_SLATE); pdf.drawRightString(x+col_w-12, yy-21, str(value))
 
     rows_used = (len(items) + 1) // 2
-    y -= rows_used * row_h + 18
+    y -= rows_used * row_h + 12
+
+    # Page 1 bottom note to avoid empty-looking page
+    setstroke(C_LINE)
+    pdf.setLineWidth(0.6)
+    pdf.line(30, 52, W-30, 52)
+    pdf.setFont('Helvetica-Oblique', 7)
+    setc(C_MUTED)
+    pdf.drawCentredString(W/2, 38, 'Page 1 of 2  ·  Patient summary and clinical measurements')
 
     # ════════════════════════════════════════════════════════════════════════
     # PAGE 2 — HEALTH ANALYTICS + ACTION PLAN
