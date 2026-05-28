@@ -1636,43 +1636,141 @@ def auth_page():
 def create_profile_page():
     st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#0A1628 0%,#0f1e3c 50%,#1a0533 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#C4B5FD 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
     public_header()
+
+    # ── Doctor approval-pending confirmation screen ──────────────────────
+    if st.session_state.get('doctor_signup_done'):
+        c1, col_card, c3 = st.columns([1, 1.8, 1])
+        with col_card:
+            st.markdown(f'''
+<div style="text-align:center;padding:40px 24px 32px;">
+    <div style="font-size:68px;margin-bottom:18px;">🎉</div>
+    <h2 style="font-family:Sora,sans-serif;font-size:26px;font-weight:900;
+               color:{TEXT};margin-bottom:10px;">Doctor Account Created!</h2>
+    <p style="font-size:15px;color:{MUTED};line-height:1.7;margin-bottom:28px;">
+        Your profile has been submitted successfully.<br>
+        An <b style="color:{TEXT};">admin will review and approve</b> your account shortly.<br>
+        You can sign in once approved.
+    </p>
+    <div style="background:{'rgba(109,40,217,0.12)' if DARK else 'rgba(109,40,217,0.06)'};
+                border:1px solid {BORDER};border-radius:16px;
+                padding:20px 24px;margin-bottom:28px;text-align:left;">
+        <div style="font-family:Sora,sans-serif;font-weight:800;font-size:14px;
+                    color:{TEXT};margin-bottom:14px;">📋 What happens next?</div>
+''', unsafe_allow_html=True)
+            for num, step in enumerate([
+                'Admin reviews your licence number and hospital details',
+                'Your account gets approved (usually within 24 hours)',
+                'Sign in with your registered email and password',
+            ], 1):
+                st.markdown(f'''
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+    <div style="min-width:28px;height:28px;border-radius:50%;
+                background:linear-gradient(135deg,{GRAD1},{GRAD2});
+                color:white;display:flex;align-items:center;justify-content:center;
+                font-weight:800;font-size:12px;flex-shrink:0;">{num}</div>
+    <span style="font-size:14px;color:{MUTED};">{step}</span>
+</div>
+''', unsafe_allow_html=True)
+            st.markdown('</div></div>', unsafe_allow_html=True)
+            if st.button('→ Go to Sign In', type='primary',
+                         use_container_width=True, key='doctor_done_signin'):
+                st.session_state.doctor_signup_done = False
+                st.session_state.page      = 'auth'
+                st.session_state.auth_mode = 'signin'
+                st.rerun()
+        return  # ← don't render the form below
+
+    # ── Normal back button (only shown on the form, not on success screen) ──
     if st.button('← Back to Password Setup', key='create_profile_back', type='secondary'):
-        st.session_state.page = 'auth'; st.session_state.auth_mode = 'signup'; st.session_state.signup_step = 2; st.rerun()
+        st.session_state.page = 'auth'
+        st.session_state.auth_mode = 'signup'
+        st.session_state.signup_step = 2
+        st.rerun()
+
     st.markdown(f'<div class="auth-title"><div class="auth-logo-row"><div class="logo-square">🩺</div><div>GlucoTrack</div></div><h1>Choose Your Profile 👤</h1><p>Are you a patient or a healthcare professional?</p></div>', unsafe_allow_html=True)
+
     c1, col_card, c3 = st.columns([1, 1.8, 1])
     with col_card:
         with st.container(border=True):
             role = st.radio('I am a', ['🧑 Patient', '👨‍⚕️ Doctor'], horizontal=True)
-            name = st.text_input(' Full Name', value=st.session_state.signup_name)
+            name  = st.text_input(' Full Name', value=st.session_state.signup_name)
             email = st.text_input(' Email', value=st.session_state.signup_email, disabled=True)
+
+            # ── PATIENT ──────────────────────────────────────────────────
             if '🧑' in role:
-                phone = st.text_input(' Phone', value=st.session_state.signup_phone)
-                age = st.number_input(' Age', 1, 100, int(st.session_state.signup_age))
-                gender = st.selectbox(' Gender', ['Female', 'Male', 'Other'], index=['Female', 'Male', 'Other'].index(st.session_state.signup_gender) if st.session_state.signup_gender in ['Female', 'Male', 'Other'] else 0)
-                address = st.text_area(' Address', value=st.session_state.signup_address)
-                uploaded_photo = st.file_uploader(' Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='patient_photo')
+                phone  = st.text_input(' Phone', value=st.session_state.signup_phone)
+                age    = st.number_input(' Age', 1, 100, int(st.session_state.signup_age))
+                gender = st.selectbox(' Gender', ['Female', 'Male', 'Other'],
+                                      index=['Female','Male','Other'].index(st.session_state.signup_gender)
+                                      if st.session_state.signup_gender in ['Female','Male','Other'] else 0)
+                address        = st.text_area(' Address', value=st.session_state.signup_address)
+                uploaded_photo = st.file_uploader(' Upload Profile Photo (Optional)',
+                                                  type=['png','jpg','jpeg'], key='patient_photo')
                 if st.button(' Create Patient Profile', type='primary', use_container_width=True):
                     base64_photo = None
-                    if uploaded_photo: base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
-                    users[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'age': age, 'gender': gender, 'address': address, 'medical_history': '', 'user_type': 'patient', 'profile_created': True, 'profile_pic': base64_photo}
-                    save_json(USERS_FILE, users); add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
+                    if uploaded_photo:
+                        base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
+                    users[st.session_state.signup_email] = {
+                        'password': st.session_state.signup_password, 'name': name,
+                        'phone': phone, 'age': age, 'gender': gender, 'address': address,
+                        'medical_history': '', 'user_type': 'patient',
+                        'profile_created': True, 'profile_pic': base64_photo,
+                    }
+                    save_json(USERS_FILE, users)
+                    add_audit('Account Created', st.session_state.signup_email, 'Patient profile created')
                     ok, msg = login_user(st.session_state.signup_email, st.session_state.signup_password)
                     if ok: st.rerun()
-                    else: st.error(msg)
-            else:
-                phone = st.text_input(' Phone', value=st.session_state.signup_phone)
-                specialization = st.text_input(' Specialization', placeholder='Endocrinology')
-                hospital = st.text_input(' Hospital / Clinic')
-                license_no = st.text_input(' Medical License No.')
-                uploaded_photo = st.file_uploader(' Upload Profile Photo (Optional)', type=['png', 'jpg', 'jpeg'], key='doctor_photo')
-                if st.button('✅ Create Doctor Profile', type='primary', use_container_width=True):
-                    base64_photo = None
-                    if uploaded_photo: base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
-                    doctors[st.session_state.signup_email] = {'password': st.session_state.signup_password, 'name': name, 'phone': phone, 'specialization': specialization, 'hospital': hospital, 'license_no': license_no, 'approved': False, 'user_type': 'doctor', 'profile_created': True, 'profile_pic': base64_photo}
-                    save_json(DOCTORS_FILE, doctors); add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval')
-                    st.success('✅ Doctor profile created! Please wait for admin approval before signing in.')
-                    st.session_state.page = 'auth'; st.session_state.auth_mode = 'signin'; st.rerun()
+                    else:  st.error(msg)
 
+            # ── DOCTOR ───────────────────────────────────────────────────
+            else:
+                phone          = st.text_input(' Phone', value=st.session_state.signup_phone,
+                                               key='doc_signup_phone')
+                specialization = st.text_input(' Specialization', placeholder='e.g. Endocrinology',
+                                               key='doc_signup_spec')
+                hospital       = st.text_input(' Hospital / Clinic', placeholder='e.g. City Hospital',
+                                               key='doc_signup_hospital')
+                license_no     = st.text_input(' Medical License No.', placeholder='e.g. MCI-12345',
+                                               key='doc_signup_license')
+                uploaded_photo = st.file_uploader(' Upload Profile Photo (Optional)',
+                                                  type=['png','jpg','jpeg'], key='doctor_photo')
+
+                # Approval notice
+                st.markdown(f'''
+<div style="background:{'rgba(244,114,182,0.08)' if DARK else '#FFF5F7'};
+            border:1px solid {'rgba(244,114,182,0.25)' if DARK else '#FBCFE8'};
+            border-radius:12px;padding:11px 15px;margin:6px 0 14px;">
+    <span style="font-size:13px;color:{MUTED};">
+        ℹ️ &nbsp;Doctor accounts require <b style="color:{TEXT};">admin approval</b>
+        before sign-in. Ensure your licence and hospital details are correct.
+    </span>
+</div>
+''', unsafe_allow_html=True)
+
+                if st.button('✅ Create Doctor Profile', type='primary', use_container_width=True):
+                    if not name.strip():
+                        st.error('⚠️ Please enter your full name.')
+                    elif not specialization.strip():
+                        st.error('⚠️ Specialization is required.')
+                    elif not hospital.strip():
+                        st.error('⚠️ Hospital / Clinic name is required.')
+                    elif not license_no.strip():
+                        st.error('⚠️ Medical licence number is required.')
+                    else:
+                        base64_photo = None
+                        if uploaded_photo:
+                            base64_photo = base64.b64encode(uploaded_photo.getvalue()).decode('utf-8')
+                        doctors[st.session_state.signup_email] = {
+                            'password': st.session_state.signup_password, 'name': name,
+                            'phone': phone, 'specialization': specialization,
+                            'hospital': hospital, 'license_no': license_no,
+                            'approved': False, 'user_type': 'doctor',
+                            'profile_created': True, 'profile_pic': base64_photo,
+                        }
+                        save_json(DOCTORS_FILE, doctors)
+                        add_audit('Doctor Signup', st.session_state.signup_email, 'Waiting for approval')
+                        st.session_state.doctor_signup_done = True  # ← show confirmation screen
+                        st.rerun()
 
 def prediction_page():
     st.markdown(f'''<style>.stApp{{background:{'linear-gradient(135deg,#071520 0%,#0D2B3E 45%,#091A2E 100%)' if DARK else 'linear-gradient(135deg,#A5B4FC 0%,#BAC8FF 45%,#DDD6FE 100%)'}!important;}}</style>''', unsafe_allow_html=True)
