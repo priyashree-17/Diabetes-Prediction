@@ -367,13 +367,12 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     border-radius: 14px !important;
     overflow: hidden !important;
 }}
-/* Step buttons — scoped tightly to number input only */
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"],
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] {{
+/* The step buttons container */
+[data-testid="stNumberInput"] button {{
     background: {'rgba(109,40,217,0.18)' if DARK else 'rgba(109,40,217,0.10)'} !important;
     border: none !important;
     border-left: 1.5px solid {BORDER} !important;
-    color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    color: {TEXT} !important;
     width: 36px !important;
     min-width: 36px !important;
     height: 100% !important;
@@ -384,30 +383,24 @@ header[data-testid="stHeader"] [data-testid="stConnectionStatus"] {{ display: no
     transition: background 0.15s ease !important;
     flex-shrink: 0 !important;
     border-radius: 0 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    position: static !important;
 }}
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"]:hover,
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"]:hover {{
+[data-testid="stNumberInput"] button:hover {{
     background: {'rgba(109,40,217,0.38)' if DARK else 'rgba(109,40,217,0.22)'} !important;
 }}
-/* Make SVG icons inside +/- buttons visible */
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"] svg,
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] svg,
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"] span,
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] span,
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepUp"] *,
-[data-testid="stNumberInput"] button[data-testid="stNumberInput-StepDown"] * {{
+/* Make the + and - symbols clearly visible in both modes */
+[data-testid="stNumberInput"] button span,
+[data-testid="stNumberInput"] button p,
+[data-testid="stNumberInput"] button svg {{
     color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     fill: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     stroke: {'#C4B5FD' if DARK else '#4C1D95'} !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
     -webkit-text-fill-color: {'#C4B5FD' if DARK else '#4C1D95'} !important;
     opacity: 1 !important;
     visibility: visible !important;
-    display: block !important;
-    width: 18px !important;
-    height: 18px !important;
+    width: auto !important;
+    height: auto !important;
     position: static !important;
     overflow: visible !important;
 }}
@@ -1519,7 +1512,7 @@ def prediction_page():
                     doc_patient_name    = st.text_input('👤 Patient Full Name *', placeholder='e.g. Ramesh Kumar',         key='doc_patient_name',    value=st.session_state.get('doc_patient_name',''))
                     doc_patient_age     = st.number_input('🎂 Age *', 1, 120, int(st.session_state.get('doc_patient_age_val', 30)), key='doc_patient_age_num')
                     doc_patient_gender  = st.selectbox('⚧ Gender *', ['Male','Female','Other'],
-                                                        index=['Male','Female','Other'].index(st.session_state.get('doc_patient_gender','Male')),
+                                                        index=['Male','Female','Other'].index(st.session_state.get('doc_patient_gender_val','Male')),
                                                         key='doc_patient_gender_sel')
                 with c2:
                     doc_patient_email   = st.text_input('📧 Email *', placeholder='patient@example.com',                  key='doc_patient_email',   value=st.session_state.get('doc_patient_email',''))
@@ -1533,18 +1526,21 @@ def prediction_page():
                 if not p_name or not p_email or not p_phone:
                     st.error('⚠️ Patient name, email and contact number are required.')
                     st.stop()
-                # persist values
+                # persist all values before rerun (widget keys reset after rerun)
                 st.session_state.doc_patient_age_val     = doc_patient_age
                 st.session_state.doc_patient_gender_val  = doc_patient_gender
                 st.session_state.doc_patient_address_val = doc_patient_address
+                st.session_state.doc_patient_phone_val   = p_phone
+                st.session_state.doc_patient_name_val    = p_name
+                st.session_state.doc_patient_email_val   = p_email
                 st.session_state.doctor_patient_step = 2
                 st.rerun()
             return   # don't show clinical form until step 1 is complete
 
         # Step 2 header — show patient summary
-        p_name    = st.session_state.get('doc_patient_name','').strip()
-        p_email   = st.session_state.get('doc_patient_email','').strip().lower()
-        p_phone   = st.session_state.get('doc_patient_phone','').strip()
+        p_name    = st.session_state.get('doc_patient_name_val', st.session_state.get('doc_patient_name','')).strip()
+        p_email   = st.session_state.get('doc_patient_email_val', st.session_state.get('doc_patient_email','')).strip().lower()
+        p_phone   = st.session_state.get('doc_patient_phone_val', st.session_state.get('doc_patient_phone','')).strip()
         p_age     = st.session_state.get('doc_patient_age_val', 30)
         p_gender  = st.session_state.get('doc_patient_gender_val', 'Male')
         p_address = st.session_state.get('doc_patient_address_val', '')
@@ -1611,8 +1607,8 @@ def prediction_page():
     btn_label = '🔍 Predict Patient Diabetes Risk →' if st.session_state.user_type == 'doctor' else '🔍 Predict My Diabetes Risk →'
     if st.button(btn_label, type='primary', use_container_width=True):
         if st.session_state.user_type == 'doctor':
-            name  = st.session_state.get('doc_patient_name','').strip()
-            email = st.session_state.get('doc_patient_email','').strip().lower()
+            name  = st.session_state.get('doc_patient_name_val', st.session_state.get('doc_patient_name','')).strip()
+            email = st.session_state.get('doc_patient_email_val', st.session_state.get('doc_patient_email','')).strip().lower()
         else:
             name  = st.session_state.current_user_name
             email = st.session_state.current_user_email
@@ -1624,7 +1620,7 @@ def prediction_page():
         # Build extra info dict for PDF
         if st.session_state.user_type == 'doctor':
             extra_info = {
-                'phone':        st.session_state.get('doc_patient_phone',''),
+                'phone':        st.session_state.get('doc_patient_phone_val', st.session_state.get('doc_patient_phone','')),
                 'gender':       st.session_state.get('doc_patient_gender_val',''),
                 'age':          st.session_state.get('doc_patient_age_val', age),
                 'address':      st.session_state.get('doc_patient_address_val',''),
