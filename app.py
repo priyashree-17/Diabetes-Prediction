@@ -605,61 +605,40 @@ div[data-testid="stMetricValue"], div[data-testid="stMetricLabel"],
 st.markdown(css, unsafe_allow_html=True)
 
 # ── Sidebar toggle icon injector ────────────────────────────────────────────
-# CSS alone cannot reliably override Streamlit's Material Icons font span.
-# This JS runs on every page load and physically replaces each button's
-# children with a proper inline SVG chevron icon.
+# st.markdown strips <script> tags. components.html() runs in a real iframe
+# with access to window.parent.document — the only reliable way to patch
+# Streamlit's sidebar buttons which live in the parent DOM.
 _ICON_COLOR_OPEN  = '#C4B5FD'
 _ICON_COLOR_CLOSE = '#C4B5FD' if DARK else '#4C1D95'
-st.markdown(f'''
+components.html(f"""
 <script>
-(function injectSidebarIcons() {{
-  // Right-facing double chevron  ›› (open sidebar)
-  const OPEN_SVG = `<svg class="gt-icon" xmlns="http://www.w3.org/2000/svg"
-      width="22" height="22" viewBox="0 0 24 24" fill="none"
-      stroke="{_ICON_COLOR_OPEN}" stroke-width="2.5"
-      stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="13 17 18 12 13 7"/>
-    <polyline points="6 17 11 12 6 7"/>
-  </svg>`;
-
-  // Left-facing double chevron  ‹‹ (close sidebar)
-  const CLOSE_SVG = `<svg class="gt-icon" xmlns="http://www.w3.org/2000/svg"
-      width="22" height="22" viewBox="0 0 24 24" fill="none"
-      stroke="{_ICON_COLOR_CLOSE}" stroke-width="2.5"
-      stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="11 17 6 12 11 7"/>
-    <polyline points="18 17 13 12 18 7"/>
-  </svg>`;
+(function() {{
+  var OPEN = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{_ICON_COLOR_OPEN}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
+  var CLOSE = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{_ICON_COLOR_CLOSE}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>';
 
   function patch() {{
-    // 1. "Open" button — lives in stSidebarCollapsedControl
-    const openWrap = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
+    var doc = window.parent.document;
+
+    // Open button (collapsed control — pill on left edge)
+    var openWrap = doc.querySelector('[data-testid="stSidebarCollapsedControl"]');
     if (openWrap) {{
-      const btn = openWrap.querySelector('button');
-      if (btn && !btn.querySelector('svg.gt-icon')) {{
-        btn.innerHTML = OPEN_SVG;
-      }}
+      var btn = openWrap.querySelector('button');
+      if (btn && !btn.querySelector('svg')) {{ btn.innerHTML = OPEN; }}
     }}
 
-    // 2. "Close" button — lives inside the sidebar itself
-    const sidebar = document.querySelector('section[data-testid="stSidebar"]');
+    // Close button (inside open sidebar)
+    var sidebar = doc.querySelector('section[data-testid="stSidebar"]');
     if (sidebar) {{
-      const closeBtn = sidebar.querySelector(
-        'button[data-testid="baseButton-headerNoPadding"], button[data-testid="baseButton-header"]'
-      );
-      if (closeBtn && !closeBtn.querySelector('svg.gt-icon')) {{
-        closeBtn.innerHTML = CLOSE_SVG;
-      }}
+      var closeBtn = sidebar.querySelector('button[data-testid="baseButton-headerNoPadding"], button[data-testid="baseButton-header"]');
+      if (closeBtn && !closeBtn.querySelector('svg')) {{ closeBtn.innerHTML = CLOSE; }}
     }}
   }}
 
-  // Run immediately and keep watching for Streamlit re-renders
   patch();
-  const observer = new MutationObserver(patch);
-  observer.observe(document.body, {{ childList: true, subtree: true }});
+  new MutationObserver(patch).observe(window.parent.document.body, {{childList:true, subtree:true}});
 }})();
 </script>
-''', unsafe_allow_html=True)
+""", height=0, scrolling=False)
 
 
 def initials(name):
@@ -1227,14 +1206,18 @@ def auth_page():
             with st.container(border=True):
                 email = st.text_input('📧 Email address', placeholder='you@example.com', key='signin_email')
                 password = st.text_input('🔒 Password', type='password', placeholder='Your password', key='signin_password')
-                # Forgot password link
-                st.markdown(f'<div style="text-align:right;margin:-6px 0 10px;"><span style="font-size:12px;color:{GRAD1};font-weight:600;cursor:pointer;" onclick="">Forgot password?</span></div>', unsafe_allow_html=True)
-                col_fp, _ = st.columns([1,2])
-                with col_fp:
-                    if st.button('🔑 Forgot Password?', key='goto_forgot', use_container_width=True):
-                        st.session_state.auth_mode = 'forgot_password'
-                        st.session_state.fp_step = 1
-                        st.rerun()
+                # Forgot password — single right-aligned link only, no button shown
+                # We use a query_param navigation, same as the original href approach
+                st.markdown(f'''
+<style>#fp_goto_btn {{ display:none !important; }}</style>
+<div style="display:flex;justify-content:flex-end;margin:-4px 2px 10px;">
+  <a href="?forgot_password=1" target="_self"
+     style="color:{GRAD1};font-size:13px;font-weight:700;
+            text-decoration:underline;text-underline-offset:3px;">
+    Forgot password?
+  </a>
+</div>
+''', unsafe_allow_html=True)
                 is_admin = st.checkbox('Are you an admin or doctor?', key='is_admin_login')
                 st.write('')
                 if st.button('Sign In →', type='primary', use_container_width=True, key='signin_btn'):
