@@ -817,7 +817,32 @@ button[data-testid="baseButton-header"] * {{
 '''
 st.markdown(css, unsafe_allow_html=True)
 
+# Fix number input double-fire (wheel scroll)
+import streamlit.components.v1 as components
+components.html("""
+<script>
+(function() {
+  function fixNumberInputs() {
+    var inputs = window.parent.document.querySelectorAll('[data-testid="stNumberInput"] input');
+    inputs.forEach(function(el) {
+      if (el.dataset.fixedDouble) return;
+      el.dataset.fixedDouble = '1';
+      el.addEventListener('wheel', function(e) { e.preventDefault(); }, { passive: false });
+    });
+  }
+  var obs = new window.parent.MutationObserver(fixNumberInputs);
+  obs.observe(window.parent.document.body, { subtree: true, childList: true });
+  fixNumberInputs();
+})();
+</script>
+""", height=0)
+
 # Sidebar icons handled entirely by CSS (font-size:0 + ::before Unicode)
+def initials(name):
+    parts = str(name or 'User').strip().split()
+    if not parts: return 'U'
+    if len(parts) == 1: return parts[0][0].upper()
+    return (parts[0][0] + parts[-1][0]).upper()
 
 
 def initials(name):
