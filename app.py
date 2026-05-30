@@ -928,6 +928,46 @@ components.html("""
 </script>
 """, height=0)
 
+# JS fix: strip raw Material Icon text nodes from sidebar collapse buttons
+components.html("""
+<script>
+(function() {
+  function stripIconTextNodes() {
+    var doc = window.parent.document;
+    // Target both the collapsed control button and the open-sidebar collapse button
+    var selectors = [
+      '[data-testid="stSidebarCollapsedControl"] button',
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]',
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"]'
+    ];
+    selectors.forEach(function(sel) {
+      doc.querySelectorAll(sel).forEach(function(btn) {
+        // Remove all direct text nodes (the "keyboard_double_arrow_left" text)
+        Array.from(btn.childNodes).forEach(function(node) {
+          if (node.nodeType === Node.TEXT_NODE) {
+            node.textContent = '';
+          }
+        });
+        // Also zero-out any span that contains the icon name text
+        btn.querySelectorAll('span').forEach(function(span) {
+          if (span.textContent.includes('keyboard') || span.textContent.includes('arrow')) {
+            span.style.cssText = 'display:none!important;width:0!important;height:0!important;overflow:hidden!important;position:absolute!important;';
+            span.textContent = '';
+          }
+        });
+      });
+    });
+  }
+  var obs = new MutationObserver(stripIconTextNodes);
+  obs.observe(window.parent.document.body, { subtree: true, childList: true, characterData: true });
+  stripIconTextNodes();
+  // Also run after a short delay for late mounts
+  setTimeout(stripIconTextNodes, 500);
+  setTimeout(stripIconTextNodes, 1500);
+})();
+</script>
+""", height=0)
+
 # Sidebar icons handled entirely by CSS (font-size:0 + ::before Unicode)
 def initials(name):
     parts = str(name or 'User').strip().split()
