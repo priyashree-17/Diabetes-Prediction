@@ -203,7 +203,17 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
-p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
+p, label {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
+span {{ font-family: 'DM Sans', sans-serif !important; }}
+/* Only color spans that are NOT icon spans — icon spans use Material Symbols font */
+span:not([class*="material"]):not([class*="icon"]):not([class*="emotion-cache-5"]) {{ color: {TEXT} !important; }}
+/* Nuclear option: any span whose content could be a Material Symbol — make it invisible */
+span[style*="Material Symbols"] {{
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    font-size: 0 !important;
+    display: none !important;
+}}
 /* Prevent global span rule from making Material Symbols icon text visible */
 [data-testid="stSidebarCollapsedControl"] span,
 [data-testid="stSidebarCollapsedControl"] span *,
@@ -259,13 +269,18 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     border-radius: 0 14px 14px 0 !important;
     box-shadow: 4px 0 18px rgba(76,29,149,0.50) !important;
     width: 34px !important;
+    max-width: 34px !important;
     height: 54px !important;
+    max-height: 54px !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
     overflow: hidden !important;
+    clip: rect(0, 34px, 54px, 0) !important;
+    clip-path: inset(0 0 0 0) !important;
     cursor: pointer !important;
     position: relative !important;
+    contain: strict !important;
 }}
 [data-testid="stSidebarCollapsedControl"]:hover {{
     width: 38px !important;
