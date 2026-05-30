@@ -283,6 +283,9 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
     overflow: hidden !important;
     position: relative !important;
     cursor: pointer !important;
+    text-indent: -9999px !important;
+    line-height: 0 !important;
+    letter-spacing: -9999px !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
@@ -299,6 +302,9 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     opacity: 0 !important;
     font-size: 0 !important;
     color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before {{
@@ -309,6 +315,8 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before
     -webkit-text-fill-color: {'#DDD6FE' if DARK else '#4C1D95'} !important;
     font-family: Arial, Helvetica, sans-serif !important;
     line-height: 1 !important;
+    text-indent: 0 !important;
+    letter-spacing: 0 !important;
     display: block !important;
     opacity: 1 !important;
 }}
