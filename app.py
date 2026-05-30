@@ -204,36 +204,6 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
-/* Hide Material Symbols icon spans — class confirmed from DevTools as st-emotion-cache-5r6ut5 */
-.st-emotion-cache-5r6ut5 {{
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-    font-size: 0 !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    display: none !important;
-    position: absolute !important;
-}}
-/* Prevent global span rule from making Material Symbols icon text visible */
-[data-testid="stSidebarCollapsedControl"] span,
-[data-testid="stSidebarCollapsedControl"] span *,
-section[data-testid="stSidebar"] button span,
-section[data-testid="stSidebar"] button span * {{
-    font-family: 'DM Sans', sans-serif !important;
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-    font-size: 0 !important;
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    position: absolute !important;
-}}
 .hero-card h1, .hero-card h2, .hero-card p, .hero-card span, .hero-card div {{ color: white !important; -webkit-text-fill-color: white !important; }}
 .hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
 
@@ -241,29 +211,7 @@ section[data-testid="stSidebar"] button span * {{
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"] {{ display: none !important; }}
 
-/* ── Material Symbols Rounded font renders "keyboard_double_arrow_left" as text.
-   Override the font so the glyph cannot render, hide the span entirely. ── */
-[data-testid="stSidebarCollapsedControl"] span,
-[data-testid="stSidebarCollapsedControl"] svg,
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] span,
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] svg,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"] span,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    color: transparent !important;
-    position: absolute !important;
-}}
-
-/* ── Sidebar toggle buttons ── */
-
-/* 1. The floating tab that re-opens the sidebar when it is collapsed */
+/* ── Sidebar collapse / expand arrow fix ── */
 [data-testid="stSidebarCollapsedControl"] {{
     visibility: visible !important;
     display: flex !important;
@@ -272,24 +220,18 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     border-radius: 0 14px 14px 0 !important;
     box-shadow: 4px 0 18px rgba(76,29,149,0.50) !important;
     width: 34px !important;
-    max-width: 34px !important;
     height: 54px !important;
-    max-height: 54px !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
     overflow: hidden !important;
-    clip: rect(0, 34px, 54px, 0) !important;
-    clip-path: inset(0 0 0 0) !important;
     cursor: pointer !important;
     position: relative !important;
-    contain: strict !important;
 }}
 [data-testid="stSidebarCollapsedControl"]:hover {{
     width: 38px !important;
     box-shadow: 6px 0 22px rgba(76,29,149,0.70) !important;
 }}
-/* Make button itself invisible — container ::after draws the icon */
 [data-testid="stSidebarCollapsedControl"] button {{
     position: absolute !important;
     inset: 0 !important;
@@ -300,29 +242,7 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;
-    overflow: hidden !important;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 34px !important;
-    max-height: 54px !important;
-    clip-path: inset(0) !important;
 }}
-[data-testid="stSidebarCollapsedControl"] button *,
-[data-testid="stSidebarCollapsedControl"] button span,
-[data-testid="stSidebarCollapsedControl"] button svg {{
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    font-size: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    position: absolute !important;
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-    font-family: monospace !important;
-}}
-/* Draw » on the container (not the button) so it is never affected by button contents */
 [data-testid="stSidebarCollapsedControl"]::after {{
     content: "\00BB" !important;
     font-size: 26px !important;
@@ -336,12 +256,10 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     z-index: 1 !important;
 }}
 
-/* 2. The « button inside the open sidebar that collapses it */
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
-    position: relative !important;
-    overflow: hidden !important;
-    cursor: pointer !important;
+    font-size: 0 !important;
+    color: transparent !important;
     background: {'rgba(109,40,217,0.28)' if DARK else 'rgba(109,40,217,0.15)'} !important;
     border: 1.5px solid {'rgba(196,181,253,0.40)' if DARK else 'rgba(109,40,217,0.35)'} !important;
     border-radius: 12px !important;
@@ -351,24 +269,14 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    color: transparent !important;
-    font-size: 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+    cursor: pointer !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
     background: {'rgba(109,40,217,0.50)' if DARK else 'rgba(109,40,217,0.32)'} !important;
 }}
-/* Shrink every child element to nothing */
-section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] > *,
-section[data-testid="stSidebar"] button[data-testid="baseButton-header"] > * {{
-    position: absolute !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}}
-/* Paint a solid cover layer with « on top using ::after */
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::after,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::after {{
     content: "\00AB" !important;
@@ -386,7 +294,6 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::after 
     z-index: 10 !important;
     border-radius: 10px !important;
 }}
-/* Hide any sidebar toggle buttons that Streamlit puts in the header */
 header button[data-testid="baseButton-headerNoPadding"],
 header button[data-testid="baseButton-header"] {{
     display: none !important;
@@ -966,91 +873,6 @@ components.html("""
   var obs = new window.parent.MutationObserver(fixNumberInputs);
   obs.observe(window.parent.document.body, { subtree: true, childList: true });
   fixNumberInputs();
-})();
-</script>
-""", height=0)
-
-# JS fix: inject a <style> tag directly into parent document head to hide the icon text
-components.html("""
-<script>
-(function() {
-  var doc = window.parent.document;
-
-  // Inject a style tag with the most aggressive possible suppression
-  if (!doc.getElementById('gt-sidebar-icon-fix')) {
-    var s = doc.createElement('style');
-    s.id = 'gt-sidebar-icon-fix';
-    s.innerHTML = [
-      /* Collapsed control (sidebar closed — shows >> button) */
-      '[data-testid="stSidebarCollapsedControl"] button {',
-      '  color: transparent !important;',
-      '  font-size: 0 !important;',
-      '  overflow: hidden !important;',
-      '}',
-      '[data-testid="stSidebarCollapsedControl"] button * {',
-      '  display: none !important;',
-      '  font-size: 0 !important;',
-      '}',
-      '[data-testid="stSidebarCollapsedControl"] button::before {',
-      '  content: "\\00BB" !important;',
-      '  font-size: 26px !important;',
-      '  font-weight: 900 !important;',
-      '  color: #DDD6FE !important;',
-      '  font-family: Arial, sans-serif !important;',
-      '  display: block !important;',
-      '  line-height: 1 !important;',
-      '}',
-      /* Open sidebar collapse button (shows << button) */
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],',
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {',
-      '  color: transparent !important;',
-      '  font-size: 0 !important;',
-      '  overflow: hidden !important;',
-      '}',
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,',
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"] * {',
-      '  display: none !important;',
-      '  font-size: 0 !important;',
-      '}',
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,',
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before {',
-      '  content: "\\00AB" !important;',
-      '  font-size: 26px !important;',
-      '  font-weight: 900 !important;',
-      '  color: #4C1D95 !important;',
-      '  font-family: Arial, sans-serif !important;',
-      '  display: block !important;',
-      '  line-height: 1 !important;',
-      '}'
-    ].join('\\n');
-    doc.head.appendChild(s);
-  }
-
-  // Also walk the DOM and nuke text nodes + spans with icon names
-  function nukeIconText() {
-    var btns = doc.querySelectorAll(
-      '[data-testid="stSidebarCollapsedControl"] button,' +
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],' +
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"]'
-    );
-    btns.forEach(function(btn) {
-      // Kill every child node — text nodes, spans, svgs
-      Array.from(btn.childNodes).forEach(function(node) {
-        if (node.nodeType === 3) { // TEXT_NODE
-          node.nodeValue = '';
-        } else if (node.nodeType === 1) { // ELEMENT_NODE
-          node.style.cssText = 'display:none!important;visibility:hidden!important;width:0!important;height:0!important;overflow:hidden!important;font-size:0!important;';
-        }
-      });
-    });
-  }
-
-  nukeIconText();
-  setTimeout(nukeIconText, 300);
-  setTimeout(nukeIconText, 1000);
-
-  var obs = new MutationObserver(nukeIconText);
-  obs.observe(doc.body, { subtree: true, childList: true });
 })();
 </script>
 """, height=0)
