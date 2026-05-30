@@ -206,11 +206,20 @@ h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
 /* Prevent global span rule from making Material Symbols icon text visible */
 [data-testid="stSidebarCollapsedControl"] span,
-section[data-testid="stSidebar"] button span {{
+[data-testid="stSidebarCollapsedControl"] span *,
+section[data-testid="stSidebar"] button span,
+section[data-testid="stSidebar"] button span * {{
     font-family: 'DM Sans', sans-serif !important;
     color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
     font-size: 0 !important;
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
 }}
 .hero-card h1, .hero-card h2, .hero-card p, .hero-card span, .hero-card div {{ color: white !important; -webkit-text-fill-color: white !important; }}
 .hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
@@ -262,7 +271,7 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     width: 38px !important;
     box-shadow: 6px 0 22px rgba(76,29,149,0.70) !important;
 }}
-/* Make button itself transparent — the container ::after draws the icon */
+/* Make button itself invisible — container ::after draws the icon */
 [data-testid="stSidebarCollapsedControl"] button {{
     position: absolute !important;
     inset: 0 !important;
@@ -273,6 +282,27 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 34px !important;
+    max-height: 54px !important;
+    clip-path: inset(0) !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button *,
+[data-testid="stSidebarCollapsedControl"] button span,
+[data-testid="stSidebarCollapsedControl"] button svg {{
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    font-size: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    font-family: monospace !important;
 }}
 /* Draw » on the container (not the button) so it is never affected by button contents */
 [data-testid="stSidebarCollapsedControl"]::after {{
