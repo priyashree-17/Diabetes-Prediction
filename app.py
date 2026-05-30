@@ -234,6 +234,7 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
 [data-testid="stSidebarCollapsedControl"] button {{
     font-size: 0 !important;
     color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
     background: transparent !important;
     border: none !important;
     width: 100% !important;
@@ -245,11 +246,6 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-family: 'DM Sans', sans-serif !important;
-    line-height: 0 !important;
-    letter-spacing: -0.5em !important;
-    word-spacing: -9999px !important;
-    text-indent: -9999px !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button *,
 [data-testid="stSidebarCollapsedControl"] button span,
@@ -260,15 +256,15 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     opacity: 0 !important;
     font-size: 0 !important;
     color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
     width: 0 !important;
     height: 0 !important;
     position: absolute !important;
     overflow: hidden !important;
     clip: rect(0,0,0,0) !important;
-    white-space: nowrap !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button::before {{
-    content: "»" !important;
+    content: "\00BB" !important;
     font-size: 26px !important;
     font-weight: 900 !important;
     color: #DDD6FE !important;
@@ -277,11 +273,6 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     line-height: 1 !important;
     display: block !important;
     opacity: 1 !important;
-    text-indent: 0 !important;
-    letter-spacing: normal !important;
-    word-spacing: normal !important;
-    position: relative !important;
-    z-index: 2 !important;
 }}
 
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
@@ -928,42 +919,87 @@ components.html("""
 </script>
 """, height=0)
 
-# JS fix: strip raw Material Icon text nodes from sidebar collapse buttons
+# JS fix: inject a <style> tag directly into parent document head to hide the icon text
 components.html("""
 <script>
 (function() {
-  function stripIconTextNodes() {
-    var doc = window.parent.document;
-    // Target both the collapsed control button and the open-sidebar collapse button
-    var selectors = [
-      '[data-testid="stSidebarCollapsedControl"] button',
-      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]',
+  var doc = window.parent.document;
+
+  // Inject a style tag with the most aggressive possible suppression
+  if (!doc.getElementById('gt-sidebar-icon-fix')) {
+    var s = doc.createElement('style');
+    s.id = 'gt-sidebar-icon-fix';
+    s.innerHTML = [
+      /* Collapsed control (sidebar closed — shows >> button) */
+      '[data-testid="stSidebarCollapsedControl"] button {',
+      '  color: transparent !important;',
+      '  font-size: 0 !important;',
+      '  overflow: hidden !important;',
+      '}',
+      '[data-testid="stSidebarCollapsedControl"] button * {',
+      '  display: none !important;',
+      '  font-size: 0 !important;',
+      '}',
+      '[data-testid="stSidebarCollapsedControl"] button::before {',
+      '  content: "\\00BB" !important;',
+      '  font-size: 26px !important;',
+      '  font-weight: 900 !important;',
+      '  color: #DDD6FE !important;',
+      '  font-family: Arial, sans-serif !important;',
+      '  display: block !important;',
+      '  line-height: 1 !important;',
+      '}',
+      /* Open sidebar collapse button (shows << button) */
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],',
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {',
+      '  color: transparent !important;',
+      '  font-size: 0 !important;',
+      '  overflow: hidden !important;',
+      '}',
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,',
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"] * {',
+      '  display: none !important;',
+      '  font-size: 0 !important;',
+      '}',
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,',
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before {',
+      '  content: "\\00AB" !important;',
+      '  font-size: 26px !important;',
+      '  font-weight: 900 !important;',
+      '  color: #4C1D95 !important;',
+      '  font-family: Arial, sans-serif !important;',
+      '  display: block !important;',
+      '  line-height: 1 !important;',
+      '}'
+    ].join('\\n');
+    doc.head.appendChild(s);
+  }
+
+  // Also walk the DOM and nuke text nodes + spans with icon names
+  function nukeIconText() {
+    var btns = doc.querySelectorAll(
+      '[data-testid="stSidebarCollapsedControl"] button,' +
+      'section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],' +
       'section[data-testid="stSidebar"] button[data-testid="baseButton-header"]'
-    ];
-    selectors.forEach(function(sel) {
-      doc.querySelectorAll(sel).forEach(function(btn) {
-        // Remove all direct text nodes (the "keyboard_double_arrow_left" text)
-        Array.from(btn.childNodes).forEach(function(node) {
-          if (node.nodeType === Node.TEXT_NODE) {
-            node.textContent = '';
-          }
-        });
-        // Also zero-out any span that contains the icon name text
-        btn.querySelectorAll('span').forEach(function(span) {
-          if (span.textContent.includes('keyboard') || span.textContent.includes('arrow')) {
-            span.style.cssText = 'display:none!important;width:0!important;height:0!important;overflow:hidden!important;position:absolute!important;';
-            span.textContent = '';
-          }
-        });
+    );
+    btns.forEach(function(btn) {
+      // Kill every child node — text nodes, spans, svgs
+      Array.from(btn.childNodes).forEach(function(node) {
+        if (node.nodeType === 3) { // TEXT_NODE
+          node.nodeValue = '';
+        } else if (node.nodeType === 1) { // ELEMENT_NODE
+          node.style.cssText = 'display:none!important;visibility:hidden!important;width:0!important;height:0!important;overflow:hidden!important;font-size:0!important;';
+        }
       });
     });
   }
-  var obs = new MutationObserver(stripIconTextNodes);
-  obs.observe(window.parent.document.body, { subtree: true, childList: true, characterData: true });
-  stripIconTextNodes();
-  // Also run after a short delay for late mounts
-  setTimeout(stripIconTextNodes, 500);
-  setTimeout(stripIconTextNodes, 1500);
+
+  nukeIconText();
+  setTimeout(nukeIconText, 300);
+  setTimeout(nukeIconText, 1000);
+
+  var obs = new MutationObserver(nukeIconText);
+  obs.observe(doc.body, { subtree: true, childList: true });
 })();
 </script>
 """, height=0)
