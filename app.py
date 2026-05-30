@@ -203,16 +203,19 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
-p, label {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
-span {{ font-family: 'DM Sans', sans-serif !important; }}
-/* Only color spans that are NOT icon spans — icon spans use Material Symbols font */
-span:not([class*="material"]):not([class*="icon"]):not([class*="emotion-cache-5"]) {{ color: {TEXT} !important; }}
-/* Nuclear option: any span whose content could be a Material Symbol — make it invisible */
-span[style*="Material Symbols"] {{
+p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
+/* Hide Material Symbols icon spans — class confirmed from DevTools as st-emotion-cache-5r6ut5 */
+.st-emotion-cache-5r6ut5 {{
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
     font-size: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
     display: none !important;
+    position: absolute !important;
 }}
 /* Prevent global span rule from making Material Symbols icon text visible */
 [data-testid="stSidebarCollapsedControl"] span,
