@@ -245,15 +245,27 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    font-family: 'DM Sans', sans-serif !important;
+    line-height: 0 !important;
+    letter-spacing: -0.5em !important;
+    word-spacing: -9999px !important;
+    text-indent: -9999px !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button *,
 [data-testid="stSidebarCollapsedControl"] button span,
-[data-testid="stSidebarCollapsedControl"] button svg {{
+[data-testid="stSidebarCollapsedControl"] button svg,
+[data-testid="stSidebarCollapsedControl"] button p {{
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
     font-size: 0 !important;
     color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button::before {{
     content: "»" !important;
@@ -265,6 +277,11 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     line-height: 1 !important;
     display: block !important;
     opacity: 1 !important;
+    text-indent: 0 !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    position: relative !important;
+    z-index: 2 !important;
 }}
 
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
@@ -283,9 +300,11 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
     overflow: hidden !important;
     position: relative !important;
     cursor: pointer !important;
-    text-indent: -9999px !important;
+    font-family: 'DM Sans', sans-serif !important;
     line-height: 0 !important;
-    letter-spacing: -9999px !important;
+    letter-spacing: -0.5em !important;
+    word-spacing: -9999px !important;
+    text-indent: -9999px !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
@@ -304,7 +323,10 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
     color: transparent !important;
     width: 0 !important;
     height: 0 !important;
+    position: absolute !important;
     overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before {{
@@ -315,10 +337,13 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::before
     -webkit-text-fill-color: {'#DDD6FE' if DARK else '#4C1D95'} !important;
     font-family: Arial, Helvetica, sans-serif !important;
     line-height: 1 !important;
-    text-indent: 0 !important;
-    letter-spacing: 0 !important;
     display: block !important;
     opacity: 1 !important;
+    text-indent: 0 !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    position: relative !important;
+    z-index: 2 !important;
 }}
 header button[data-testid="baseButton-headerNoPadding"],
 header button[data-testid="baseButton-header"] {{
