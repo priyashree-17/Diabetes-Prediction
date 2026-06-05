@@ -245,7 +245,7 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     margin: 0 !important;
 }}
 [data-testid="stSidebarCollapsedControl"]::after {{
-    content: "\00BB" !important;
+    content: "\203A" !important;
     font-size: 26px !important;
     font-weight: 900 !important;
     color: #DDD6FE !important;
@@ -280,7 +280,7 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::after,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]::after {{
-    content: "\00AB" !important;
+    content: "\2039" !important;
     position: absolute !important;
     inset: 0 !important;
     display: flex !important;
