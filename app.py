@@ -243,6 +243,14 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button * {{
+    display: none !important;
+    visibility: hidden !important;
+    font-size: 0 !important;
+    color: transparent !important;
 }}
 [data-testid="stSidebarCollapsedControl"]::after {{
     content: "\203A" !important;
@@ -273,6 +281,14 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] {{
     overflow: hidden !important;
     position: relative !important;
     cursor: pointer !important;
+}}
+/* Kill inner Material Icons span / svg that leaks icon name as text */
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] *,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] * {{
+    display: none !important;
+    visibility: hidden !important;
+    font-size: 0 !important;
+    color: transparent !important;
 }}
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover,
 section[data-testid="stSidebar"] button[data-testid="baseButton-header"]:hover {{
