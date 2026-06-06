@@ -204,6 +204,36 @@ html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif !important; }}
 .block-container {{ padding-top: 0.5rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }}
 h1,h2,h3,h4,h5,h6 {{ font-family: 'Sora', sans-serif !important; color: {TEXT} !important; }}
 p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !important; }}
+
+/* ── Kill Streamlit Material Icons ligature text (keyboard_double_arrow_*) ── */
+[data-testid="stSidebarCollapsedControl"] span,
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] p,
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] span,
+section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] svg,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] span,
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}}
+
+/* ── Also target the icon by its material-icons class wherever it appears ── */
+.material-icons,
+.material-icons-outlined,
+[class*="material-icon"] {{
+    font-size: 0 !important;
+    color: transparent !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    overflow: hidden !important;
+}}
 .st-emotion-cache-5r6ut5 {{ color: transparent !important; }}
 .hero-card h1, .hero-card h2, .hero-card p, .hero-card span, .hero-card div {{ color: white !important; -webkit-text-fill-color: white !important; }}
 .hero-sub {{ color: rgba(255,255,255,0.85) !important; -webkit-text-fill-color: rgba(255,255,255,0.85) !important; }}
@@ -226,6 +256,7 @@ p, label, span {{ font-family: 'DM Sans', sans-serif !important; color: {TEXT} !
     justify-content: center !important;
     padding: 0 !important;
     overflow: hidden !important;
+    clip: rect(0, 34px, 54px, 0) !important;
     cursor: pointer !important;
     position: relative !important;
 }}
