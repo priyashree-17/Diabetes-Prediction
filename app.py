@@ -242,43 +242,58 @@ section[data-testid="stSidebar"] button[data-testid="baseButton-header"] svg {{
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNav"] {{ display: none !important; }}
 
-/* ── Sidebar collapsed control: fully hidden, JS reopener handles it ── */
+/* ── Sidebar collapse / expand arrow fix ── */
 [data-testid="stSidebarCollapsedControl"] {{
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    pointer-events: none !important;
-}}
-
-/* ── Custom floating reopen button (injected by JS) ── */
-#gt-sidebar-open-btn {{
-    position: fixed !important;
-    top: 50% !important;
-    left: 0 !important;
-    transform: translateY(-50%) !important;
-    z-index: 99999 !important;
-    width: 28px !important;
-    height: 52px !important;
+    visibility: visible !important;
+    display: flex !important;
+    opacity: 1 !important;
     background: {'rgba(30,20,60,0.96)' if DARK else '#4C1D95'} !important;
     border-radius: 0 14px 14px 0 !important;
     box-shadow: 4px 0 18px rgba(76,29,149,0.50) !important;
-    display: flex !important;
+    width: 34px !important;
+    height: 54px !important;
     align-items: center !important;
     justify-content: center !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 34px, 54px, 0) !important;
     cursor: pointer !important;
-    border: none !important;
-    color: #DDD6FE !important;
-    font-size: 20px !important;
-    font-family: Arial, sans-serif !important;
-    font-weight: 900 !important;
-    transition: width 0.2s ease, box-shadow 0.2s ease !important;
-    line-height: 1 !important;
+    position: relative !important;
 }}
-#gt-sidebar-open-btn:hover {{
-    width: 34px !important;
+[data-testid="stSidebarCollapsedControl"]:hover {{
+    width: 38px !important;
     box-shadow: 6px 0 22px rgba(76,29,149,0.70) !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button {{
+    position: absolute !important;
+    inset: 0 !important;
+    opacity: 0 !important;
+    cursor: pointer !important;
+    z-index: 2 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button * {{
+    display: none !important;
+    visibility: hidden !important;
+    font-size: 0 !important;
+    color: transparent !important;
+}}
+[data-testid="stSidebarCollapsedControl"]::after {{
+    content: "\203A" !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+    color: #DDD6FE !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    line-height: 1 !important;
+    display: block !important;
+    pointer-events: none !important;
+    position: relative !important;
+    z-index: 1 !important;
 }}
 
 section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
@@ -344,19 +359,8 @@ section[data-testid="stSidebar"] .block-container {{
     padding-top: 0 !important; margin-top: 0 !important;
 }}
 section[data-testid="stSidebar"] > div:first-child > div:first-child {{
-    padding-top: 0 !important; margin-top: 0 !important;
-}}
-[data-testid="stSidebarContent"] {{
-    padding-top: 0 !important; margin-top: 0 !important;
-}}
-[data-testid="stSidebarUserContent"] {{
-    padding-top: 0 !important; margin-top: 0 !important;
-}}
-section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{
-    padding-top: 0 !important; margin-top: 0 !important;
-}}
-section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {{
-    padding-top: 0 !important; margin-top: 0 !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
 }}
 
 /* Header cleanup */
@@ -936,47 +940,9 @@ components.html("""
     });
   }
 
-  /* 3. Custom sidebar reopen button */
-  function manageSidebarBtn() {
-    var sidebar = pd.querySelector('section[data-testid="stSidebar"]');
-    var collapsed = pd.querySelector('[data-testid="stSidebarCollapsedControl"]');
-    var btn = pd.getElementById('gt-sidebar-open-btn');
-
-    // Detect if sidebar is collapsed (Streamlit adds aria-expanded=false or collapses the section)
-    var isCollapsed = sidebar && (
-      sidebar.style.transform === 'translateX(-110%)' ||
-      getComputedStyle(sidebar).transform.indexOf('matrix') !== -1 && parseFloat(getComputedStyle(sidebar).transform.split(',')[4]) < -200 ||
-      sidebar.getAttribute('aria-expanded') === 'false' ||
-      (sidebar.getBoundingClientRect().left < -200)
-    );
-
-    if (isCollapsed) {
-      if (!btn) {
-        btn = pd.createElement('button');
-        btn.id = 'gt-sidebar-open-btn';
-        btn.innerHTML = '&#8250;';
-        btn.title = 'Open sidebar';
-        btn.onclick = function() {
-          // Click the real Streamlit collapsed control button
-          var realBtn = pd.querySelector('[data-testid="stSidebarCollapsedControl"] button');
-          if (realBtn) realBtn.click();
-        };
-        pd.body.appendChild(btn);
-      }
-      btn.style.display = 'flex';
-    } else {
-      if (btn) btn.style.display = 'none';
-    }
-  }
-
-  function runAll() {
-    fixNumberInputs();
-    killMaterialIconText();
-    manageSidebarBtn();
-  }
-
+  function runAll() { fixNumberInputs(); killMaterialIconText(); }
   var obs = new window.parent.MutationObserver(runAll);
-  obs.observe(pd.body, { subtree: true, childList: true, characterData: true, attributes: true });
+  obs.observe(pd.body, { subtree: true, childList: true, characterData: true });
   runAll();
 })();
 </script>
