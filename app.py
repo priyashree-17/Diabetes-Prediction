@@ -910,17 +910,40 @@ import streamlit.components.v1 as components
 components.html("""
 <script>
 (function() {
+  var pd = window.parent.document;
+
+  /* 1. Fix number input scroll */
   function fixNumberInputs() {
-    var inputs = window.parent.document.querySelectorAll('[data-testid="stNumberInput"] input');
-    inputs.forEach(function(el) {
+    pd.querySelectorAll('[data-testid="stNumberInput"] input').forEach(function(el) {
       if (el.dataset.fixedDouble) return;
       el.dataset.fixedDouble = '1';
       el.addEventListener('wheel', function(e) { e.preventDefault(); }, { passive: false });
     });
   }
-  var obs = new window.parent.MutationObserver(fixNumberInputs);
-  obs.observe(window.parent.document.body, { subtree: true, childList: true });
-  fixNumberInputs();
+
+  /* 2. Kill keyboard_double_arrow Material Icons text */
+  function killMaterialIconText() {
+    var walker = pd.createTreeWalker(pd.body, NodeFilter.SHOW_TEXT, null, false);
+    var node;
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue && node.nodeValue.indexOf('keyboard_double') !== -1) {
+        var el = node.parentElement;
+        if (el) {
+          el.style.cssText = 'display:none!important;visibility:hidden!important;width:0!important;height:0!important;overflow:hidden!important;font-size:0!important;color:transparent!important;position:absolute!important;';
+        }
+      }
+    }
+    pd.querySelectorAll('[data-testid="stSidebarCollapsedControl"] button').forEach(function(btn) {
+      btn.querySelectorAll('*').forEach(function(child) {
+        child.style.cssText = 'display:none!important;visibility:hidden!important;font-size:0!important;color:transparent!important;';
+      });
+    });
+  }
+
+  function runAll() { fixNumberInputs(); killMaterialIconText(); }
+  var obs = new window.parent.MutationObserver(runAll);
+  obs.observe(pd.body, { subtree: true, childList: true, characterData: true });
+  runAll();
 })();
 </script>
 """, height=0)
